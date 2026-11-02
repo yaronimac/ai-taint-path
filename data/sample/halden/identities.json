@@ -1,0 +1,69 @@
+[
+  {
+    "id": "svc-ops-agent",
+    "kind": "machine",
+    "platform": "aws_iam_role",
+    "name": "ops-agent-role",
+    "permissions": [
+      "AdministratorAccess"
+    ],
+    "scope": "aws-prod",
+    "notes": "Attached to the CI build server so the Ops agent can 'fix things'."
+  },
+  {
+    "id": "svc-support-agent",
+    "kind": "machine",
+    "platform": "entra_service_principal",
+    "name": "support-assistant-sp",
+    "permissions": [
+      "crm.records.read_all",
+      "crm.records.write_all",
+      "mail.send_as_company"
+    ],
+    "scope": "crm"
+  },
+  {
+    "id": "svc-finance-agent",
+    "kind": "machine",
+    "platform": "entra_service_principal",
+    "name": "ap-reconciler-sp",
+    "permissions": [
+      "erp.invoices.write",
+      "erp.payments.create"
+    ],
+    "scope": "finance-erp"
+  },
+  {
+    "id": "svc-backup",
+    "kind": "machine",
+    "platform": "aws_iam_user",
+    "name": "backup-svc",
+    "permissions": [
+      "s3:GetObject",
+      "rds:CreateDBSnapshot"
+    ],
+    "scope": "orders-db",
+    "access_key_age_days": 412
+  },
+  {
+    "id": "it-admin",
+    "kind": "human",
+    "platform": "active_directory",
+    "name": "IT admin (shared account)",
+    "permissions": [
+      "Domain Admins"
+    ],
+    "scope": "dc-01",
+    "mfa": false
+  },
+  {
+    "id": "wms-app",
+    "kind": "machine",
+    "platform": "entra_managed_identity",
+    "name": "wms-app-mi",
+    "permissions": [
+      "wms.db.read_write"
+    ],
+    "scope": "wms-db"
+  }
+]

@@ -1,0 +1,765 @@
+[
+  {
+    "id": "F-0001",
+    "type": "cve",
+    "asset": "vpn-gw-01",
+    "cve": "CVE-2024-21887",
+    "source": "vuln_scanner",
+    "status": "open",
+    "first_seen": "2026-08-24"
+  },
+  {
+    "id": "F-0002",
+    "type": "cve",
+    "asset": "dc-01",
+    "cve": "CVE-2020-1472",
+    "source": "vuln_scanner",
+    "status": "open",
+    "first_seen": "2026-09-10"
+  },
+  {
+    "id": "F-0003",
+    "type": "cve",
+    "asset": "screenconnect-01",
+    "cve": "CVE-2024-1709",
+    "source": "vuln_scanner",
+    "status": "open",
+    "first_seen": "2026-10-03"
+  },
+  {
+    "id": "F-0004",
+    "type": "cve",
+    "asset": "tracking-portal",
+    "cve": "CVE-2022-22965",
+    "source": "vuln_scanner",
+    "status": "open",
+    "first_seen": "2026-06-17"
+  },
+  {
+    "id": "F-0005",
+    "type": "cve",
+    "asset": "sharepoint-01",
+    "cve": "CVE-2025-53770",
+    "source": "vuln_scanner",
+    "status": "open",
+    "first_seen": "2026-09-06"
+  },
+  {
+    "id": "F-0006",
+    "type": "cve",
+    "asset": "reporting-app",
+    "cve": "CVE-2021-44228",
+    "source": "vuln_scanner",
+    "status": "open",
+    "first_seen": "2026-08-05"
+  },
+  {
+    "id": "F-0007",
+    "type": "cve",
+    "asset": "moveit-01",
+    "cve": "CVE-2023-34362",
+    "source": "vuln_scanner",
+    "status": "open",
+    "first_seen": "2026-09-14"
+  },
+  {
+    "id": "F-0008",
+    "type": "cve",
+    "asset": "outlook-clients",
+    "cve": "CVE-2023-23397",
+    "source": "vuln_scanner",
+    "status": "open",
+    "first_seen": "2026-06-22"
+  },
+  {
+    "id": "F-0009",
+    "type": "cve",
+    "asset": "core-router-01",
+    "cve": "CVE-2023-20198",
+    "source": "vuln_scanner",
+    "status": "open",
+    "first_seen": "2026-06-25"
+  },
+  {
+    "id": "F-0010",
+    "type": "cve",
+    "asset": "fw-edge-01",
+    "cve": "CVE-2023-27997",
+    "source": "vuln_scanner",
+    "status": "open",
+    "first_seen": "2026-10-19"
+  },
+  {
+    "id": "F-0011",
+    "type": "cve",
+    "asset": "pan-gp-01",
+    "cve": "CVE-2024-3400",
+    "source": "vuln_scanner",
+    "status": "fixed",
+    "first_seen": "2026-08-11"
+  },
+  {
+    "id": "F-0012",
+    "type": "cve",
+    "asset": "citrix-adc-01",
+    "cve": "CVE-2023-4966",
+    "source": "vuln_scanner",
+    "status": "fixed",
+    "first_seen": "2026-08-20"
+  },
+  {
+    "id": "F-0013",
+    "type": "cve",
+    "asset": "confluence-lab",
+    "cve": "CVE-2023-22515",
+    "source": "vuln_scanner",
+    "status": "open",
+    "first_seen": "2026-09-19"
+  },
+  {
+    "id": "F-0014",
+    "type": "cve",
+    "asset": "xz-test-vm",
+    "cve": "CVE-2024-3094",
+    "source": "vuln_scanner",
+    "status": "open",
+    "first_seen": "2026-09-03"
+  },
+  {
+    "id": "F-0015",
+    "type": "cve",
+    "asset": "dev-laptops",
+    "cve": "CVE-2025-6514",
+    "source": "sbom",
+    "status": "open",
+    "component": "mcp-remote@0.1.15",
+    "first_seen": "2026-06-09"
+  },
+  {
+    "id": "F-0016",
+    "type": "cve",
+    "asset": "dev-laptops",
+    "cve": "CVE-2025-49596",
+    "source": "sbom",
+    "status": "open",
+    "component": "@modelcontextprotocol/inspector@0.13.0",
+    "first_seen": "2026-09-23"
+  },
+  {
+    "id": "F-0017",
+    "asset": "mcp-ops",
+    "type": "agent_risk",
+    "title": "MCP server listens on all interfaces with no authentication",
+    "owasp_agentic": [
+      "ASI05",
+      "ASI02"
+    ],
+    "source": "agent_inventory",
+    "status": "open",
+    "first_seen": "2026-06-02"
+  },
+  {
+    "id": "F-0018",
+    "asset": "svc-ops-agent",
+    "type": "misconfig",
+    "title": "Agent identity has AdministratorAccess on the production AWS account",
+    "owasp_agentic": [
+      "ASI03"
+    ],
+    "source": "cspm",
+    "status": "open",
+    "first_seen": "2026-08-21"
+  },
+  {
+    "id": "F-0019",
+    "asset": "agent-support",
+    "type": "agent_risk",
+    "title": "Public chat input reaches an agent with CRM write and external email tools, no human approval",
+    "owasp_agentic": [
+      "ASI01",
+      "ASI02"
+    ],
+    "source": "agent_inventory",
+    "status": "open",
+    "first_seen": "2026-10-22"
+  },
+  {
+    "id": "F-0020",
+    "asset": "svc-support-agent",
+    "type": "misconfig",
+    "title": "Support agent can read and write all CRM records and send mail as the company",
+    "owasp_agentic": [
+      "ASI03"
+    ],
+    "source": "identity_scan",
+    "status": "open",
+    "first_seen": "2026-09-10"
+  },
+  {
+    "id": "F-0021",
+    "asset": "agent-finance",
+    "type": "agent_risk",
+    "title": "Agent acts on emailed invoices and can change vendor bank details and schedule payments without approval",
+    "owasp_agentic": [
+      "ASI01",
+      "ASI06",
+      "ASI09"
+    ],
+    "source": "agent_inventory",
+    "status": "open",
+    "first_seen": "2026-09-22"
+  },
+  {
+    "id": "F-0022",
+    "asset": "mcp-inspector",
+    "type": "agent_risk",
+    "title": "MCP Inspector proxy exposed on 0.0.0.0 on developer laptops",
+    "owasp_agentic": [
+      "ASI04",
+      "ASI05"
+    ],
+    "source": "agent_inventory",
+    "status": "open",
+    "first_seen": "2026-08-01"
+  },
+  {
+    "id": "F-0023",
+    "asset": "it-admin",
+    "type": "misconfig",
+    "title": "Shared Domain Admin account without MFA",
+    "source": "identity_scan",
+    "status": "open",
+    "first_seen": "2026-09-12"
+  },
+  {
+    "id": "F-0024",
+    "asset": "svc-backup",
+    "type": "misconfig",
+    "title": "Access key not rotated in 412 days",
+    "source": "cspm",
+    "status": "open",
+    "first_seen": "2026-07-20"
+  },
+  {
+    "id": "F-0025",
+    "type": "cve",
+    "asset": "web-frontends",
+    "cve": "CVE-2022-42889",
+    "source": "vuln_scanner",
+    "status": "open",
+    "first_seen": "2026-06-16"
+  },
+  {
+    "id": "F-0026",
+    "type": "cve",
+    "asset": "web-frontends",
+    "cve": "CVE-2023-43804",
+    "source": "vuln_scanner",
+    "status": "open",
+    "first_seen": "2026-06-07"
+  },
+  {
+    "id": "F-0027",
+    "type": "cve",
+    "asset": "web-frontends",
+    "cve": "CVE-2022-0778",
+    "source": "vuln_scanner",
+    "status": "open",
+    "first_seen": "2026-08-05"
+  },
+  {
+    "id": "F-0028",
+    "type": "cve",
+    "asset": "web-frontends",
+    "cve": "CVE-2023-38545",
+    "source": "vuln_scanner",
+    "status": "open",
+    "first_seen": "2026-07-13"
+  },
+  {
+    "id": "F-0029",
+    "type": "cve",
+    "asset": "web-frontends",
+    "cve": "CVE-2024-37891",
+    "source": "vuln_scanner",
+    "status": "open",
+    "first_seen": "2026-09-28"
+  },
+  {
+    "id": "F-0030",
+    "type": "cve",
+    "asset": "web-frontends",
+    "cve": "CVE-2023-0464",
+    "source": "vuln_scanner",
+    "status": "open",
+    "first_seen": "2026-09-03"
+  },
+  {
+    "id": "F-0031",
+    "type": "cve",
+    "asset": "tracking-portal",
+    "cve": "CVE-2024-35195",
+    "source": "vuln_scanner",
+    "status": "open",
+    "first_seen": "2026-07-15"
+  },
+  {
+    "id": "F-0032",
+    "type": "cve",
+    "asset": "tracking-portal",
+    "cve": "CVE-2022-0778",
+    "source": "vuln_scanner",
+    "status": "open",
+    "first_seen": "2026-09-18"
+  },
+  {
+    "id": "F-0033",
+    "type": "cve",
+    "asset": "tracking-portal",
+    "cve": "CVE-2024-45337",
+    "source": "vuln_scanner",
+    "status": "open",
+    "first_seen": "2026-08-05"
+  },
+  {
+    "id": "F-0034",
+    "type": "cve",
+    "asset": "tracking-portal",
+    "cve": "CVE-2021-23017",
+    "source": "vuln_scanner",
+    "status": "open",
+    "first_seen": "2026-09-28"
+  },
+  {
+    "id": "F-0035",
+    "type": "cve",
+    "asset": "build-01",
+    "cve": "CVE-2023-38545",
+    "source": "vuln_scanner",
+    "status": "open",
+    "first_seen": "2026-10-09"
+  },
+  {
+    "id": "F-0036",
+    "type": "cve",
+    "asset": "build-01",
+    "cve": "CVE-2024-37891",
+    "source": "vuln_scanner",
+    "status": "open",
+    "first_seen": "2026-09-12"
+  },
+  {
+    "id": "F-0037",
+    "type": "cve",
+    "asset": "build-01",
+    "cve": "CVE-2022-40897",
+    "source": "vuln_scanner",
+    "status": "open",
+    "first_seen": "2026-09-08"
+  },
+  {
+    "id": "F-0038",
+    "type": "cve",
+    "asset": "build-01",
+    "cve": "CVE-2023-44487",
+    "source": "vuln_scanner",
+    "status": "open",
+    "first_seen": "2026-07-03"
+  },
+  {
+    "id": "F-0039",
+    "type": "cve",
+    "asset": "reporting-app",
+    "cve": "CVE-2023-38545",
+    "source": "vuln_scanner",
+    "status": "open",
+    "first_seen": "2026-07-05"
+  },
+  {
+    "id": "F-0040",
+    "type": "cve",
+    "asset": "reporting-app",
+    "cve": "CVE-2022-40897",
+    "source": "vuln_scanner",
+    "status": "open",
+    "first_seen": "2026-07-22"
+  },
+  {
+    "id": "F-0041",
+    "type": "cve",
+    "asset": "reporting-app",
+    "cve": "CVE-2024-37891",
+    "source": "vuln_scanner",
+    "status": "open",
+    "first_seen": "2026-07-01"
+  },
+  {
+    "id": "F-0042",
+    "type": "cve",
+    "asset": "reporting-app",
+    "cve": "CVE-2022-0778",
+    "source": "vuln_scanner",
+    "status": "open",
+    "first_seen": "2026-09-27"
+  },
+  {
+    "id": "F-0043",
+    "type": "cve",
+    "asset": "reporting-app",
+    "cve": "CVE-2024-45337",
+    "source": "vuln_scanner",
+    "status": "open",
+    "first_seen": "2026-10-06"
+  },
+  {
+    "id": "F-0044",
+    "type": "cve",
+    "asset": "data-pipelines",
+    "cve": "CVE-2022-3602",
+    "source": "vuln_scanner",
+    "status": "open",
+    "first_seen": "2026-08-10"
+  },
+  {
+    "id": "F-0045",
+    "type": "cve",
+    "asset": "data-pipelines",
+    "cve": "CVE-2024-2961",
+    "source": "vuln_scanner",
+    "status": "open",
+    "first_seen": "2026-06-05"
+  },
+  {
+    "id": "F-0046",
+    "type": "cve",
+    "asset": "data-pipelines",
+    "cve": "CVE-2022-0778",
+    "source": "vuln_scanner",
+    "status": "open",
+    "first_seen": "2026-09-18"
+  },
+  {
+    "id": "F-0047",
+    "type": "cve",
+    "asset": "data-pipelines",
+    "cve": "CVE-2023-43804",
+    "source": "vuln_scanner",
+    "status": "open",
+    "first_seen": "2026-08-20"
+  },
+  {
+    "id": "F-0048",
+    "type": "cve",
+    "asset": "data-pipelines",
+    "cve": "CVE-2024-6387",
+    "source": "vuln_scanner",
+    "status": "open",
+    "first_seen": "2026-10-11"
+  },
+  {
+    "id": "F-0049",
+    "type": "cve",
+    "asset": "data-pipelines",
+    "cve": "CVE-2023-44487",
+    "source": "vuln_scanner",
+    "status": "open",
+    "first_seen": "2026-07-23"
+  },
+  {
+    "id": "F-0050",
+    "type": "cve",
+    "asset": "data-pipelines",
+    "cve": "CVE-2022-25883",
+    "source": "vuln_scanner",
+    "status": "open",
+    "first_seen": "2026-10-20"
+  },
+  {
+    "id": "F-0051",
+    "type": "cve",
+    "asset": "data-pipelines",
+    "cve": "CVE-2023-0464",
+    "source": "vuln_scanner",
+    "status": "open",
+    "first_seen": "2026-06-15"
+  },
+  {
+    "id": "F-0052",
+    "type": "cve",
+    "asset": "ssh-bastion",
+    "cve": "CVE-2023-39325",
+    "source": "vuln_scanner",
+    "status": "open",
+    "first_seen": "2026-10-13"
+  },
+  {
+    "id": "F-0053",
+    "type": "cve",
+    "asset": "ssh-bastion",
+    "cve": "CVE-2024-37891",
+    "source": "vuln_scanner",
+    "status": "open",
+    "first_seen": "2026-09-13"
+  },
+  {
+    "id": "F-0054",
+    "type": "cve",
+    "asset": "ssh-bastion",
+    "cve": "CVE-2022-42889",
+    "source": "vuln_scanner",
+    "status": "open",
+    "first_seen": "2026-09-04"
+  },
+  {
+    "id": "F-0055",
+    "type": "cve",
+    "asset": "ssh-bastion",
+    "cve": "CVE-2022-3602",
+    "source": "vuln_scanner",
+    "status": "open",
+    "first_seen": "2026-09-21"
+  },
+  {
+    "id": "F-0056",
+    "type": "cve",
+    "asset": "ssh-bastion",
+    "cve": "CVE-2023-44487",
+    "source": "vuln_scanner",
+    "status": "open",
+    "first_seen": "2026-09-02"
+  },
+  {
+    "id": "F-0057",
+    "type": "cve",
+    "asset": "sharepoint-01",
+    "cve": "CVE-2022-40897",
+    "source": "vuln_scanner",
+    "status": "open",
+    "first_seen": "2026-07-03"
+  },
+  {
+    "id": "F-0058",
+    "type": "cve",
+    "asset": "sharepoint-01",
+    "cve": "CVE-2023-48795",
+    "source": "vuln_scanner",
+    "status": "open",
+    "first_seen": "2026-07-15"
+  },
+  {
+    "id": "F-0059",
+    "type": "cve",
+    "asset": "sharepoint-01",
+    "cve": "CVE-2022-3602",
+    "source": "vuln_scanner",
+    "status": "open",
+    "first_seen": "2026-07-04"
+  },
+  {
+    "id": "F-0060",
+    "type": "cve",
+    "asset": "sharepoint-01",
+    "cve": "CVE-2021-23017",
+    "source": "vuln_scanner",
+    "status": "open",
+    "first_seen": "2026-08-20"
+  },
+  {
+    "id": "F-0061",
+    "type": "cve",
+    "asset": "sharepoint-01",
+    "cve": "CVE-2023-44487",
+    "source": "vuln_scanner",
+    "status": "open",
+    "first_seen": "2026-06-04"
+  },
+  {
+    "id": "F-0062",
+    "type": "cve",
+    "asset": "sharepoint-01",
+    "cve": "CVE-2022-0778",
+    "source": "vuln_scanner",
+    "status": "open",
+    "first_seen": "2026-06-19"
+  },
+  {
+    "id": "F-0063",
+    "type": "cve",
+    "asset": "confluence-lab",
+    "cve": "CVE-2023-38545",
+    "source": "vuln_scanner",
+    "status": "open",
+    "first_seen": "2026-07-18"
+  },
+  {
+    "id": "F-0064",
+    "type": "cve",
+    "asset": "confluence-lab",
+    "cve": "CVE-2022-0778",
+    "source": "vuln_scanner",
+    "status": "open",
+    "first_seen": "2026-06-12"
+  },
+  {
+    "id": "F-0065",
+    "type": "cve",
+    "asset": "confluence-lab",
+    "cve": "CVE-2021-23017",
+    "source": "vuln_scanner",
+    "status": "open",
+    "first_seen": "2026-10-01"
+  },
+  {
+    "id": "F-0066",
+    "type": "cve",
+    "asset": "confluence-lab",
+    "cve": "CVE-2024-4067",
+    "source": "vuln_scanner",
+    "status": "open",
+    "first_seen": "2026-06-28"
+  },
+  {
+    "id": "F-0067",
+    "type": "cve",
+    "asset": "confluence-lab",
+    "cve": "CVE-2023-32681",
+    "source": "vuln_scanner",
+    "status": "open",
+    "first_seen": "2026-07-20"
+  },
+  {
+    "id": "F-0068",
+    "type": "cve",
+    "asset": "confluence-lab",
+    "cve": "CVE-2023-0464",
+    "source": "vuln_scanner",
+    "status": "open",
+    "first_seen": "2026-09-05"
+  },
+  {
+    "id": "F-0069",
+    "type": "cve",
+    "asset": "confluence-lab",
+    "cve": "CVE-2024-45337",
+    "source": "vuln_scanner",
+    "status": "open",
+    "first_seen": "2026-08-12"
+  },
+  {
+    "id": "F-0070",
+    "type": "cve",
+    "asset": "confluence-lab",
+    "cve": "CVE-2023-48795",
+    "source": "vuln_scanner",
+    "status": "open",
+    "first_seen": "2026-10-12"
+  },
+  {
+    "id": "F-0071",
+    "type": "cve",
+    "asset": "xz-test-vm",
+    "cve": "CVE-2023-44487",
+    "source": "vuln_scanner",
+    "status": "open",
+    "first_seen": "2026-09-04"
+  },
+  {
+    "id": "F-0072",
+    "type": "cve",
+    "asset": "xz-test-vm",
+    "cve": "CVE-2022-25883",
+    "source": "vuln_scanner",
+    "status": "open",
+    "first_seen": "2026-06-28"
+  },
+  {
+    "id": "F-0073",
+    "type": "cve",
+    "asset": "xz-test-vm",
+    "cve": "CVE-2024-35195",
+    "source": "vuln_scanner",
+    "status": "open",
+    "first_seen": "2026-09-15"
+  },
+  {
+    "id": "F-0074",
+    "type": "cve",
+    "asset": "xz-test-vm",
+    "cve": "CVE-2023-39325",
+    "source": "vuln_scanner",
+    "status": "open",
+    "first_seen": "2026-09-16"
+  },
+  {
+    "id": "F-0075",
+    "type": "cve",
+    "asset": "xz-test-vm",
+    "cve": "CVE-2022-3602",
+    "source": "vuln_scanner",
+    "status": "open",
+    "first_seen": "2026-08-03"
+  },
+  {
+    "id": "F-0076",
+    "type": "cve",
+    "asset": "xz-test-vm",
+    "cve": "CVE-2023-43804",
+    "source": "vuln_scanner",
+    "status": "open",
+    "first_seen": "2026-07-04"
+  },
+  {
+    "id": "F-0077",
+    "type": "cve",
+    "asset": "xz-test-vm",
+    "cve": "CVE-2023-38545",
+    "source": "vuln_scanner",
+    "status": "open",
+    "first_seen": "2026-08-24"
+  },
+  {
+    "id": "F-0078",
+    "type": "cve",
+    "asset": "moveit-01",
+    "cve": "CVE-2023-38545",
+    "source": "vuln_scanner",
+    "status": "open",
+    "first_seen": "2026-08-16"
+  },
+  {
+    "id": "F-0079",
+    "type": "cve",
+    "asset": "moveit-01",
+    "cve": "CVE-2023-39325",
+    "source": "vuln_scanner",
+    "status": "open",
+    "first_seen": "2026-07-17"
+  },
+  {
+    "id": "F-0080",
+    "type": "cve",
+    "asset": "moveit-01",
+    "cve": "CVE-2024-45337",
+    "source": "vuln_scanner",
+    "status": "open",
+    "first_seen": "2026-06-07"
+  },
+  {
+    "id": "F-0081",
+    "type": "cve",
+    "asset": "moveit-01",
+    "cve": "CVE-2024-4067",
+    "source": "vuln_scanner",
+    "status": "open",
+    "first_seen": "2026-10-12"
+  },
+  {
+    "id": "F-0082",
+    "type": "cve",
+    "asset": "moveit-01",
+    "cve": "CVE-2022-25883",
+    "source": "vuln_scanner",
+    "status": "open",
+    "first_seen": "2026-07-23"
+  }
+]

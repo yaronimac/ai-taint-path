@@ -1,0 +1,22 @@
+{
+  "description": "Ground truth planted in the Halden sample. The engine's tests check its ranking against this.",
+  "critical_paths": [
+    {"id": "ops-agent-to-aws", "nodes": ["dev-laptops", "corp-net", "mcp-ops", "build-01", "svc-ops-agent", "aws-prod"],
+     "why": "A laptop compromised through a vulnerable MCP client (CVE-2025-6514) can call an unauthenticated MCP shell tool whose host runs as an AWS admin role. The decisive hops are misconfigurations, not CVEs."},
+    {"id": "support-chat-to-crm", "nodes": ["support-chat", "agent-support", "mcp-crm", "svc-support-agent", "crm"],
+     "why": "Prompt injection in the public chat can drive CRM write and external email tools: customer data exfiltration. No CVE involved."},
+    {"id": "finance-inbox-to-erp", "nodes": ["finance-inbox", "agent-finance", "mcp-erp", "svc-finance-agent", "finance-erp"],
+     "why": "A forged invoice can make the agent change vendor bank details and schedule payment. No CVE involved."},
+    {"id": "vpn-to-domain", "nodes": ["vpn-gw-01", "corp-net", "dc-01"],
+     "why": "Known-exploited Ivanti flaw on the VPN, then Zerologon on the domain controller."},
+    {"id": "screenconnect-to-domain", "nodes": ["screenconnect-01", "it-admin", "dc-01"],
+     "why": "Known-exploited ScreenConnect auth bypass gives a session as a shared Domain Admin without MFA."},
+    {"id": "portal-to-orders", "nodes": ["tracking-portal", "orders-db"],
+     "why": "Known-exploited Spring4Shell on an internet-facing portal with direct access to the orders database."}
+  ],
+  "decoys": {
+    "isolated_assets": ["confluence-lab", "xz-test-vm"],
+    "why": "Critical or known-exploited CVEs on isolated lab systems: high CVSS, no path to a crown jewel. A good ranking keeps them out of the top 10."
+  },
+  "fixed_cves_excluded": ["CVE-2024-3400", "CVE-2023-4966"]
+}

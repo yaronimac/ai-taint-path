@@ -1,0 +1,12 @@
+{
+  "name": "Halden Logistics",
+  "fictional": true,
+  "industry": "Freight and warehousing",
+  "employees": 4500,
+  "environments": [
+    "aws",
+    "azure",
+    "on_prem"
+  ],
+  "notes": "Invented company for demos. Any resemblance to a real organisation is coincidental."
+}

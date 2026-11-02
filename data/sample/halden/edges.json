@@ -1,0 +1,212 @@
+[
+  {
+    "from": "vpn-gw-01",
+    "to": "corp-net",
+    "kind": "network"
+  },
+  {
+    "from": "fw-edge-01",
+    "to": "corp-net",
+    "kind": "network"
+  },
+  {
+    "from": "pan-gp-01",
+    "to": "corp-net",
+    "kind": "network"
+  },
+  {
+    "from": "citrix-adc-01",
+    "to": "corp-net",
+    "kind": "network"
+  },
+  {
+    "from": "screenconnect-01",
+    "to": "it-admin",
+    "kind": "session_hijack"
+  },
+  {
+    "from": "dev-laptops",
+    "to": "corp-net",
+    "kind": "network"
+  },
+  {
+    "from": "corp-net",
+    "to": "dc-01",
+    "kind": "network"
+  },
+  {
+    "from": "corp-net",
+    "to": "sharepoint-01",
+    "kind": "network"
+  },
+  {
+    "from": "corp-net",
+    "to": "reporting-app",
+    "kind": "network"
+  },
+  {
+    "from": "corp-net",
+    "to": "core-router-01",
+    "kind": "network"
+  },
+  {
+    "from": "corp-net",
+    "to": "outlook-clients",
+    "kind": "network"
+  },
+  {
+    "from": "corp-net",
+    "to": "build-01",
+    "kind": "network"
+  },
+  {
+    "from": "corp-net",
+    "to": "ssh-bastion",
+    "kind": "network"
+  },
+  {
+    "from": "it-admin",
+    "to": "dc-01",
+    "kind": "admin_of"
+  },
+  {
+    "from": "sharepoint-01",
+    "to": "dc-01",
+    "kind": "network"
+  },
+  {
+    "from": "reporting-app",
+    "to": "wms-db",
+    "kind": "network"
+  },
+  {
+    "from": "ssh-bastion",
+    "to": "orders-db",
+    "kind": "network"
+  },
+  {
+    "from": "tracking-portal",
+    "to": "orders-db",
+    "kind": "network"
+  },
+  {
+    "from": "web-frontends",
+    "to": "tracking-portal",
+    "kind": "network"
+  },
+  {
+    "from": "moveit-01",
+    "to": "file-share-01",
+    "kind": "network"
+  },
+  {
+    "from": "build-01",
+    "to": "svc-ops-agent",
+    "kind": "runs_as"
+  },
+  {
+    "from": "svc-ops-agent",
+    "to": "aws-prod",
+    "kind": "admin_of"
+  },
+  {
+    "from": "aws-prod",
+    "to": "orders-db",
+    "kind": "admin_of"
+  },
+  {
+    "from": "svc-backup",
+    "to": "orders-db",
+    "kind": "admin_of"
+  },
+  {
+    "from": "data-pipelines",
+    "to": "svc-backup",
+    "kind": "runs_as"
+  },
+  {
+    "from": "svc-support-agent",
+    "to": "crm",
+    "kind": "admin_of"
+  },
+  {
+    "from": "svc-finance-agent",
+    "to": "finance-erp",
+    "kind": "admin_of"
+  },
+  {
+    "from": "support-chat",
+    "to": "agent-support",
+    "kind": "agent_input"
+  },
+  {
+    "from": "agent-support",
+    "to": "mcp-crm",
+    "kind": "agent_tool"
+  },
+  {
+    "from": "mcp-crm",
+    "to": "svc-support-agent",
+    "kind": "runs_as"
+  },
+  {
+    "from": "corp-net",
+    "to": "agent-ops",
+    "kind": "agent_input"
+  },
+  {
+    "from": "corp-net",
+    "to": "mcp-ops",
+    "kind": "network"
+  },
+  {
+    "from": "agent-ops",
+    "to": "mcp-ops",
+    "kind": "agent_tool"
+  },
+  {
+    "from": "mcp-ops",
+    "to": "build-01",
+    "kind": "hosted_on"
+  },
+  {
+    "from": "finance-inbox",
+    "to": "agent-finance",
+    "kind": "agent_input"
+  },
+  {
+    "from": "agent-finance",
+    "to": "mcp-erp",
+    "kind": "agent_tool"
+  },
+  {
+    "from": "mcp-erp",
+    "to": "svc-finance-agent",
+    "kind": "runs_as"
+  },
+  {
+    "from": "dev-laptops",
+    "to": "agent-dev-assistants",
+    "kind": "agent_input"
+  },
+  {
+    "from": "agent-dev-assistants",
+    "to": "mcp-remote-client",
+    "kind": "agent_tool"
+  },
+  {
+    "from": "agent-dev-assistants",
+    "to": "mcp-inspector",
+    "kind": "agent_tool"
+  },
+  {
+    "from": "mcp-remote-client",
+    "to": "dev-laptops",
+    "kind": "hosted_on"
+  },
+  {
+    "from": "mcp-inspector",
+    "to": "dev-laptops",
+    "kind": "hosted_on"
+  }
+]

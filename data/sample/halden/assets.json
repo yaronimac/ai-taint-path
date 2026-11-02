@@ -1,0 +1,233 @@
+[
+  {
+    "id": "aws-prod",
+    "name": "AWS production account",
+    "type": "cloud_account",
+    "env": "aws",
+    "crown_jewel": true,
+    "business_service": "All customer-facing systems",
+    "owner": "Cloud Platform"
+  },
+  {
+    "id": "orders-db",
+    "name": "Orders database (RDS)",
+    "type": "database",
+    "env": "aws",
+    "crown_jewel": true,
+    "business_service": "Order management",
+    "owner": "Commerce Engineering"
+  },
+  {
+    "id": "crm",
+    "name": "Customer CRM",
+    "type": "saas",
+    "env": "azure",
+    "crown_jewel": true,
+    "business_service": "Customer records (PII)",
+    "owner": "Sales Operations"
+  },
+  {
+    "id": "dc-01",
+    "name": "Active Directory domain controller",
+    "type": "server",
+    "env": "on_prem",
+    "crown_jewel": true,
+    "business_service": "Identity for all staff",
+    "owner": "IT Infrastructure"
+  },
+  {
+    "id": "finance-erp",
+    "name": "Finance ERP",
+    "type": "application",
+    "env": "azure",
+    "crown_jewel": true,
+    "business_service": "Payments and invoicing",
+    "owner": "Finance Systems"
+  },
+  {
+    "id": "wms-db",
+    "name": "Warehouse management database",
+    "type": "database",
+    "env": "azure",
+    "crown_jewel": true,
+    "business_service": "Warehouse operations",
+    "owner": "Logistics Engineering"
+  },
+  {
+    "id": "vpn-gw-01",
+    "name": "Ivanti Connect Secure VPN gateway",
+    "type": "network_appliance",
+    "env": "on_prem",
+    "internet_facing": true,
+    "entry_point": "internet",
+    "owner": "Network Team"
+  },
+  {
+    "id": "fw-edge-01",
+    "name": "FortiGate SSL-VPN (branch offices)",
+    "type": "network_appliance",
+    "env": "on_prem",
+    "internet_facing": true,
+    "entry_point": "internet",
+    "owner": "Network Team"
+  },
+  {
+    "id": "pan-gp-01",
+    "name": "PAN-OS GlobalProtect gateway",
+    "type": "network_appliance",
+    "env": "on_prem",
+    "internet_facing": true,
+    "entry_point": "internet",
+    "owner": "Network Team"
+  },
+  {
+    "id": "citrix-adc-01",
+    "name": "Citrix NetScaler ADC",
+    "type": "network_appliance",
+    "env": "on_prem",
+    "internet_facing": true,
+    "entry_point": "internet",
+    "owner": "Network Team"
+  },
+  {
+    "id": "tracking-portal",
+    "name": "Shipment tracking portal (Spring)",
+    "type": "web_app",
+    "env": "aws",
+    "internet_facing": true,
+    "entry_point": "internet",
+    "owner": "Commerce Engineering"
+  },
+  {
+    "id": "moveit-01",
+    "name": "MOVEit Transfer (partner file exchange)",
+    "type": "application",
+    "env": "on_prem",
+    "internet_facing": true,
+    "entry_point": "internet",
+    "owner": "Integration Team"
+  },
+  {
+    "id": "screenconnect-01",
+    "name": "ScreenConnect remote support",
+    "type": "application",
+    "env": "on_prem",
+    "internet_facing": true,
+    "entry_point": "internet",
+    "owner": "IT Service Desk"
+  },
+  {
+    "id": "support-chat",
+    "name": "Website customer support chat",
+    "type": "web_app",
+    "env": "azure",
+    "internet_facing": true,
+    "entry_point": "internet",
+    "owner": "Customer Experience"
+  },
+  {
+    "id": "finance-inbox",
+    "name": "Accounts payable shared mailbox",
+    "type": "mailbox",
+    "env": "azure",
+    "internet_facing": true,
+    "entry_point": "internet",
+    "owner": "Finance Operations"
+  },
+  {
+    "id": "dev-laptops",
+    "name": "Developer laptop fleet (120 devices)",
+    "type": "endpoint_group",
+    "env": "on_prem",
+    "entry_point": "user_action",
+    "owner": "Engineering IT"
+  },
+  {
+    "id": "corp-net",
+    "name": "Corporate network",
+    "type": "network_segment",
+    "env": "on_prem",
+    "owner": "Network Team"
+  },
+  {
+    "id": "build-01",
+    "name": "CI build server",
+    "type": "server",
+    "env": "aws",
+    "owner": "Platform Engineering"
+  },
+  {
+    "id": "sharepoint-01",
+    "name": "SharePoint Server (intranet)",
+    "type": "server",
+    "env": "on_prem",
+    "owner": "Collaboration Team"
+  },
+  {
+    "id": "reporting-app",
+    "name": "Internal reporting app (Java)",
+    "type": "application",
+    "env": "on_prem",
+    "owner": "Data Team"
+  },
+  {
+    "id": "core-router-01",
+    "name": "Cisco IOS XE core router",
+    "type": "network_appliance",
+    "env": "on_prem",
+    "owner": "Network Team"
+  },
+  {
+    "id": "file-share-01",
+    "name": "Partner file share",
+    "type": "storage",
+    "env": "on_prem",
+    "owner": "Integration Team"
+  },
+  {
+    "id": "outlook-clients",
+    "name": "Outlook desktop clients",
+    "type": "endpoint_group",
+    "env": "on_prem",
+    "owner": "Workplace IT"
+  },
+  {
+    "id": "confluence-lab",
+    "name": "Confluence (isolated R&D lab)",
+    "type": "application",
+    "env": "on_prem",
+    "isolated": true,
+    "owner": "R&D"
+  },
+  {
+    "id": "xz-test-vm",
+    "name": "Linux test VM (lab)",
+    "type": "server",
+    "env": "on_prem",
+    "isolated": true,
+    "owner": "R&D"
+  },
+  {
+    "id": "web-frontends",
+    "name": "Public web front-ends (nginx)",
+    "type": "server_group",
+    "env": "aws",
+    "internet_facing": true,
+    "entry_point": "internet",
+    "owner": "Commerce Engineering"
+  },
+  {
+    "id": "data-pipelines",
+    "name": "Python data pipelines",
+    "type": "server_group",
+    "env": "azure",
+    "owner": "Data Team"
+  },
+  {
+    "id": "ssh-bastion",
+    "name": "SSH bastion host",
+    "type": "server",
+    "env": "aws",
+    "owner": "Platform Engineering"
+  }
+]
