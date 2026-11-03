@@ -4,7 +4,7 @@
 
 Security teams can see thousands of exposures but can't tell which few actually lead to their critical assets. AI agents make this worse: they add tools, identities and MCP servers that most exposure tools don't model as attack surface.
 
-This project uses two agents. A **discovery agent** finds the AI agents and MCP servers in use and flags their risks (no login, high-risk tools, vulnerable packages, poisoned tool descriptions). A prioritization engine then ranks **attack paths to crown-jewel assets** across infrastructure, identities and those agents, enriched with public threat intelligence, and an **analyst agent** explains the top risks, drafts remediation tickets and writes a one-page board brief.
+This project uses two agents. A **discovery agent** finds the AI agents, MCP servers and RAG knowledge bases in use and flags their risks (no login, high-risk tools, vulnerable packages, poisoned tool descriptions, open vector stores, knowledge bases fed from untrusted sources). A prioritization engine then ranks **attack paths to crown-jewel assets** across infrastructure, identities and those agents, enriched with public threat intelligence, and an **analyst agent** explains the top risks, drafts remediation tickets and writes a one-page board brief.
 
 ## What's here so far
 
@@ -32,11 +32,11 @@ pytest -q                            # check the data
 
 - [x] Product requirements and go-to-market brief
 - [x] Sample environment with planted ground truth
-- [ ] Discovery agent: MCP config files, read-only endpoint probes, cloud agent exports; OWASP agentic and MITRE ATLAS mapping
+- [ ] Discovery agent: MCP config files, read-only MCP and vector database probes, cloud AI exports; OWASP agentic, OWASP LLM and MITRE ATLAS mapping
 - [ ] Prioritization engine: enrichment, attack-path graph, explainable score, dashboard
 - [ ] Analyst agent: explanations, remediation tickets, board brief, secured MCP server
 - [ ] Hosted demo, demo video, case study
 
 ## Frameworks used
 
-[CISA KEV](https://www.cisa.gov/known-exploited-vulnerabilities-catalog) · [FIRST EPSS](https://www.first.org/epss/) · [MITRE ATT&CK](https://attack.mitre.org/) · [OWASP Top 10 for Agentic Applications](https://genai.owasp.org/2025/12/09/owasp-top-10-for-agentic-applications-the-benchmark-for-agentic-security-in-the-age-of-autonomous-ai/) · [MITRE ATLAS](https://atlas.mitre.org/)
+[CISA KEV](https://www.cisa.gov/known-exploited-vulnerabilities-catalog) · [FIRST EPSS](https://www.first.org/epss/) · [MITRE ATT&CK](https://attack.mitre.org/) · [OWASP Top 10 for Agentic Applications](https://genai.owasp.org/2025/12/09/owasp-top-10-for-agentic-applications-the-benchmark-for-agentic-security-in-the-age-of-autonomous-ai/) · [OWASP Top 10 for LLM Applications](https://genai.owasp.org/llm-top-10/) · [MITRE ATLAS](https://atlas.mitre.org/)
