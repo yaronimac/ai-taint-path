@@ -35,6 +35,7 @@ pytest -q                            # check the data
 - [ ] Discovery agent: MCP config files, read-only MCP and vector database probes, cloud AI exports; OWASP agentic, OWASP LLM and MITRE ATLAS mapping
 - [ ] Prioritization engine: enrichment, attack-path graph, explainable score, dashboard
 - [ ] Analyst agent: explanations, remediation tickets, board brief, secured MCP server
+- [ ] SOAR integration: JSON output with a published schema, REST API (OpenAPI), signed webhooks, example XSOAR or Sentinel playbook, integration guide
 - [ ] Hosted demo, demo video, case study
 
 ## Frameworks used
