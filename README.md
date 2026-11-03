@@ -1,10 +1,10 @@
 # Agent Exposure Copilot (working name)
 
-**Status: in progress, week 1 of 3.** Product brief and sample environment are done; the prioritization engine and AI agent layer are next.
+**Status: in progress, week 1 of 3.** Product brief and sample environment are done; the discovery agent, prioritization engine and analyst agent are next.
 
 Security teams can see thousands of exposures but can't tell which few actually lead to their critical assets. AI agents make this worse: they add tools, identities and MCP servers that most exposure tools don't model as attack surface.
 
-This project ranks **attack paths to crown-jewel assets** across infrastructure, identities and AI agents, enriched with public threat intelligence, then uses a Claude agent to explain the top risks, draft remediation tickets and write a one-page board brief.
+This project uses two agents. A **discovery agent** finds the AI agents and MCP servers in use and flags their risks (no login, high-risk tools, vulnerable packages, poisoned tool descriptions). A prioritization engine then ranks **attack paths to crown-jewel assets** across infrastructure, identities and those agents, enriched with public threat intelligence, and an **analyst agent** explains the top risks, drafts remediation tickets and writes a one-page board brief.
 
 ## What's here so far
 
@@ -32,10 +32,11 @@ pytest -q                            # check the data
 
 - [x] Product requirements and go-to-market brief
 - [x] Sample environment with planted ground truth
+- [ ] Discovery agent: MCP config files, read-only endpoint probes, cloud agent exports; OWASP agentic and MITRE ATLAS mapping
 - [ ] Prioritization engine: enrichment, attack-path graph, explainable score, dashboard
-- [ ] AI agent layer: explanations, remediation tickets, board brief, secured MCP server
+- [ ] Analyst agent: explanations, remediation tickets, board brief, secured MCP server
 - [ ] Hosted demo, demo video, case study
 
 ## Frameworks used
 
-[CISA KEV](https://www.cisa.gov/known-exploited-vulnerabilities-catalog) · [FIRST EPSS](https://www.first.org/epss/) · [MITRE ATT&CK](https://attack.mitre.org/) · [OWASP Top 10 for Agentic Applications](https://genai.owasp.org/2025/12/09/owasp-top-10-for-agentic-applications-the-benchmark-for-agentic-security-in-the-age-of-autonomous-ai/)
+[CISA KEV](https://www.cisa.gov/known-exploited-vulnerabilities-catalog) · [FIRST EPSS](https://www.first.org/epss/) · [MITRE ATT&CK](https://attack.mitre.org/) · [OWASP Top 10 for Agentic Applications](https://genai.owasp.org/2025/12/09/owasp-top-10-for-agentic-applications-the-benchmark-for-agentic-security-in-the-age-of-autonomous-ai/) · [MITRE ATLAS](https://atlas.mitre.org/)
