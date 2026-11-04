@@ -1,4 +1,6 @@
-# Agent Exposure Copilot (working name)
+# shadow-taint-path
+
+Follows untrusted input (a chat message, an emailed invoice, a poisoned document) through shadow AI agents, MCP servers, knowledge bases and identities to the systems that matter.
 
 **Status: in progress, week 1 of 3.** Product brief and sample environment are done; the discovery agent, prioritization engine and analyst agent are next.
 

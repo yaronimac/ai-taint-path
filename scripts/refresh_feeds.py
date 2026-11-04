@@ -31,7 +31,7 @@ EPSS_URL = "https://api.first.org/data/v1/epss?cve={cves}"
 
 
 def fetch_json(url: str, timeout: int = 60):
-    req = urllib.request.Request(url, headers={"User-Agent": "agent-exposure-portfolio/0.1"})
+    req = urllib.request.Request(url, headers={"User-Agent": "shadow-taint-path/0.1"})
     with urllib.request.urlopen(req, timeout=timeout) as resp:
         return json.load(resp)
 

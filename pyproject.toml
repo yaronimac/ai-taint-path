@@ -1,5 +1,5 @@
 [project]
-name = "agent-exposure"
+name = "shadow-taint-path"
 version = "0.1.0"
 description = "Agent-aware exposure prioritization: ranks attack paths to crown-jewel assets across infrastructure, identities and AI agents."
 readme = "README.md"
