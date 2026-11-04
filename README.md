@@ -1,4 +1,4 @@
-# shadow-taint-path
+# ai-taint-path
 
 Follows untrusted input (a chat message, an emailed invoice, a poisoned document) through shadow AI agents, MCP servers, knowledge bases and identities to the systems that matter.
 
