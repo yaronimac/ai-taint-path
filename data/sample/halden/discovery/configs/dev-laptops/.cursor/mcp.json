@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "pdf-tools": {
+      "command": "npx",
+      "args": ["-y", "pdf-tools-mcp@latest"],
+      "env": {
+        "PDF_API_KEY": "pdfapi-EXAMPLE-0000-not-a-real-key"
+      }
+    }
+  }
+}

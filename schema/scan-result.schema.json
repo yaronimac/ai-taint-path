@@ -1,0 +1,912 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/yaronimac/ai-taint-path/schema/scan-result.schema.json",
+  "title": "ai-taint-path scan result",
+  "description": "One scan of one environment: what discovery found, the ranked attack paths to crown jewels, and the fixes that remove the most risk. Path IDs ('<entry>-><target>') and finding IDs are stable across runs on the same data, so SOAR playbooks and ticketing can track them.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "tool",
+    "generated_at",
+    "environment",
+    "settings",
+    "feeds",
+    "summary",
+    "paths",
+    "choke_points",
+    "remediation_plan",
+    "findings",
+    "inventory",
+    "nodes",
+    "edges",
+    "discovery",
+    "baseline"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "tool": {
+      "type": "object",
+      "required": [
+        "name",
+        "version"
+      ],
+      "properties": {
+        "name": {
+          "const": "ai-taint-path"
+        },
+        "version": {
+          "type": "string"
+        }
+      }
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "environment": {
+      "type": "object",
+      "required": [
+        "name",
+        "fictional"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "fictional": {
+          "type": "boolean"
+        },
+        "path": {
+          "type": "string"
+        }
+      }
+    },
+    "settings": {
+      "type": "object",
+      "required": [
+        "discovery",
+        "top"
+      ],
+      "properties": {
+        "discovery": {
+          "type": "boolean"
+        },
+        "discovery_mode": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "transport": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "top": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "feeds": {
+      "type": "object"
+    },
+    "summary": {
+      "type": "object",
+      "required": [
+        "exposure_index",
+        "exposure_index_max",
+        "crown_jewels",
+        "paths",
+        "paths_by_tier",
+        "top_paths",
+        "top_paths_through_ai",
+        "ai_components",
+        "ai_not_registered",
+        "discovery_flags",
+        "without_discovery",
+        "plan"
+      ],
+      "properties": {
+        "exposure_index": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Sum over crown jewels of the score of the easiest path to each."
+        },
+        "exposure_index_max": {
+          "type": "number",
+          "minimum": 0
+        },
+        "crown_jewels": {
+          "type": "integer"
+        },
+        "crown_jewels_reachable": {
+          "type": "integer"
+        },
+        "paths": {
+          "type": "integer"
+        },
+        "paths_by_tier": {
+          "type": "object",
+          "required": [
+            "critical",
+            "high",
+            "medium",
+            "low"
+          ],
+          "additionalProperties": {
+            "type": "integer"
+          }
+        },
+        "top_paths": {
+          "type": "integer"
+        },
+        "top_paths_through_ai": {
+          "type": "integer"
+        },
+        "top_paths_blind_spot": {
+          "type": "integer"
+        },
+        "findings_open": {
+          "type": "integer"
+        },
+        "findings_on_paths": {
+          "type": "integer"
+        },
+        "ai_components": {
+          "type": "integer"
+        },
+        "ai_not_registered": {
+          "type": "integer"
+        },
+        "discovery_flags": {
+          "type": "integer"
+        },
+        "without_discovery": {
+          "type": "object",
+          "required": [
+            "exposure_index",
+            "paths"
+          ]
+        },
+        "plan": {
+          "type": "object",
+          "required": [
+            "fixes",
+            "exposure_index_after",
+            "reduction_pct"
+          ]
+        }
+      }
+    },
+    "paths": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/path"
+      }
+    },
+    "choke_points": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/chokePoint"
+      }
+    },
+    "remediation_plan": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/planStep"
+      }
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/finding"
+      }
+    },
+    "inventory": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/inventoryItem"
+      }
+    },
+    "nodes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "kind",
+          "name"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "asset",
+              "identity",
+              "agent",
+              "mcp_server",
+              "knowledge_base",
+              "vector_store"
+            ]
+          },
+          "name": {
+            "type": "string"
+          },
+          "crown_jewel": {
+            "type": "boolean"
+          },
+          "impact": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "discovered": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "from",
+          "to",
+          "kind",
+          "origin"
+        ],
+        "properties": {
+          "from": {
+            "type": "string"
+          },
+          "to": {
+            "type": "string"
+          },
+          "kind": {
+            "$ref": "#/$defs/edgeKind"
+          },
+          "origin": {
+            "enum": [
+              "static",
+              "discovery"
+            ]
+          },
+          "note": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "discovery": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "required": [
+            "mode",
+            "summary",
+            "sources",
+            "leads",
+            "requests"
+          ],
+          "properties": {
+            "mode": {
+              "type": "string"
+            },
+            "leads": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "url",
+                  "kind",
+                  "status"
+                ],
+                "properties": {
+                  "status": {
+                    "enum": [
+                      "probed",
+                      "out_of_scope",
+                      "refused",
+                      "not_probed",
+                      "pending"
+                    ]
+                  }
+                }
+              }
+            },
+            "requests": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "request",
+                  "result"
+                ]
+              }
+            },
+            "narrative": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "baseline": {
+      "type": "object",
+      "required": [
+        "exposure_index",
+        "paths",
+        "cvss_top10"
+      ]
+    }
+  },
+  "$defs": {
+    "edgeKind": {
+      "enum": [
+        "network",
+        "data_access",
+        "runs_as",
+        "admin_of",
+        "session_hijack",
+        "executes_on",
+        "agent_input",
+        "agent_tool",
+        "retrieved_by",
+        "feeds",
+        "backs"
+      ]
+    },
+    "step": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "from",
+        "to",
+        "kind",
+        "ease",
+        "why",
+        "findings",
+        "techniques",
+        "origin"
+      ],
+      "properties": {
+        "from": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "null for the first step, getting in."
+        },
+        "to": {
+          "type": "string"
+        },
+        "kind": {
+          "oneOf": [
+            {
+              "const": "entry"
+            },
+            {
+              "$ref": "#/$defs/edgeKind"
+            }
+          ]
+        },
+        "ease": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "why": {
+          "type": "string"
+        },
+        "findings": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "techniques": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "origin": {
+          "enum": [
+            "static",
+            "discovery"
+          ]
+        }
+      }
+    },
+    "path": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "rank",
+        "top",
+        "score",
+        "tier",
+        "entry",
+        "target",
+        "target_name",
+        "impact",
+        "exposure",
+        "likelihood",
+        "hops",
+        "nodes",
+        "summary",
+        "through_ai",
+        "ai_nodes",
+        "blind_spot",
+        "score_without_discovery",
+        "findings",
+        "techniques",
+        "steps"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^.+->.+$"
+        },
+        "rank": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "top": {
+          "type": "boolean"
+        },
+        "score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "tier": {
+          "enum": [
+            "critical",
+            "high",
+            "medium",
+            "low"
+          ]
+        },
+        "entry": {
+          "type": "string"
+        },
+        "target": {
+          "type": "string"
+        },
+        "target_name": {
+          "type": "string"
+        },
+        "impact": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "exposure": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "likelihood": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "hops": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "nodes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 2
+        },
+        "summary": {
+          "type": "string"
+        },
+        "through_ai": {
+          "type": "boolean"
+        },
+        "ai_nodes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "blind_spot": {
+          "type": "boolean",
+          "description": "True when the path is invisible, or scores lower, without discovery."
+        },
+        "score_without_discovery": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "findings": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "techniques": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "steps": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/step"
+          },
+          "minItems": 2
+        }
+      }
+    },
+    "chokePoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "finding",
+        "asset",
+        "title",
+        "fix",
+        "reduction",
+        "reduction_pct",
+        "exposure_index_after",
+        "paths_closed",
+        "paths_weakened"
+      ],
+      "properties": {
+        "finding": {
+          "type": "string"
+        },
+        "asset": {
+          "type": "string"
+        },
+        "asset_name": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "severity": {
+          "enum": [
+            "critical",
+            "high",
+            "medium",
+            "low",
+            "info"
+          ]
+        },
+        "source": {
+          "type": "string"
+        },
+        "fix": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "What to do, in plain words."
+        },
+        "reduction": {
+          "type": "number",
+          "minimum": 0,
+          "description": "How far the exposure index falls if this is fixed."
+        },
+        "reduction_pct": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "exposure_index_after": {
+          "type": "number",
+          "minimum": 0
+        },
+        "cvss_rank": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Where this finding sits on a CVSS-sorted scanner list."
+        },
+        "paths_closed": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "paths_weakened": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "planStep": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "step",
+        "finding",
+        "asset",
+        "title",
+        "fix",
+        "reduction",
+        "exposure_index_after"
+      ],
+      "properties": {
+        "finding": {
+          "type": "string"
+        },
+        "asset": {
+          "type": "string"
+        },
+        "asset_name": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "severity": {
+          "enum": [
+            "critical",
+            "high",
+            "medium",
+            "low",
+            "info"
+          ]
+        },
+        "source": {
+          "type": "string"
+        },
+        "fix": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "What to do, in plain words."
+        },
+        "reduction": {
+          "type": "number",
+          "minimum": 0,
+          "description": "How far the exposure index falls if this is fixed."
+        },
+        "reduction_pct": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "exposure_index_after": {
+          "type": "number",
+          "minimum": 0
+        },
+        "cvss_rank": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Where this finding sits on a CVSS-sorted scanner list."
+        },
+        "step": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "finding": {
+      "type": "object",
+      "required": [
+        "id",
+        "asset",
+        "type",
+        "title",
+        "status",
+        "on_paths"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^(F|D)-\\d{3,4}$",
+          "description": "F- for scanner and posture findings, D- for discovery flags."
+        },
+        "asset": {
+          "type": "string"
+        },
+        "asset_name": {
+          "type": "string"
+        },
+        "type": {
+          "enum": [
+            "cve",
+            "misconfig",
+            "ai_risk"
+          ]
+        },
+        "title": {
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "open",
+            "fixed",
+            "accepted"
+          ]
+        },
+        "severity": {
+          "enum": [
+            "critical",
+            "high",
+            "medium",
+            "low",
+            "info"
+          ]
+        },
+        "source": {
+          "type": "string"
+        },
+        "cve": {
+          "type": "string",
+          "pattern": "^CVE-\\d{4}-\\d{4,}$"
+        },
+        "rule": {
+          "type": "string",
+          "pattern": "^AI-[A-Z]{2,3}-\\d{3}$"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "foothold",
+              "steerable_by_input",
+              "untrusted_ingestion",
+              "poisoned_content",
+              "excess_privilege"
+            ]
+          }
+        },
+        "ease": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "frameworks": {
+          "type": "object",
+          "description": "Framework IDs: MITRE ATT&CK, MITRE ATLAS, OWASP Top 10 for Agentic Applications, OWASP Top 10 for LLM Applications 2025.",
+          "properties": {
+            "attack": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^T\\d{4}(\\.\\d{3})?$"
+              }
+            },
+            "atlas": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^AML\\.T\\d{4}(\\.\\d{3})?$"
+              }
+            },
+            "owasp_agentic": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^ASI\\d{2}$"
+              }
+            },
+            "owasp_llm": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^LLM\\d{2}$"
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        "evidence": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "remediation": {
+          "type": "string"
+        },
+        "component": {
+          "type": "string"
+        },
+        "intel": {
+          "type": "object"
+        },
+        "on_paths": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "inventoryItem": {
+      "type": "object",
+      "required": [
+        "id",
+        "kind",
+        "name",
+        "registered",
+        "evidence"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "agent",
+            "mcp_server",
+            "knowledge_base",
+            "vector_store"
+          ]
+        },
+        "name": {
+          "type": "string"
+        },
+        "registered": {
+          "type": "boolean"
+        },
+        "auth": {
+          "enum": [
+            "none",
+            "required",
+            "unknown",
+            "local"
+          ]
+        },
+        "tools": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "name",
+              "access"
+            ],
+            "properties": {
+              "access": {
+                "enum": [
+                  "execute",
+                  "admin",
+                  "payment",
+                  "send_external",
+                  "write",
+                  "read"
+                ]
+              }
+            }
+          }
+        },
+        "evidence": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        }
+      }
+    }
+  }
+}

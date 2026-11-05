@@ -5,7 +5,11 @@ are made up, but every CVE it references is real, so the engine can enrich
 them with real public threat intelligence (CISA KEV, CVE records).
 
 Run:  python scripts/build_sample_env.py
-Writes JSON files to data/sample/halden/.
+Writes the scanner-style JSON files in data/sample/halden/. The discovery
+evidence in data/sample/halden/discovery/ (MCP client configs, recorded probe
+responses, cloud AI exports) is written by hand, like real collected evidence,
+and is not touched by this script. Neither is expected.json, the ground truth
+the tests check the engine against.
 """
 
 from __future__ import annotations
@@ -26,17 +30,20 @@ COMPANY = {
 }
 
 # --- Assets -----------------------------------------------------------------
-# crown_jewel: what the board cares about. internet_facing: reachable by anyone.
+# crown_jewel: what the board cares about; impact (0-1) weights how much.
 # entry_point: "internet" (anyone can reach it) or "user_action" (reached when an
 # employee opens a link, email or untrusted tool).
+# open_channel: anyone can put content into it (a chat box, a shared mailbox, an
+# upload form), so no exploit is needed to start a path there.
+# addresses / hostnames: let discovery match the endpoints it finds to assets.
 ASSETS = [
     # Crown jewels
-    {"id": "aws-prod", "name": "AWS production account", "type": "cloud_account", "env": "aws", "crown_jewel": True, "business_service": "All customer-facing systems", "owner": "Cloud Platform"},
-    {"id": "orders-db", "name": "Orders database (RDS)", "type": "database", "env": "aws", "crown_jewel": True, "business_service": "Order management", "owner": "Commerce Engineering"},
-    {"id": "crm", "name": "Customer CRM", "type": "saas", "env": "azure", "crown_jewel": True, "business_service": "Customer records (PII)", "owner": "Sales Operations"},
-    {"id": "dc-01", "name": "Active Directory domain controller", "type": "server", "env": "on_prem", "crown_jewel": True, "business_service": "Identity for all staff", "owner": "IT Infrastructure"},
-    {"id": "finance-erp", "name": "Finance ERP", "type": "application", "env": "azure", "crown_jewel": True, "business_service": "Payments and invoicing", "owner": "Finance Systems"},
-    {"id": "wms-db", "name": "Warehouse management database", "type": "database", "env": "azure", "crown_jewel": True, "business_service": "Warehouse operations", "owner": "Logistics Engineering"},
+    {"id": "aws-prod", "name": "AWS production account", "type": "cloud_account", "env": "aws", "crown_jewel": True, "impact": 1.0, "business_service": "All customer-facing systems", "owner": "Cloud Platform"},
+    {"id": "orders-db", "name": "Orders database (RDS)", "type": "database", "env": "aws", "crown_jewel": True, "impact": 0.8, "business_service": "Order management", "owner": "Commerce Engineering"},
+    {"id": "crm", "name": "Customer CRM", "type": "saas", "env": "azure", "crown_jewel": True, "impact": 0.9, "business_service": "Customer records (PII)", "owner": "Sales Operations"},
+    {"id": "dc-01", "name": "Active Directory domain controller", "type": "server", "env": "on_prem", "crown_jewel": True, "impact": 1.0, "business_service": "Identity for all staff", "owner": "IT Infrastructure"},
+    {"id": "finance-erp", "name": "Finance ERP", "type": "application", "env": "azure", "crown_jewel": True, "impact": 0.9, "hostnames": ["erp.halden.internal"], "business_service": "Payments and invoicing", "owner": "Finance Systems"},
+    {"id": "wms-db", "name": "Warehouse management database", "type": "database", "env": "azure", "crown_jewel": True, "impact": 0.7, "hostnames": ["wms-db.halden.internal"], "business_service": "Warehouse operations", "owner": "Logistics Engineering"},
     # Internet-facing entry points
     {"id": "vpn-gw-01", "name": "Ivanti Connect Secure VPN gateway", "type": "network_appliance", "env": "on_prem", "internet_facing": True, "entry_point": "internet", "owner": "Network Team"},
     {"id": "fw-edge-01", "name": "FortiGate SSL-VPN (branch offices)", "type": "network_appliance", "env": "on_prem", "internet_facing": True, "entry_point": "internet", "owner": "Network Team"},
@@ -45,12 +52,13 @@ ASSETS = [
     {"id": "tracking-portal", "name": "Shipment tracking portal (Spring)", "type": "web_app", "env": "aws", "internet_facing": True, "entry_point": "internet", "owner": "Commerce Engineering"},
     {"id": "moveit-01", "name": "MOVEit Transfer (partner file exchange)", "type": "application", "env": "on_prem", "internet_facing": True, "entry_point": "internet", "owner": "Integration Team"},
     {"id": "screenconnect-01", "name": "ScreenConnect remote support", "type": "application", "env": "on_prem", "internet_facing": True, "entry_point": "internet", "owner": "IT Service Desk"},
-    {"id": "support-chat", "name": "Website customer support chat", "type": "web_app", "env": "azure", "internet_facing": True, "entry_point": "internet", "owner": "Customer Experience"},
-    {"id": "finance-inbox", "name": "Accounts payable shared mailbox", "type": "mailbox", "env": "azure", "internet_facing": True, "entry_point": "internet", "owner": "Finance Operations"},
+    {"id": "support-chat", "name": "Website customer support chat", "type": "web_app", "env": "azure", "internet_facing": True, "entry_point": "internet", "open_channel": True, "owner": "Customer Experience"},
+    {"id": "finance-inbox", "name": "Accounts payable shared mailbox", "type": "mailbox", "env": "azure", "internet_facing": True, "entry_point": "internet", "open_channel": True, "owner": "Finance Operations"},
     {"id": "dev-laptops", "name": "Developer laptop fleet (120 devices)", "type": "endpoint_group", "env": "on_prem", "entry_point": "user_action", "owner": "Engineering IT"},
     # Internal systems
-    {"id": "corp-net", "name": "Corporate network", "type": "network_segment", "env": "on_prem", "owner": "Network Team"},
-    {"id": "build-01", "name": "CI build server", "type": "server", "env": "aws", "owner": "Platform Engineering"},
+    {"id": "corp-net", "name": "Corporate network (10.20.0.0/16, AWS VPC joined over Direct Connect)", "type": "network_segment", "env": "on_prem", "cidr": "10.20.0.0/16", "owner": "Network Team"},
+    {"id": "azure-apps", "name": "Azure application network (10.30.0.0/16)", "type": "network_segment", "env": "azure", "cidr": "10.30.0.0/16", "owner": "Cloud Platform"},
+    {"id": "build-01", "name": "CI build server", "type": "server", "env": "aws", "addresses": ["10.20.1.15"], "owner": "Platform Engineering"},
     {"id": "sharepoint-01", "name": "SharePoint Server (intranet)", "type": "server", "env": "on_prem", "owner": "Collaboration Team"},
     {"id": "reporting-app", "name": "Internal reporting app (Java)", "type": "application", "env": "on_prem", "owner": "Data Team"},
     {"id": "core-router-01", "name": "Cisco IOS XE core router", "type": "network_appliance", "env": "on_prem", "owner": "Network Team"},
@@ -59,8 +67,11 @@ ASSETS = [
     {"id": "confluence-lab", "name": "Confluence (isolated R&D lab)", "type": "application", "env": "on_prem", "isolated": True, "owner": "R&D"},
     {"id": "xz-test-vm", "name": "Linux test VM (lab)", "type": "server", "env": "on_prem", "isolated": True, "owner": "R&D"},
     {"id": "web-frontends", "name": "Public web front-ends (nginx)", "type": "server_group", "env": "aws", "internet_facing": True, "entry_point": "internet", "owner": "Commerce Engineering"},
-    {"id": "data-pipelines", "name": "Python data pipelines", "type": "server_group", "env": "azure", "owner": "Data Team"},
+    {"id": "data-pipelines", "name": "Python data pipeline hosts", "type": "server_group", "env": "on_prem", "addresses": ["10.20.4.17", "10.20.4.21"], "owner": "Data Team"},
     {"id": "ssh-bastion", "name": "SSH bastion host", "type": "server", "env": "aws", "owner": "Platform Engineering"},
+    {"id": "weaviate-01", "name": "Weaviate vector database (product search)", "type": "vector_store", "env": "on_prem", "product": "weaviate", "addresses": ["10.20.5.40"], "endpoint": "http://10.20.5.40:8080", "owner": "Data Team"},
+    # Added for step 2: an upload channel that feeds the support knowledge base
+    {"id": "support-portal", "name": "Customer support portal (ticket attachments)", "type": "web_app", "env": "azure", "internet_facing": True, "entry_point": "internet", "open_channel": True, "owner": "Customer Experience"},
 ]
 
 # --- Identities (human and machine) ------------------------------------------
@@ -73,71 +84,39 @@ IDENTITIES = [
     {"id": "wms-app", "kind": "machine", "platform": "entra_managed_identity", "name": "wms-app-mi", "permissions": ["wms.db.read_write"], "scope": "wms-db"},
 ]
 
-# --- AI agents and MCP servers ----------------------------------------------
-AGENTS = [
-    {
-        "id": "agent-support",
-        "name": "Customer Support Assistant",
-        "model_provider": "Azure OpenAI",
-        "exposed_via": "support-chat",
-        "untrusted_input": "Anyone on the public website",
-        "acts_as": "svc-support-agent",
-        "mcp_servers": ["mcp-crm"],
-        "human_approval": False,
-        "owner": "Customer Experience",
-    },
-    {
-        "id": "agent-ops",
-        "name": "Ops Automation Agent",
-        "model_provider": "Anthropic Claude",
-        "exposed_via": "corp-net",
-        "untrusted_input": "Chat messages from any employee",
-        "acts_as": "svc-ops-agent",
-        "mcp_servers": ["mcp-ops"],
-        "human_approval": False,
-        "owner": "Platform Engineering",
-    },
-    {
-        "id": "agent-finance",
-        "name": "Invoice Reconciliation Agent",
-        "model_provider": "Azure OpenAI",
-        "exposed_via": "finance-inbox",
-        "untrusted_input": "Invoices emailed by any sender",
-        "acts_as": "svc-finance-agent",
-        "mcp_servers": ["mcp-erp"],
-        "human_approval": False,
-        "memory": "Keeps vendor bank details between runs",
-        "owner": "Finance Systems",
-    },
-    {
-        "id": "agent-dev-assistants",
-        "name": "Developer coding assistants",
-        "model_provider": "Various",
-        "exposed_via": "dev-laptops",
-        "untrusted_input": "Third-party MCP servers developers add themselves",
-        "acts_as": None,
-        "mcp_servers": ["mcp-remote-client", "mcp-inspector"],
-        "human_approval": True,
-        "owner": "Engineering",
-    },
-]
+# --- AI inventory (what the AI governance team has registered) -------------
+# Discovery compares what it finds with this list. It holds names and owners,
+# not wiring: which tools an agent really has, who can talk to it and what the
+# servers really expose is what discovery has to find out.
+AI_REGISTRY = {
+    "description": "Halden's AI inventory, as kept by the AI governance team in a spreadsheet. Anything discovery finds that is not here is shadow AI.",
+    "agents": [
+        {"id": "agent-support", "name": "Customer Support Assistant", "platform": "azure_ai_foundry", "owner": "Customer Experience", "approved": "2026-03-14"},
+        {"id": "agent-finance", "name": "Invoice Reconciliation Agent", "platform": "azure_ai_foundry", "owner": "Finance Systems", "approved": "2026-05-02"},
+        {"id": "agent-ops", "name": "Ops Automation Agent", "platform": "claude_code", "clients": ["claude_code"], "hosts": ["build-01"], "owner": "Platform Engineering", "approved": "2026-06-20",
+         "input_channel": {"asset": "corp-net", "audience": "internal", "description": "Requests from any employee in the #ops-requests chat channel"}},
+        {"id": "agent-dev-assistants", "name": "Developer coding assistants (Claude Desktop, Cursor, VS Code)", "platform": "desktop", "clients": ["claude_desktop", "cursor", "vscode"], "owner": "Engineering IT", "approved": "2026-02-01",
+         "input_channel": {"asset": "dev-laptops", "audience": "internal", "description": "The developer at the keyboard"}},
+    ],
+    "mcp_servers": [
+        {"id": "mcp-ops", "name": "Ops tools server", "endpoint": "http://10.20.1.15:8080/mcp", "owner": "Platform Engineering"},
+        {"id": "mcp-crm", "name": "CRM tools server", "endpoint": "https://10.30.2.8:8443/mcp", "owner": "Sales Operations"},
+        {"id": "mcp-erp", "name": "ERP tools server", "endpoint": "https://10.30.2.9:8443/mcp", "owner": "Finance Systems"},
+        {"id": "docs-search-mcp", "name": "Intranet docs search", "endpoint": "http://10.20.4.21:8000/mcp", "owner": "Data Team"},
+        {"id": "calendar-mcp", "name": "Meeting room calendar", "endpoint": "https://10.20.6.12:8443/mcp", "owner": "Workplace IT"},
+        {"id": "fs-tools-mcp", "name": "Halden file tools (internal package)", "package": "@halden/fs-tools", "approved_versions": ["1.4.0"], "owner": "Engineering IT"},
+    ],
+    "knowledge_bases": [],
+}
 
-MCP_SERVERS = [
-    {"id": "mcp-crm", "name": "CRM tools server", "hosted_on": "support-chat", "auth": "service_token", "listen": "internal",
-     "tools": [{"name": "crm.read_customer", "access": "read"}, {"name": "crm.update_customer", "access": "write"}, {"name": "email.send", "access": "send_external"}]},
-    {"id": "mcp-ops", "name": "Ops tools server", "hosted_on": "build-01", "auth": "none", "listen": "0.0.0.0:8080",
-     "tools": [{"name": "shell.exec", "access": "execute"}, {"name": "aws.cli", "access": "admin"}, {"name": "k8s.apply", "access": "write"}]},
-    {"id": "mcp-erp", "name": "ERP tools server", "hosted_on": "finance-erp", "auth": "service_token", "listen": "internal",
-     "tools": [{"name": "erp.match_invoice", "access": "write"}, {"name": "erp.update_vendor_bank", "access": "write"}, {"name": "erp.schedule_payment", "access": "payment"}]},
-    {"id": "mcp-remote-client", "name": "mcp-remote 0.1.15 (client proxy)", "hosted_on": "dev-laptops", "auth": "n/a", "listen": "local", "package": "mcp-remote@0.1.15",
-     "tools": []},
-    {"id": "mcp-inspector", "name": "MCP Inspector 0.13.0 (debug tool)", "hosted_on": "dev-laptops", "auth": "none", "listen": "0.0.0.0:6277", "package": "@modelcontextprotocol/inspector@0.13.0",
-     "tools": []},
-]
 
 # --- Reachability: who can reach whom (attacker movement) --------------------
-# kind: network (can connect), runs_as (asset uses identity), admin_of
-# (identity controls asset), agent_tool (agent drives an MCP server), hosts.
+# This is the "static" graph a CMDB, a network map and a cloud posture tool
+# would give you. AI agents, MCP servers and knowledge bases are missing on
+# purpose: discovery adds them and their wiring.
+# kind: network (can connect; needs a foothold on the target unless it is a
+# network segment), data_access (holds credentials to it), runs_as (uses the
+# identity), admin_of (identity controls it), session_hijack.
 EDGES = [
     # Internet-facing appliances lead into the corporate network
     ("vpn-gw-01", "corp-net", "network"),
@@ -146,6 +125,7 @@ EDGES = [
     ("citrix-adc-01", "corp-net", "network"),
     ("screenconnect-01", "it-admin", "session_hijack"),
     ("dev-laptops", "corp-net", "network"),
+    ("corp-net", "azure-apps", "network"),  # ExpressRoute to the Azure app network
     ("corp-net", "dc-01", "network"),
     ("corp-net", "sharepoint-01", "network"),
     ("corp-net", "reporting-app", "network"),
@@ -155,12 +135,12 @@ EDGES = [
     ("corp-net", "ssh-bastion", "network"),
     ("it-admin", "dc-01", "admin_of"),
     ("sharepoint-01", "dc-01", "network"),
-    ("reporting-app", "wms-db", "network"),
+    ("reporting-app", "wms-db", "data_access"),
     ("ssh-bastion", "orders-db", "network"),
     # Web
-    ("tracking-portal", "orders-db", "network"),
+    ("tracking-portal", "orders-db", "data_access"),
     ("web-frontends", "tracking-portal", "network"),
-    ("moveit-01", "file-share-01", "network"),
+    ("moveit-01", "file-share-01", "data_access"),
     # Machine identities
     ("build-01", "svc-ops-agent", "runs_as"),
     ("svc-ops-agent", "aws-prod", "admin_of"),
@@ -169,22 +149,6 @@ EDGES = [
     ("data-pipelines", "svc-backup", "runs_as"),
     ("svc-support-agent", "crm", "admin_of"),
     ("svc-finance-agent", "finance-erp", "admin_of"),
-    # AI agents
-    ("support-chat", "agent-support", "agent_input"),
-    ("agent-support", "mcp-crm", "agent_tool"),
-    ("mcp-crm", "svc-support-agent", "runs_as"),
-    ("corp-net", "agent-ops", "agent_input"),
-    ("corp-net", "mcp-ops", "network"),  # listens on 0.0.0.0 with no auth
-    ("agent-ops", "mcp-ops", "agent_tool"),
-    ("mcp-ops", "build-01", "hosted_on"),
-    ("finance-inbox", "agent-finance", "agent_input"),
-    ("agent-finance", "mcp-erp", "agent_tool"),
-    ("mcp-erp", "svc-finance-agent", "runs_as"),
-    ("dev-laptops", "agent-dev-assistants", "agent_input"),
-    ("agent-dev-assistants", "mcp-remote-client", "agent_tool"),
-    ("agent-dev-assistants", "mcp-inspector", "agent_tool"),
-    ("mcp-remote-client", "dev-laptops", "hosted_on"),
-    ("mcp-inspector", "dev-laptops", "hosted_on"),
 ]
 
 # --- Findings that matter (CVEs are real; their placement is invented) ------
@@ -199,28 +163,32 @@ SIGNAL_FINDINGS = [
     {"asset": "moveit-01", "cve": "CVE-2023-34362", "source": "vuln_scanner", "status": "open"},
     {"asset": "outlook-clients", "cve": "CVE-2023-23397", "source": "vuln_scanner", "status": "open"},
     {"asset": "core-router-01", "cve": "CVE-2023-20198", "source": "vuln_scanner", "status": "open"},
-    {"asset": "fw-edge-01", "cve": "CVE-2023-27997", "source": "vuln_scanner", "status": "open"},
-    # Already fixed: should drop out of the ranking
+    {"asset": "fw-edge-01", "cve": "CVE-2023-27997", "source": "vuln_scanner", "status": "fixed"},
+    # Already fixed (fw-edge-01 above too): should drop out of the ranking
     {"asset": "pan-gp-01", "cve": "CVE-2024-3400", "source": "vuln_scanner", "status": "fixed"},
     {"asset": "citrix-adc-01", "cve": "CVE-2023-4966", "source": "vuln_scanner", "status": "fixed"},
     # Decoys: scary scores, no path to anything that matters
     {"asset": "confluence-lab", "cve": "CVE-2023-22515", "source": "vuln_scanner", "status": "open"},
     {"asset": "xz-test-vm", "cve": "CVE-2024-3094", "source": "vuln_scanner", "status": "open"},
-    # AI tooling CVEs
-    {"asset": "dev-laptops", "cve": "CVE-2025-6514", "source": "sbom", "status": "open", "component": "mcp-remote@0.1.15"},
+    # AI tooling CVE the SBOM scanner already knows about. The vulnerable
+    # mcp-remote client (CVE-2025-6514) is not in the SBOM: discovery finds it
+    # in a laptop's Claude Desktop config.
     {"asset": "dev-laptops", "cve": "CVE-2025-49596", "source": "sbom", "status": "open", "component": "@modelcontextprotocol/inspector@0.13.0"},
 ]
 
-# Misconfigurations and agent risks have no CVE: CVSS-only tools miss them.
+# Misconfigurations have no CVE: CVSS-only tools miss them. Agent risks
+# (no approval step, unauthenticated MCP servers, poisoned tools) are not
+# here at all: discovery finds those.
 NON_CVE_FINDINGS = [
-    {"asset": "mcp-ops", "type": "agent_risk", "title": "MCP server listens on all interfaces with no authentication", "owasp_agentic": ["ASI05", "ASI02"], "source": "agent_inventory", "status": "open"},
-    {"asset": "svc-ops-agent", "type": "misconfig", "title": "Agent identity has AdministratorAccess on the production AWS account", "owasp_agentic": ["ASI03"], "source": "cspm", "status": "open"},
-    {"asset": "agent-support", "type": "agent_risk", "title": "Public chat input reaches an agent with CRM write and external email tools, no human approval", "owasp_agentic": ["ASI01", "ASI02"], "source": "agent_inventory", "status": "open"},
-    {"asset": "svc-support-agent", "type": "misconfig", "title": "Support agent can read and write all CRM records and send mail as the company", "owasp_agentic": ["ASI03"], "source": "identity_scan", "status": "open"},
-    {"asset": "agent-finance", "type": "agent_risk", "title": "Agent acts on emailed invoices and can change vendor bank details and schedule payments without approval", "owasp_agentic": ["ASI01", "ASI06", "ASI09"], "source": "agent_inventory", "status": "open"},
-    {"asset": "mcp-inspector", "type": "agent_risk", "title": "MCP Inspector proxy exposed on 0.0.0.0 on developer laptops", "owasp_agentic": ["ASI04", "ASI05"], "source": "agent_inventory", "status": "open"},
-    {"asset": "it-admin", "type": "misconfig", "title": "Shared Domain Admin account without MFA", "source": "identity_scan", "status": "open"},
-    {"asset": "svc-backup", "type": "misconfig", "title": "Access key not rotated in 412 days", "source": "cspm", "status": "open"},
+    {"asset": "svc-ops-agent", "type": "misconfig", "title": "Agent identity has AdministratorAccess on the production AWS account", "source": "cspm", "status": "open", "severity": "high",
+     "tags": ["excess_privilege"], "grants_edge": {"from": "svc-ops-agent", "to": "aws-prod"},
+     "remediation": "Replace AdministratorAccess with a least-privilege policy limited to the build pipeline's resources."},
+    {"asset": "svc-support-agent", "type": "misconfig", "title": "Support agent identity can read and write all CRM records and send mail as the company", "source": "identity_scan", "status": "open", "severity": "high",
+     "remediation": "Limit the service principal to the records of the customer in the conversation and remove send-as rights."},
+    {"asset": "it-admin", "type": "misconfig", "title": "Shared Domain Admin account without MFA", "source": "identity_scan", "status": "open", "severity": "high",
+     "remediation": "Replace the shared account with named admin accounts that require phishing-resistant MFA."},
+    {"asset": "svc-backup", "type": "misconfig", "title": "Access key not rotated in 412 days", "source": "cspm", "status": "open", "severity": "medium",
+     "remediation": "Rotate the key and move the backup job to a role with short-lived credentials."},
 ]
 
 # Background noise: real, mostly non-exploited CVEs spread across assets.
@@ -242,7 +210,7 @@ def build_findings(seed: int = 7) -> list[dict]:
     for f in SIGNAL_FINDINGS:
         findings.append({"type": "cve", **f})
     for f in NON_CVE_FINDINGS:
-        findings.append(f)
+        findings.append(dict(f))
     for asset in NOISE_ASSETS:
         for cve in rng.sample(NOISE_CVES, k=rng.randint(4, 8)):
             findings.append({"type": "cve", "asset": asset, "cve": cve, "source": "vuln_scanner", "status": "open"})
@@ -254,21 +222,22 @@ def build_findings(seed: int = 7) -> list[dict]:
 
 def main() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
+    for stale in ("agents.json", "mcp_servers.json"):  # replaced by ai_registry.json in step 2
+        (OUT / stale).unlink(missing_ok=True)
     edges = [{"from": a, "to": b, "kind": k} for a, b, k in EDGES]
     files = {
         "company.json": COMPANY,
         "assets.json": ASSETS,
         "identities.json": IDENTITIES,
-        "agents.json": AGENTS,
-        "mcp_servers.json": MCP_SERVERS,
+        "ai_registry.json": AI_REGISTRY,
         "edges.json": edges,
         "findings.json": build_findings(),
     }
     for name, data in files.items():
         (OUT / name).write_text(json.dumps(data, indent=2) + "\n")
     print(f"Wrote {len(files)} files to {OUT}")
-    print(f"  {len(ASSETS)} assets, {len(IDENTITIES)} identities, {len(AGENTS)} agents, "
-          f"{len(MCP_SERVERS)} MCP servers, {len(edges)} edges, {len(files['findings.json'])} findings")
+    print(f"  {len(ASSETS)} assets, {len(IDENTITIES)} identities, {len(AI_REGISTRY['agents'])} registered agents, "
+          f"{len(AI_REGISTRY['mcp_servers'])} registered MCP servers, {len(edges)} edges, {len(files['findings.json'])} findings")
 
 
 if __name__ == "__main__":

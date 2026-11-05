@@ -31,6 +31,11 @@
   },
   {
     "from": "corp-net",
+    "to": "azure-apps",
+    "kind": "network"
+  },
+  {
+    "from": "corp-net",
     "to": "dc-01",
     "kind": "network"
   },
@@ -77,7 +82,7 @@
   {
     "from": "reporting-app",
     "to": "wms-db",
-    "kind": "network"
+    "kind": "data_access"
   },
   {
     "from": "ssh-bastion",
@@ -87,7 +92,7 @@
   {
     "from": "tracking-portal",
     "to": "orders-db",
-    "kind": "network"
+    "kind": "data_access"
   },
   {
     "from": "web-frontends",
@@ -97,7 +102,7 @@
   {
     "from": "moveit-01",
     "to": "file-share-01",
-    "kind": "network"
+    "kind": "data_access"
   },
   {
     "from": "build-01",
@@ -133,80 +138,5 @@
     "from": "svc-finance-agent",
     "to": "finance-erp",
     "kind": "admin_of"
-  },
-  {
-    "from": "support-chat",
-    "to": "agent-support",
-    "kind": "agent_input"
-  },
-  {
-    "from": "agent-support",
-    "to": "mcp-crm",
-    "kind": "agent_tool"
-  },
-  {
-    "from": "mcp-crm",
-    "to": "svc-support-agent",
-    "kind": "runs_as"
-  },
-  {
-    "from": "corp-net",
-    "to": "agent-ops",
-    "kind": "agent_input"
-  },
-  {
-    "from": "corp-net",
-    "to": "mcp-ops",
-    "kind": "network"
-  },
-  {
-    "from": "agent-ops",
-    "to": "mcp-ops",
-    "kind": "agent_tool"
-  },
-  {
-    "from": "mcp-ops",
-    "to": "build-01",
-    "kind": "hosted_on"
-  },
-  {
-    "from": "finance-inbox",
-    "to": "agent-finance",
-    "kind": "agent_input"
-  },
-  {
-    "from": "agent-finance",
-    "to": "mcp-erp",
-    "kind": "agent_tool"
-  },
-  {
-    "from": "mcp-erp",
-    "to": "svc-finance-agent",
-    "kind": "runs_as"
-  },
-  {
-    "from": "dev-laptops",
-    "to": "agent-dev-assistants",
-    "kind": "agent_input"
-  },
-  {
-    "from": "agent-dev-assistants",
-    "to": "mcp-remote-client",
-    "kind": "agent_tool"
-  },
-  {
-    "from": "agent-dev-assistants",
-    "to": "mcp-inspector",
-    "kind": "agent_tool"
-  },
-  {
-    "from": "mcp-remote-client",
-    "to": "dev-laptops",
-    "kind": "hosted_on"
-  },
-  {
-    "from": "mcp-inspector",
-    "to": "dev-laptops",
-    "kind": "hosted_on"
   }
 ]
