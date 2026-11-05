@@ -9,6 +9,7 @@ import sys
 from pathlib import Path
 
 from . import __version__
+from .discovery.agent import AgentError
 from .discovery.probe import HttpTransport
 from .engine import scan
 from .model import load_environment, load_feeds
@@ -19,7 +20,7 @@ from .output.table import render_discovery, render_scan
 def _agent(args):
     if args.agent != "claude":
         return None
-    from .discovery.agent import ClaudeDiscoveryAgent  # needs the optional 'anthropic' package
+    from .discovery.agent import ClaudeDiscoveryAgent  # imports anthropic lazily, on the first call
 
     return ClaudeDiscoveryAgent(model=args.model or os.environ.get("AI_TAINT_PATH_MODEL"))
 
@@ -64,8 +65,12 @@ def main(argv: list[str] | None = None) -> int:
     env = load_environment(args.environment)
     feeds = load_feeds(args.feeds)
     transport = HttpTransport() if args.live else None
-    result = scan(env, feeds, use_discovery=not getattr(args, "no_discovery", False), transport=transport,
-                  agent=_agent(args), transport_name="live network" if args.live else None)
+    try:
+        result = scan(env, feeds, use_discovery=not getattr(args, "no_discovery", False), transport=transport,
+                      agent=_agent(args), transport_name="live network" if args.live else None)
+    except AgentError as exc:
+        print(f"ai-taint-path: {exc}", file=sys.stderr)
+        return 2
     report = build_report(result, top=getattr(args, "top", 10), generated_at=args.generated_at)
 
     if args.command == "discover":
