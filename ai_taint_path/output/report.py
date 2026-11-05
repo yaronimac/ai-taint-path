@@ -13,9 +13,17 @@ from datetime import datetime, timezone
 from .. import __version__
 from ..engine import ScanResult, exposure_index
 from ..frameworks import framework_of
-from ..model import AI_KINDS
+from ..model import AI_KINDS, ROOT
 
 SCHEMA_VERSION = "1.0"
+
+
+def _display_path(path) -> str:
+    """Repo-relative when possible, so reports do not leak local directory names."""
+    try:
+        return path.resolve().relative_to(ROOT).as_posix()
+    except ValueError:
+        return path.name
 
 
 def _path_dict(r: ScanResult, p, rank: int, top: int, ai_ids: set, baseline: dict) -> dict:
@@ -100,7 +108,7 @@ def build_report(r: ScanResult, *, top: int = 10, generated_at: str | None = Non
         "tool": {"name": "ai-taint-path", "version": __version__},
         "generated_at": generated_at or datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z"),
         "environment": {"name": r.env.company.get("name", r.env.path.name), "fictional": bool(r.env.company.get("fictional")),
-                        "path": r.env.path.as_posix()},
+                        "path": _display_path(r.env.path)},
         "settings": {"discovery": d is not None, "discovery_mode": d.mode if d else None,
                      "transport": d.sources.get("transport") if d else None, "top": top},
         "feeds": r.feeds.describe(),
