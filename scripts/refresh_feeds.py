@@ -103,6 +103,9 @@ def load_epss(cves: set[str]) -> dict:
 def main() -> None:
     findings = json.loads(FINDINGS.read_text())
     cves = {f["cve"] for f in findings if f.get("cve")}
+    # CVEs the discovery agent can raise from MCP package versions it finds
+    packages = json.loads((FEEDS / "mcp_packages.json").read_text())["packages"]
+    cves |= {p["cve"] for p in packages}
     print(f"Refreshing feeds for {len(cves)} CVEs")
     FEEDS.mkdir(parents=True, exist_ok=True)
     (FEEDS / "kev.json").write_text(json.dumps(load_kev(cves), indent=2) + "\n")

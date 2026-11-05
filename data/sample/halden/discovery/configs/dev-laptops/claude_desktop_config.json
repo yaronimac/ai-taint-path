@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "crm-preview": {
+      "command": "npx",
+      "args": ["mcp-remote@0.1.15", "https://mcp.crm-vendor.example/mcp"]
+    },
+    "fs-tools": {
+      "command": "npx",
+      "args": ["-y", "@halden/fs-tools@1.4.0", "--root", "/Users/dev/projects"]
+    }
+  }
+}

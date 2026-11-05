@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "ops-tools": {
+      "type": "http",
+      "url": "http://10.20.1.15:8080/mcp"
+    },
+    "docs": {
+      "type": "http",
+      "url": "http://10.20.4.21:8000/mcp"
+    }
+  }
+}

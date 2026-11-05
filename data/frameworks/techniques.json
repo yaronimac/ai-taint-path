@@ -1,0 +1,189 @@
+{
+  "sources": {
+    "attack": {
+      "url": "https://raw.githubusercontent.com/mitre/cti/master/enterprise-attack/enterprise-attack.json",
+      "retrieved": "2026-11-05"
+    },
+    "atlas": {
+      "url": "https://raw.githubusercontent.com/mitre-atlas/atlas-data/main/dist/ATLAS.yaml",
+      "version": "5.6.0",
+      "retrieved": "2026-11-05"
+    },
+    "owasp_agentic": {
+      "title": "OWASP Top 10 for Agentic Applications (December 2025)",
+      "url": "https://genai.owasp.org/"
+    },
+    "owasp_llm": {
+      "title": "OWASP Top 10 for LLM Applications 2025",
+      "url": "https://genai.owasp.org/llm-top-10/"
+    }
+  },
+  "attack": {
+    "T1059": {
+      "name": "Command and Scripting Interpreter",
+      "url": "https://attack.mitre.org/techniques/T1059"
+    },
+    "T1078.002": {
+      "name": "Valid Accounts: Domain Accounts",
+      "url": "https://attack.mitre.org/techniques/T1078/002"
+    },
+    "T1078.004": {
+      "name": "Valid Accounts: Cloud Accounts",
+      "url": "https://attack.mitre.org/techniques/T1078/004"
+    },
+    "T1190": {
+      "name": "Exploit Public-Facing Application",
+      "url": "https://attack.mitre.org/techniques/T1190"
+    },
+    "T1195.002": {
+      "name": "Supply Chain Compromise: Compromise Software Supply Chain",
+      "url": "https://attack.mitre.org/techniques/T1195/002"
+    },
+    "T1203": {
+      "name": "Exploitation for Client Execution",
+      "url": "https://attack.mitre.org/techniques/T1203"
+    },
+    "T1210": {
+      "name": "Exploitation of Remote Services",
+      "url": "https://attack.mitre.org/techniques/T1210"
+    },
+    "T1213": {
+      "name": "Data from Information Repositories",
+      "url": "https://attack.mitre.org/techniques/T1213"
+    },
+    "T1213.006": {
+      "name": "Data from Information Repositories: Databases",
+      "url": "https://attack.mitre.org/techniques/T1213/006"
+    },
+    "T1552.001": {
+      "name": "Unsecured Credentials: Credentials In Files",
+      "url": "https://attack.mitre.org/techniques/T1552/001"
+    },
+    "T1563": {
+      "name": "Remote Service Session Hijacking",
+      "url": "https://attack.mitre.org/techniques/T1563"
+    },
+    "T1567": {
+      "name": "Exfiltration Over Web Service",
+      "url": "https://attack.mitre.org/techniques/T1567"
+    }
+  },
+  "atlas": {
+    "AML.T0010.005": {
+      "name": "AI Agent Tool",
+      "url": "https://atlas.mitre.org/techniques/AML.T0010.005"
+    },
+    "AML.T0051.000": {
+      "name": "Direct",
+      "url": "https://atlas.mitre.org/techniques/AML.T0051.000"
+    },
+    "AML.T0051.001": {
+      "name": "Indirect",
+      "url": "https://atlas.mitre.org/techniques/AML.T0051.001"
+    },
+    "AML.T0053": {
+      "name": "AI Agent Tool Invocation",
+      "url": "https://atlas.mitre.org/techniques/AML.T0053"
+    },
+    "AML.T0057": {
+      "name": "LLM Data Leakage",
+      "url": "https://atlas.mitre.org/techniques/AML.T0057"
+    },
+    "AML.T0070": {
+      "name": "RAG Poisoning",
+      "url": "https://atlas.mitre.org/techniques/AML.T0070"
+    },
+    "AML.T0080.000": {
+      "name": "Memory",
+      "url": "https://atlas.mitre.org/techniques/AML.T0080.000"
+    },
+    "AML.T0083": {
+      "name": "Credentials from AI Agent Configuration",
+      "url": "https://atlas.mitre.org/techniques/AML.T0083"
+    },
+    "AML.T0085.000": {
+      "name": "RAG Databases",
+      "url": "https://atlas.mitre.org/techniques/AML.T0085.000"
+    },
+    "AML.T0086": {
+      "name": "Exfiltration via AI Agent Tool Invocation",
+      "url": "https://atlas.mitre.org/techniques/AML.T0086"
+    },
+    "AML.T0093": {
+      "name": "Prompt Infiltration via Public-Facing Application",
+      "url": "https://atlas.mitre.org/techniques/AML.T0093"
+    },
+    "AML.T0109": {
+      "name": "AI Supply Chain Rug Pull",
+      "url": "https://atlas.mitre.org/techniques/AML.T0109"
+    },
+    "AML.T0110": {
+      "name": "AI Agent Tool Poisoning",
+      "url": "https://atlas.mitre.org/techniques/AML.T0110"
+    }
+  },
+  "owasp_agentic": {
+    "ASI01": {
+      "name": "Agent Goal Hijack"
+    },
+    "ASI02": {
+      "name": "Tool Misuse and Exploitation"
+    },
+    "ASI03": {
+      "name": "Identity and Privilege Abuse"
+    },
+    "ASI04": {
+      "name": "Agentic Supply Chain Vulnerabilities"
+    },
+    "ASI05": {
+      "name": "Unexpected Code Execution"
+    },
+    "ASI06": {
+      "name": "Memory and Context Poisoning"
+    },
+    "ASI07": {
+      "name": "Insecure Inter-Agent Communication"
+    },
+    "ASI08": {
+      "name": "Cascading Failures"
+    },
+    "ASI09": {
+      "name": "Human-Agent Trust Exploitation"
+    },
+    "ASI10": {
+      "name": "Rogue Agents"
+    }
+  },
+  "owasp_llm": {
+    "LLM01": {
+      "name": "Prompt Injection"
+    },
+    "LLM02": {
+      "name": "Sensitive Information Disclosure"
+    },
+    "LLM03": {
+      "name": "Supply Chain"
+    },
+    "LLM04": {
+      "name": "Data and Model Poisoning"
+    },
+    "LLM05": {
+      "name": "Improper Output Handling"
+    },
+    "LLM06": {
+      "name": "Excessive Agency"
+    },
+    "LLM07": {
+      "name": "System Prompt Leakage"
+    },
+    "LLM08": {
+      "name": "Vector and Embedding Weaknesses"
+    },
+    "LLM09": {
+      "name": "Misinformation"
+    },
+    "LLM10": {
+      "name": "Unbounded Consumption"
+    }
+  }
+}

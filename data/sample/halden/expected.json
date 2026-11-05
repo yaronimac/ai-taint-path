@@ -1,22 +1,317 @@
 {
-  "description": "Ground truth planted in the Halden sample. The engine's tests check its ranking against this.",
+  "description": "Ground truth planted in the Halden sample. The tests check the discovery agent and the engine against it. Written by hand, not by the generator, so the tests do not grade their own homework.",
   "critical_paths": [
-    {"id": "ops-agent-to-aws", "nodes": ["dev-laptops", "corp-net", "mcp-ops", "build-01", "svc-ops-agent", "aws-prod"],
-     "why": "A laptop compromised through a vulnerable MCP client (CVE-2025-6514) can call an unauthenticated MCP shell tool whose host runs as an AWS admin role. The decisive hops are misconfigurations, not CVEs."},
-    {"id": "support-chat-to-crm", "nodes": ["support-chat", "agent-support", "mcp-crm", "svc-support-agent", "crm"],
-     "why": "Prompt injection in the public chat can drive CRM write and external email tools: customer data exfiltration. No CVE involved."},
-    {"id": "finance-inbox-to-erp", "nodes": ["finance-inbox", "agent-finance", "mcp-erp", "svc-finance-agent", "finance-erp"],
-     "why": "A forged invoice can make the agent change vendor bank details and schedule payment. No CVE involved."},
-    {"id": "vpn-to-domain", "nodes": ["vpn-gw-01", "corp-net", "dc-01"],
-     "why": "Known-exploited Ivanti flaw on the VPN, then Zerologon on the domain controller."},
-    {"id": "screenconnect-to-domain", "nodes": ["screenconnect-01", "it-admin", "dc-01"],
-     "why": "Known-exploited ScreenConnect auth bypass gives a session as a shared Domain Admin without MFA."},
-    {"id": "portal-to-orders", "nodes": ["tracking-portal", "orders-db"],
-     "why": "Known-exploited Spring4Shell on an internet-facing portal with direct access to the orders database."}
+    {
+      "id": "ops-agent-to-aws",
+      "target": "aws-prod",
+      "decisive": [
+        "mcp-ops",
+        "svc-ops-agent"
+      ],
+      "needs_discovery": true,
+      "example": [
+        "vpn-gw-01",
+        "corp-net",
+        "mcp-ops",
+        "build-01",
+        "svc-ops-agent",
+        "aws-prod"
+      ],
+      "why": "Anyone on the corporate network can call the shell tool of an MCP server that needs no login; it runs on a build server whose role is an AWS administrator. The decisive hops are misconfigurations, not CVEs."
+    },
+    {
+      "id": "support-chat-to-crm",
+      "target": "crm",
+      "decisive": [
+        "agent-support",
+        "mcp-crm"
+      ],
+      "needs_discovery": true,
+      "example": [
+        "support-chat",
+        "agent-support",
+        "mcp-crm",
+        "svc-support-agent",
+        "crm"
+      ],
+      "why": "Prompt injection in the public chat can drive CRM write and external email tools: customer data exfiltration. No CVE involved."
+    },
+    {
+      "id": "finance-inbox-to-erp",
+      "target": "finance-erp",
+      "decisive": [
+        "agent-finance",
+        "mcp-erp"
+      ],
+      "needs_discovery": true,
+      "example": [
+        "finance-inbox",
+        "agent-finance",
+        "mcp-erp",
+        "svc-finance-agent",
+        "finance-erp"
+      ],
+      "why": "A forged invoice can make the agent change vendor bank details and schedule a payment. No CVE involved."
+    },
+    {
+      "id": "vpn-to-domain",
+      "target": "dc-01",
+      "decisive": [
+        "vpn-gw-01"
+      ],
+      "needs_discovery": false,
+      "example": [
+        "vpn-gw-01",
+        "corp-net",
+        "dc-01"
+      ],
+      "why": "Known-exploited Ivanti flaw on the VPN, then Zerologon on the domain controller."
+    },
+    {
+      "id": "screenconnect-to-domain",
+      "target": "dc-01",
+      "decisive": [
+        "screenconnect-01",
+        "it-admin"
+      ],
+      "needs_discovery": false,
+      "example": [
+        "screenconnect-01",
+        "it-admin",
+        "dc-01"
+      ],
+      "why": "Known-exploited ScreenConnect authentication bypass gives a session as a shared Domain Admin without MFA."
+    },
+    {
+      "id": "portal-to-orders",
+      "target": "orders-db",
+      "decisive": [
+        "tracking-portal"
+      ],
+      "needs_discovery": false,
+      "example": [
+        "tracking-portal",
+        "orders-db"
+      ],
+      "why": "Known-exploited Spring4Shell on an internet-facing portal with direct access to the orders database."
+    },
+    {
+      "id": "shadow-mcp-to-wms",
+      "target": "wms-db",
+      "decisive": [
+        "analytics-mcp"
+      ],
+      "needs_discovery": true,
+      "example": [
+        "vpn-gw-01",
+        "corp-net",
+        "analytics-mcp",
+        "wms-db"
+      ],
+      "why": "A shadow MCP server, started from VS Code on a pipeline host and bound to 0.0.0.0 with no login, can run INSERT, UPDATE and DELETE on the warehouse database. It is in no inventory."
+    },
+    {
+      "id": "open-vector-store-to-erp",
+      "target": "finance-erp",
+      "decisive": [
+        "qdrant-10-20-4-30",
+        "vendor-kb",
+        "agent-finance"
+      ],
+      "needs_discovery": true,
+      "example": [
+        "vpn-gw-01",
+        "corp-net",
+        "qdrant-10-20-4-30",
+        "vendor-kb",
+        "agent-finance",
+        "mcp-erp",
+        "svc-finance-agent",
+        "finance-erp"
+      ],
+      "why": "The invoice agent's knowledge base lives in a Qdrant database that needs no API key and is missing from the CMDB. Rewriting a vendor's record there steers the agent's bank-detail and payment tools."
+    },
+    {
+      "id": "poisoned-ticket-to-crm",
+      "target": "crm",
+      "decisive": [
+        "support-kb",
+        "agent-support"
+      ],
+      "needs_discovery": true,
+      "example": [
+        "support-portal",
+        "support-kb",
+        "agent-support",
+        "mcp-crm",
+        "svc-support-agent",
+        "crm"
+      ],
+      "why": "A ticket attachment with hidden instructions is already indexed in the support knowledge base. When the support agent retrieves it, it is told to email customer addresses out."
+    }
   ],
-  "decoys": {
-    "isolated_assets": ["confluence-lab", "xz-test-vm"],
-    "why": "Critical or known-exploited CVEs on isolated lab systems: high CVSS, no path to a crown jewel. A good ranking keeps them out of the top 10."
+  "discovery": {
+    "inventory": {
+      "agent": [
+        "agent-dev-assistants",
+        "agent-finance",
+        "agent-ops",
+        "agent-support",
+        "hr-helpdesk"
+      ],
+      "mcp_server": [
+        "analytics-mcp",
+        "calendar-mcp",
+        "crm-preview-mcp",
+        "docs-search-mcp",
+        "fs-tools-mcp",
+        "mcp-crm",
+        "mcp-erp",
+        "mcp-ops",
+        "pdf-tools-mcp"
+      ],
+      "knowledge_base": [
+        "hr-policies-kb",
+        "support-kb",
+        "vendor-kb"
+      ],
+      "vector_store": [
+        "qdrant-10-20-4-30",
+        "weaviate-01"
+      ]
+    },
+    "not_registered": [
+      "analytics-mcp",
+      "crm-preview-mcp",
+      "hr-helpdesk",
+      "hr-policies-kb",
+      "pdf-tools-mcp",
+      "qdrant-10-20-4-30",
+      "support-kb",
+      "vendor-kb"
+    ],
+    "flags": [
+      [
+        "mcp-ops",
+        "AI-MCP-001"
+      ],
+      [
+        "mcp-ops",
+        "AI-MCP-002"
+      ],
+      [
+        "docs-search-mcp",
+        "AI-MCP-001"
+      ],
+      [
+        "docs-search-mcp",
+        "AI-MCP-004"
+      ],
+      [
+        "analytics-mcp",
+        "AI-MCP-001"
+      ],
+      [
+        "analytics-mcp",
+        "AI-MCP-002"
+      ],
+      [
+        "analytics-mcp",
+        "AI-MCP-006"
+      ],
+      [
+        "mcp-crm",
+        "AI-MCP-002"
+      ],
+      [
+        "mcp-erp",
+        "AI-MCP-002"
+      ],
+      [
+        "pdf-tools-mcp",
+        "AI-MCP-005"
+      ],
+      [
+        "pdf-tools-mcp",
+        "AI-MCP-006"
+      ],
+      [
+        "pdf-tools-mcp",
+        "AI-MCP-007"
+      ],
+      [
+        "crm-preview-mcp",
+        "AI-MCP-006"
+      ],
+      [
+        "dev-laptops",
+        "AI-MCP-003"
+      ],
+      [
+        "qdrant-10-20-4-30",
+        "AI-VEC-001"
+      ],
+      [
+        "qdrant-10-20-4-30",
+        "AI-VEC-002"
+      ],
+      [
+        "support-kb",
+        "AI-KB-001"
+      ],
+      [
+        "support-kb",
+        "AI-KB-003"
+      ],
+      [
+        "vendor-kb",
+        "AI-KB-001"
+      ],
+      [
+        "hr-policies-kb",
+        "AI-KB-002"
+      ],
+      [
+        "agent-support",
+        "AI-AGT-001"
+      ],
+      [
+        "agent-finance",
+        "AI-AGT-001"
+      ],
+      [
+        "agent-finance",
+        "AI-AGT-002"
+      ],
+      [
+        "agent-ops",
+        "AI-AGT-001"
+      ],
+      [
+        "hr-helpdesk",
+        "AI-AGT-003"
+      ]
+    ],
+    "clean": [
+      "calendar-mcp",
+      "weaviate-01",
+      "fs-tools-mcp",
+      "agent-dev-assistants"
+    ],
+    "out_of_scope_leads": [
+      "https://mcp.crm-vendor.example/mcp"
+    ]
   },
-  "fixed_cves_excluded": ["CVE-2024-3400", "CVE-2023-4966"]
+  "decoys": {
+    "isolated_assets": [
+      "confluence-lab",
+      "xz-test-vm"
+    ],
+    "why": "Critical or known-exploited CVEs on isolated lab systems: high CVSS, no path to a crown jewel. A good ranking keeps them off every path."
+  },
+  "fixed_cves_excluded": [
+    "CVE-2024-3400",
+    "CVE-2023-4966",
+    "CVE-2023-27997"
+  ]
 }

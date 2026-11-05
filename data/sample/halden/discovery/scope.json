@@ -1,0 +1,9 @@
+{
+  "description": "Where the discovery agent may send read-only probes. A lead outside these networks or hosts is recorded but never contacted.",
+  "networks": [
+    {"cidr": "10.20.0.0/16", "segment": "corp-net"},
+    {"cidr": "10.30.0.0/16", "segment": "azure-apps"}
+  ],
+  "hosts": [],
+  "max_requests": 60
+}

@@ -1,0 +1,96 @@
+{
+  "description": "Halden's AI inventory, as kept by the AI governance team in a spreadsheet. Anything discovery finds that is not here is shadow AI.",
+  "agents": [
+    {
+      "id": "agent-support",
+      "name": "Customer Support Assistant",
+      "platform": "azure_ai_foundry",
+      "owner": "Customer Experience",
+      "approved": "2026-03-14"
+    },
+    {
+      "id": "agent-finance",
+      "name": "Invoice Reconciliation Agent",
+      "platform": "azure_ai_foundry",
+      "owner": "Finance Systems",
+      "approved": "2026-05-02"
+    },
+    {
+      "id": "agent-ops",
+      "name": "Ops Automation Agent",
+      "platform": "claude_code",
+      "clients": [
+        "claude_code"
+      ],
+      "hosts": [
+        "build-01"
+      ],
+      "owner": "Platform Engineering",
+      "approved": "2026-06-20",
+      "input_channel": {
+        "asset": "corp-net",
+        "audience": "internal",
+        "description": "Requests from any employee in the #ops-requests chat channel"
+      }
+    },
+    {
+      "id": "agent-dev-assistants",
+      "name": "Developer coding assistants (Claude Desktop, Cursor, VS Code)",
+      "platform": "desktop",
+      "clients": [
+        "claude_desktop",
+        "cursor",
+        "vscode"
+      ],
+      "owner": "Engineering IT",
+      "approved": "2026-02-01",
+      "input_channel": {
+        "asset": "dev-laptops",
+        "audience": "internal",
+        "description": "The developer at the keyboard"
+      }
+    }
+  ],
+  "mcp_servers": [
+    {
+      "id": "mcp-ops",
+      "name": "Ops tools server",
+      "endpoint": "http://10.20.1.15:8080/mcp",
+      "owner": "Platform Engineering"
+    },
+    {
+      "id": "mcp-crm",
+      "name": "CRM tools server",
+      "endpoint": "https://10.30.2.8:8443/mcp",
+      "owner": "Sales Operations"
+    },
+    {
+      "id": "mcp-erp",
+      "name": "ERP tools server",
+      "endpoint": "https://10.30.2.9:8443/mcp",
+      "owner": "Finance Systems"
+    },
+    {
+      "id": "docs-search-mcp",
+      "name": "Intranet docs search",
+      "endpoint": "http://10.20.4.21:8000/mcp",
+      "owner": "Data Team"
+    },
+    {
+      "id": "calendar-mcp",
+      "name": "Meeting room calendar",
+      "endpoint": "https://10.20.6.12:8443/mcp",
+      "owner": "Workplace IT"
+    },
+    {
+      "id": "fs-tools-mcp",
+      "name": "Halden file tools (internal package)",
+      "package": "@halden/fs-tools",
+      "approved_versions": [
+        "1.4.0"
+      ],
+      "owner": "Engineering IT"
+    }
+  ],
+  "knowledge_bases": []
+}

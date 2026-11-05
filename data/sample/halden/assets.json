@@ -5,6 +5,7 @@
     "type": "cloud_account",
     "env": "aws",
     "crown_jewel": true,
+    "impact": 1.0,
     "business_service": "All customer-facing systems",
     "owner": "Cloud Platform"
   },
@@ -14,6 +15,7 @@
     "type": "database",
     "env": "aws",
     "crown_jewel": true,
+    "impact": 0.8,
     "business_service": "Order management",
     "owner": "Commerce Engineering"
   },
@@ -23,6 +25,7 @@
     "type": "saas",
     "env": "azure",
     "crown_jewel": true,
+    "impact": 0.9,
     "business_service": "Customer records (PII)",
     "owner": "Sales Operations"
   },
@@ -32,6 +35,7 @@
     "type": "server",
     "env": "on_prem",
     "crown_jewel": true,
+    "impact": 1.0,
     "business_service": "Identity for all staff",
     "owner": "IT Infrastructure"
   },
@@ -41,6 +45,10 @@
     "type": "application",
     "env": "azure",
     "crown_jewel": true,
+    "impact": 0.9,
+    "hostnames": [
+      "erp.halden.internal"
+    ],
     "business_service": "Payments and invoicing",
     "owner": "Finance Systems"
   },
@@ -50,6 +58,10 @@
     "type": "database",
     "env": "azure",
     "crown_jewel": true,
+    "impact": 0.7,
+    "hostnames": [
+      "wms-db.halden.internal"
+    ],
     "business_service": "Warehouse operations",
     "owner": "Logistics Engineering"
   },
@@ -123,6 +135,7 @@
     "env": "azure",
     "internet_facing": true,
     "entry_point": "internet",
+    "open_channel": true,
     "owner": "Customer Experience"
   },
   {
@@ -132,6 +145,7 @@
     "env": "azure",
     "internet_facing": true,
     "entry_point": "internet",
+    "open_channel": true,
     "owner": "Finance Operations"
   },
   {
@@ -144,16 +158,28 @@
   },
   {
     "id": "corp-net",
-    "name": "Corporate network",
+    "name": "Corporate network (10.20.0.0/16, AWS VPC joined over Direct Connect)",
     "type": "network_segment",
     "env": "on_prem",
+    "cidr": "10.20.0.0/16",
     "owner": "Network Team"
+  },
+  {
+    "id": "azure-apps",
+    "name": "Azure application network (10.30.0.0/16)",
+    "type": "network_segment",
+    "env": "azure",
+    "cidr": "10.30.0.0/16",
+    "owner": "Cloud Platform"
   },
   {
     "id": "build-01",
     "name": "CI build server",
     "type": "server",
     "env": "aws",
+    "addresses": [
+      "10.20.1.15"
+    ],
     "owner": "Platform Engineering"
   },
   {
@@ -218,9 +244,13 @@
   },
   {
     "id": "data-pipelines",
-    "name": "Python data pipelines",
+    "name": "Python data pipeline hosts",
     "type": "server_group",
-    "env": "azure",
+    "env": "on_prem",
+    "addresses": [
+      "10.20.4.17",
+      "10.20.4.21"
+    ],
     "owner": "Data Team"
   },
   {
@@ -229,5 +259,27 @@
     "type": "server",
     "env": "aws",
     "owner": "Platform Engineering"
+  },
+  {
+    "id": "weaviate-01",
+    "name": "Weaviate vector database (product search)",
+    "type": "vector_store",
+    "env": "on_prem",
+    "product": "weaviate",
+    "addresses": [
+      "10.20.5.40"
+    ],
+    "endpoint": "http://10.20.5.40:8080",
+    "owner": "Data Team"
+  },
+  {
+    "id": "support-portal",
+    "name": "Customer support portal (ticket attachments)",
+    "type": "web_app",
+    "env": "azure",
+    "internet_facing": true,
+    "entry_point": "internet",
+    "open_channel": true,
+    "owner": "Customer Experience"
   }
 ]

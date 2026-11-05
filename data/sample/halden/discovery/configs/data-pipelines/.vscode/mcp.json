@@ -1,0 +1,12 @@
+{
+  "servers": {
+    "analytics": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": ["analytics-mcp==0.2.0", "--transport", "http", "--host", "0.0.0.0", "--port", "8000"],
+      "env": {
+        "WAREHOUSE_DSN": "postgresql://analytics@wms-db.halden.internal:5432/wms"
+      }
+    }
+  }
+}

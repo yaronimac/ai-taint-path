@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__ops-tools",
+      "mcp__docs"
+    ]
+  }
+}
