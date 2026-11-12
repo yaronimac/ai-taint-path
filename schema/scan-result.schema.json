@@ -15,6 +15,7 @@
     "paths",
     "choke_points",
     "remediation_plan",
+    "toxic_combinations",
     "findings",
     "inventory",
     "nodes",
@@ -24,7 +25,7 @@
   ],
   "properties": {
     "schema_version": {
-      "const": "1.0"
+      "const": "1.1"
     },
     "tool": {
       "type": "object",
@@ -179,6 +180,10 @@
             "exposure_index_after",
             "reduction_pct"
           ]
+        },
+        "toxic_combinations": {
+          "type": "integer",
+          "minimum": 0
         }
       }
     },
@@ -198,6 +203,13 @@
       "type": "array",
       "items": {
         "$ref": "#/$defs/planStep"
+      }
+    },
+    "toxic_combinations": {
+      "type": "array",
+      "description": "Risks that are serious only together: discovery flags joined by a real link (this agent reads that knowledge base, calls that server). Breaking any one ingredient breaks the combination.",
+      "items": {
+        "$ref": "#/$defs/toxicCombination"
       }
     },
     "findings": {
@@ -248,6 +260,10 @@
           },
           "discovered": {
             "type": "boolean"
+          },
+          "owner": {
+            "type": "string",
+            "description": "Owning team, from the CMDB or the AI inventory."
           }
         }
       }
@@ -350,7 +366,47 @@
         "exposure_index",
         "paths",
         "cvss_top10"
-      ]
+      ],
+      "properties": {
+        "paths": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "score",
+              "tier",
+              "nodes"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^.+->.+$"
+              },
+              "score": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 100
+              },
+              "tier": {
+                "enum": [
+                  "critical",
+                  "high",
+                  "medium",
+                  "low"
+                ]
+              },
+              "nodes": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 2
+              }
+            }
+          }
+        }
+      }
     }
   },
   "$defs": {
@@ -557,6 +613,13 @@
             "$ref": "#/$defs/step"
           },
           "minItems": 2
+        },
+        "toxic_combinations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^TC-\\d{2,}$"
+          }
         }
       }
     },
@@ -905,6 +968,103 @@
             "type": "string"
           },
           "minItems": 1
+        }
+      }
+    },
+    "toxicCombination": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "pattern",
+        "title",
+        "summary",
+        "severity",
+        "components",
+        "ingredients",
+        "findings",
+        "paths",
+        "break_with"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^TC-\\d{2,}$"
+        },
+        "pattern": {
+          "enum": [
+            "untrusted-input-unapproved-tools",
+            "untrusted-documents-to-agent",
+            "open-vector-store-behind-agent",
+            "poisoned-tool-to-agent",
+            "open-mcp-high-impact-tools"
+          ]
+        },
+        "title": {
+          "type": "string"
+        },
+        "summary": {
+          "type": "string"
+        },
+        "severity": {
+          "enum": [
+            "critical",
+            "high",
+            "medium",
+            "low"
+          ]
+        },
+        "components": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        },
+        "ingredients": {
+          "type": "array",
+          "minItems": 2,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "component",
+              "text",
+              "finding"
+            ],
+            "properties": {
+              "component": {
+                "type": "string"
+              },
+              "text": {
+                "type": "string"
+              },
+              "finding": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            }
+          }
+        },
+        "findings": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        },
+        "paths": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Attack paths that run through every core component of the combination."
+        },
+        "break_with": {
+          "type": "string",
+          "description": "The finding whose fix most directly breaks the combination."
         }
       }
     }

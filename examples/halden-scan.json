@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.0",
+  "schema_version": "1.1",
   "tool": {
     "name": "ai-taint-path",
     "version": "0.2.0"
@@ -42,6 +42,7 @@
     "ai_components": 19,
     "ai_not_registered": 8,
     "discovery_flags": 25,
+    "toxic_combinations": 9,
     "without_discovery": {
       "exposure_index": 245.7,
       "paths": 11
@@ -120,7 +121,8 @@
           "techniques": [],
           "origin": "static"
         }
-      ]
+      ],
+      "toxic_combinations": []
     },
     {
       "id": "vpn-gw-01->aws-prod",
@@ -238,6 +240,9 @@
           "techniques": [],
           "origin": "static"
         }
+      ],
+      "toxic_combinations": [
+        "TC-01"
       ]
     },
     {
@@ -310,7 +315,8 @@
           ],
           "origin": "static"
         }
-      ]
+      ],
+      "toxic_combinations": []
     },
     {
       "id": "tracking-portal->orders-db",
@@ -368,7 +374,8 @@
           ],
           "origin": "static"
         }
-      ]
+      ],
+      "toxic_combinations": []
     },
     {
       "id": "vpn-gw-01->orders-db",
@@ -497,6 +504,9 @@
           "techniques": [],
           "origin": "static"
         }
+      ],
+      "toxic_combinations": [
+        "TC-01"
       ]
     },
     {
@@ -594,6 +604,9 @@
           "techniques": [],
           "origin": "static"
         }
+      ],
+      "toxic_combinations": [
+        "TC-02"
       ]
     },
     {
@@ -691,6 +704,9 @@
           "techniques": [],
           "origin": "static"
         }
+      ],
+      "toxic_combinations": [
+        "TC-03"
       ]
     },
     {
@@ -780,6 +796,9 @@
           ],
           "origin": "discovery"
         }
+      ],
+      "toxic_combinations": [
+        "TC-08"
       ]
     },
     {
@@ -899,6 +918,10 @@
           "techniques": [],
           "origin": "static"
         }
+      ],
+      "toxic_combinations": [
+        "TC-03",
+        "TC-06"
       ]
     },
     {
@@ -1049,6 +1072,11 @@
           "techniques": [],
           "origin": "static"
         }
+      ],
+      "toxic_combinations": [
+        "TC-02",
+        "TC-04",
+        "TC-05"
       ]
     },
     {
@@ -1167,6 +1195,9 @@
           "techniques": [],
           "origin": "static"
         }
+      ],
+      "toxic_combinations": [
+        "TC-01"
       ]
     },
     {
@@ -1239,7 +1270,8 @@
           ],
           "origin": "static"
         }
-      ]
+      ],
+      "toxic_combinations": []
     },
     {
       "id": "web-frontends->orders-db",
@@ -1314,7 +1346,8 @@
           ],
           "origin": "static"
         }
-      ]
+      ],
+      "toxic_combinations": []
     },
     {
       "id": "dev-laptops->orders-db",
@@ -1443,6 +1476,9 @@
           "techniques": [],
           "origin": "static"
         }
+      ],
+      "toxic_combinations": [
+        "TC-01"
       ]
     },
     {
@@ -1532,6 +1568,9 @@
           ],
           "origin": "discovery"
         }
+      ],
+      "toxic_combinations": [
+        "TC-08"
       ]
     },
     {
@@ -1682,6 +1721,11 @@
           "techniques": [],
           "origin": "static"
         }
+      ],
+      "toxic_combinations": [
+        "TC-02",
+        "TC-04",
+        "TC-05"
       ]
     }
   ],
@@ -1901,6 +1945,338 @@
       "exposure_index_after": 92.4,
       "cvss_rank": 6,
       "step": 5
+    }
+  ],
+  "toxic_combinations": [
+    {
+      "id": "TC-01",
+      "pattern": "open-mcp-high-impact-tools",
+      "title": "MCP server with no login exposes high-impact tools",
+      "summary": "Anyone who can reach Ops tools server on the network can call its high-impact tools directly, with no agent and no login in the way.",
+      "severity": "critical",
+      "components": [
+        "mcp-ops"
+      ],
+      "ingredients": [
+        {
+          "component": "mcp-ops",
+          "text": "Ops tools server: answers without a login",
+          "finding": "D-012"
+        },
+        {
+          "component": "mcp-ops",
+          "text": "Ops tools server: exposes high-impact tools",
+          "finding": "D-016"
+        }
+      ],
+      "findings": [
+        "D-012",
+        "D-016"
+      ],
+      "paths": [
+        "vpn-gw-01->aws-prod",
+        "vpn-gw-01->orders-db",
+        "dev-laptops->aws-prod",
+        "dev-laptops->orders-db"
+      ],
+      "break_with": "D-012"
+    },
+    {
+      "id": "TC-02",
+      "pattern": "untrusted-input-unapproved-tools",
+      "title": "Agent acts on outside input with high-impact tools and no approval",
+      "summary": "Anyone who can send external input to Invoice Reconciliation Agent can steer it into tools that change data or send it out, and no person approves the call.",
+      "severity": "critical",
+      "components": [
+        "finance-inbox",
+        "agent-finance",
+        "mcp-erp"
+      ],
+      "ingredients": [
+        {
+          "component": "finance-inbox",
+          "text": "Accounts payable shared mailbox: external input via email trigger",
+          "finding": null
+        },
+        {
+          "component": "agent-finance",
+          "text": "Invoice Reconciliation Agent: no human approval on high-impact tools",
+          "finding": "D-001"
+        },
+        {
+          "component": "mcp-erp",
+          "text": "ERP tools server: exposes high-impact tools",
+          "finding": "D-015"
+        }
+      ],
+      "findings": [
+        "D-001",
+        "D-015"
+      ],
+      "paths": [
+        "finance-inbox->finance-erp",
+        "vpn-gw-01->finance-erp",
+        "dev-laptops->finance-erp"
+      ],
+      "break_with": "D-001"
+    },
+    {
+      "id": "TC-03",
+      "pattern": "untrusted-input-unapproved-tools",
+      "title": "Agent acts on outside input with high-impact tools and no approval",
+      "summary": "Anyone who can send public input to Customer Support Assistant can steer it into tools that change data or send it out, and no person approves the call.",
+      "severity": "critical",
+      "components": [
+        "support-chat",
+        "agent-support",
+        "mcp-crm"
+      ],
+      "ingredients": [
+        {
+          "component": "support-chat",
+          "text": "Website customer support chat: public input via website chat",
+          "finding": null
+        },
+        {
+          "component": "agent-support",
+          "text": "Customer Support Assistant: no human approval on high-impact tools",
+          "finding": "D-003"
+        },
+        {
+          "component": "mcp-crm",
+          "text": "CRM tools server: exposes high-impact tools",
+          "finding": "D-014"
+        }
+      ],
+      "findings": [
+        "D-003",
+        "D-014"
+      ],
+      "paths": [
+        "support-chat->crm",
+        "support-portal->crm"
+      ],
+      "break_with": "D-003"
+    },
+    {
+      "id": "TC-04",
+      "pattern": "untrusted-documents-to-agent",
+      "title": "Untrusted documents feed an agent that can act",
+      "summary": "Invoice Reconciliation Agent reads vendor-kb, which indexes documents from outside, and it can act on what it reads without approval.",
+      "severity": "critical",
+      "components": [
+        "vendor-kb",
+        "agent-finance"
+      ],
+      "ingredients": [
+        {
+          "component": "vendor-kb",
+          "text": "vendor-kb: indexes untrusted content",
+          "finding": "D-007"
+        },
+        {
+          "component": "agent-finance",
+          "text": "Invoice Reconciliation Agent: no human approval on high-impact tools",
+          "finding": "D-001"
+        }
+      ],
+      "findings": [
+        "D-007",
+        "D-001"
+      ],
+      "paths": [
+        "vpn-gw-01->finance-erp",
+        "dev-laptops->finance-erp"
+      ],
+      "break_with": "D-007"
+    },
+    {
+      "id": "TC-05",
+      "pattern": "open-vector-store-behind-agent",
+      "title": "Open vector database behind an agent's knowledge base",
+      "summary": "Anyone on the network can write to Qdrant vector database at 10.20.4.30:6333, which holds the vectors of vendor-kb; Invoice Reconciliation Agent retrieves from it and can act without approval.",
+      "severity": "critical",
+      "components": [
+        "qdrant-10-20-4-30",
+        "vendor-kb",
+        "agent-finance"
+      ],
+      "ingredients": [
+        {
+          "component": "qdrant-10-20-4-30",
+          "text": "Qdrant vector database at 10.20.4.30:6333: answers without authentication",
+          "finding": "D-024"
+        },
+        {
+          "component": "qdrant-10-20-4-30",
+          "text": "Qdrant vector database at 10.20.4.30:6333: not in the CMDB",
+          "finding": "D-025"
+        },
+        {
+          "component": "vendor-kb",
+          "text": "vendor-kb: stores its vectors there",
+          "finding": null
+        },
+        {
+          "component": "agent-finance",
+          "text": "Invoice Reconciliation Agent: no human approval on high-impact tools",
+          "finding": "D-001"
+        }
+      ],
+      "findings": [
+        "D-024",
+        "D-025",
+        "D-001"
+      ],
+      "paths": [
+        "vpn-gw-01->finance-erp",
+        "dev-laptops->finance-erp"
+      ],
+      "break_with": "D-024"
+    },
+    {
+      "id": "TC-06",
+      "pattern": "untrusted-documents-to-agent",
+      "title": "Untrusted documents feed an agent that can act",
+      "summary": "Customer Support Assistant reads support-kb, which already holds a document with hidden instructions, and it can act on what it reads without approval.",
+      "severity": "critical",
+      "components": [
+        "support-kb",
+        "agent-support"
+      ],
+      "ingredients": [
+        {
+          "component": "support-kb",
+          "text": "support-kb: a document carries hidden instructions",
+          "finding": "D-009"
+        },
+        {
+          "component": "support-kb",
+          "text": "support-kb: indexes untrusted content",
+          "finding": "D-006"
+        },
+        {
+          "component": "agent-support",
+          "text": "Customer Support Assistant: no human approval on high-impact tools",
+          "finding": "D-003"
+        }
+      ],
+      "findings": [
+        "D-009",
+        "D-006",
+        "D-003"
+      ],
+      "paths": [
+        "support-portal->crm"
+      ],
+      "break_with": "D-009"
+    },
+    {
+      "id": "TC-07",
+      "pattern": "poisoned-tool-to-agent",
+      "title": "Poisoned tool description reaches an agent with high-impact tools",
+      "summary": "Ops Automation Agent loads the tools of Intranet docs search, whose description tells the model what to do, and it can run high-impact tools without approval.",
+      "severity": "critical",
+      "components": [
+        "docs-search-mcp",
+        "agent-ops"
+      ],
+      "ingredients": [
+        {
+          "component": "docs-search-mcp",
+          "text": "Intranet docs search: a tool description carries hidden instructions",
+          "finding": "D-018"
+        },
+        {
+          "component": "docs-search-mcp",
+          "text": "Intranet docs search: answers without a login",
+          "finding": "D-011"
+        },
+        {
+          "component": "agent-ops",
+          "text": "Ops Automation Agent: no human approval on high-impact tools",
+          "finding": "D-002"
+        }
+      ],
+      "findings": [
+        "D-018",
+        "D-011",
+        "D-002"
+      ],
+      "paths": [],
+      "break_with": "D-018"
+    },
+    {
+      "id": "TC-08",
+      "pattern": "open-mcp-high-impact-tools",
+      "title": "MCP server with no login exposes high-impact tools",
+      "summary": "Anyone who can reach analytics-mcp 0.2.0 on the network can call its high-impact tools directly, with no agent and no login in the way. Nobody has it in an inventory.",
+      "severity": "high",
+      "components": [
+        "analytics-mcp"
+      ],
+      "ingredients": [
+        {
+          "component": "analytics-mcp",
+          "text": "analytics-mcp 0.2.0: answers without a login",
+          "finding": "D-010"
+        },
+        {
+          "component": "analytics-mcp",
+          "text": "analytics-mcp 0.2.0: exposes high-impact tools",
+          "finding": "D-013"
+        },
+        {
+          "component": "analytics-mcp",
+          "text": "analytics-mcp 0.2.0: in no inventory",
+          "finding": "D-020"
+        }
+      ],
+      "findings": [
+        "D-010",
+        "D-013",
+        "D-020"
+      ],
+      "paths": [
+        "vpn-gw-01->wms-db",
+        "dev-laptops->wms-db"
+      ],
+      "break_with": "D-010"
+    },
+    {
+      "id": "TC-09",
+      "pattern": "untrusted-input-unapproved-tools",
+      "title": "Agent acts on outside input with high-impact tools and no approval",
+      "summary": "Anyone who can send internal input to Ops Automation Agent can steer it into tools that change data or send it out, and no person approves the call.",
+      "severity": "high",
+      "components": [
+        "corp-net",
+        "agent-ops",
+        "mcp-ops"
+      ],
+      "ingredients": [
+        {
+          "component": "corp-net",
+          "text": "Corporate network: internal input",
+          "finding": null
+        },
+        {
+          "component": "agent-ops",
+          "text": "Ops Automation Agent: no human approval on high-impact tools",
+          "finding": "D-002"
+        },
+        {
+          "component": "mcp-ops",
+          "text": "Ops tools server: exposes high-impact tools",
+          "finding": "D-016"
+        }
+      ],
+      "findings": [
+        "D-002",
+        "D-016"
+      ],
+      "paths": [],
+      "break_with": "D-002"
     }
   ],
   "findings": [
@@ -5229,7 +5605,8 @@
       "impact": 1.0,
       "entry_point": null,
       "open_channel": false,
-      "discovered": false
+      "discovered": false,
+      "owner": "Cloud Platform"
     },
     {
       "id": "orders-db",
@@ -5240,7 +5617,8 @@
       "impact": 0.8,
       "entry_point": null,
       "open_channel": false,
-      "discovered": false
+      "discovered": false,
+      "owner": "Commerce Engineering"
     },
     {
       "id": "crm",
@@ -5251,7 +5629,8 @@
       "impact": 0.9,
       "entry_point": null,
       "open_channel": false,
-      "discovered": false
+      "discovered": false,
+      "owner": "Sales Operations"
     },
     {
       "id": "dc-01",
@@ -5262,7 +5641,8 @@
       "impact": 1.0,
       "entry_point": null,
       "open_channel": false,
-      "discovered": false
+      "discovered": false,
+      "owner": "IT Infrastructure"
     },
     {
       "id": "finance-erp",
@@ -5273,7 +5653,8 @@
       "impact": 0.9,
       "entry_point": null,
       "open_channel": false,
-      "discovered": false
+      "discovered": false,
+      "owner": "Finance Systems"
     },
     {
       "id": "wms-db",
@@ -5284,7 +5665,8 @@
       "impact": 0.7,
       "entry_point": null,
       "open_channel": false,
-      "discovered": false
+      "discovered": false,
+      "owner": "Logistics Engineering"
     },
     {
       "id": "vpn-gw-01",
@@ -5295,7 +5677,8 @@
       "impact": 0.0,
       "entry_point": "internet",
       "open_channel": false,
-      "discovered": false
+      "discovered": false,
+      "owner": "Network Team"
     },
     {
       "id": "fw-edge-01",
@@ -5306,7 +5689,8 @@
       "impact": 0.0,
       "entry_point": "internet",
       "open_channel": false,
-      "discovered": false
+      "discovered": false,
+      "owner": "Network Team"
     },
     {
       "id": "pan-gp-01",
@@ -5317,7 +5701,8 @@
       "impact": 0.0,
       "entry_point": "internet",
       "open_channel": false,
-      "discovered": false
+      "discovered": false,
+      "owner": "Network Team"
     },
     {
       "id": "citrix-adc-01",
@@ -5328,7 +5713,8 @@
       "impact": 0.0,
       "entry_point": "internet",
       "open_channel": false,
-      "discovered": false
+      "discovered": false,
+      "owner": "Network Team"
     },
     {
       "id": "tracking-portal",
@@ -5339,7 +5725,8 @@
       "impact": 0.0,
       "entry_point": "internet",
       "open_channel": false,
-      "discovered": false
+      "discovered": false,
+      "owner": "Commerce Engineering"
     },
     {
       "id": "moveit-01",
@@ -5350,7 +5737,8 @@
       "impact": 0.0,
       "entry_point": "internet",
       "open_channel": false,
-      "discovered": false
+      "discovered": false,
+      "owner": "Integration Team"
     },
     {
       "id": "screenconnect-01",
@@ -5361,7 +5749,8 @@
       "impact": 0.0,
       "entry_point": "internet",
       "open_channel": false,
-      "discovered": false
+      "discovered": false,
+      "owner": "IT Service Desk"
     },
     {
       "id": "support-chat",
@@ -5372,7 +5761,8 @@
       "impact": 0.0,
       "entry_point": "internet",
       "open_channel": true,
-      "discovered": false
+      "discovered": false,
+      "owner": "Customer Experience"
     },
     {
       "id": "finance-inbox",
@@ -5383,7 +5773,8 @@
       "impact": 0.0,
       "entry_point": "internet",
       "open_channel": true,
-      "discovered": false
+      "discovered": false,
+      "owner": "Finance Operations"
     },
     {
       "id": "dev-laptops",
@@ -5394,7 +5785,8 @@
       "impact": 0.0,
       "entry_point": "user_action",
       "open_channel": false,
-      "discovered": false
+      "discovered": false,
+      "owner": "Engineering IT"
     },
     {
       "id": "corp-net",
@@ -5405,7 +5797,8 @@
       "impact": 0.0,
       "entry_point": null,
       "open_channel": false,
-      "discovered": false
+      "discovered": false,
+      "owner": "Network Team"
     },
     {
       "id": "azure-apps",
@@ -5416,7 +5809,8 @@
       "impact": 0.0,
       "entry_point": null,
       "open_channel": false,
-      "discovered": false
+      "discovered": false,
+      "owner": "Cloud Platform"
     },
     {
       "id": "build-01",
@@ -5427,7 +5821,8 @@
       "impact": 0.0,
       "entry_point": null,
       "open_channel": false,
-      "discovered": false
+      "discovered": false,
+      "owner": "Platform Engineering"
     },
     {
       "id": "sharepoint-01",
@@ -5438,7 +5833,8 @@
       "impact": 0.0,
       "entry_point": null,
       "open_channel": false,
-      "discovered": false
+      "discovered": false,
+      "owner": "Collaboration Team"
     },
     {
       "id": "reporting-app",
@@ -5449,7 +5845,8 @@
       "impact": 0.0,
       "entry_point": null,
       "open_channel": false,
-      "discovered": false
+      "discovered": false,
+      "owner": "Data Team"
     },
     {
       "id": "core-router-01",
@@ -5460,7 +5857,8 @@
       "impact": 0.0,
       "entry_point": null,
       "open_channel": false,
-      "discovered": false
+      "discovered": false,
+      "owner": "Network Team"
     },
     {
       "id": "file-share-01",
@@ -5471,7 +5869,8 @@
       "impact": 0.0,
       "entry_point": null,
       "open_channel": false,
-      "discovered": false
+      "discovered": false,
+      "owner": "Integration Team"
     },
     {
       "id": "outlook-clients",
@@ -5482,7 +5881,8 @@
       "impact": 0.0,
       "entry_point": null,
       "open_channel": false,
-      "discovered": false
+      "discovered": false,
+      "owner": "Workplace IT"
     },
     {
       "id": "confluence-lab",
@@ -5493,7 +5893,8 @@
       "impact": 0.0,
       "entry_point": null,
       "open_channel": false,
-      "discovered": false
+      "discovered": false,
+      "owner": "R&D"
     },
     {
       "id": "xz-test-vm",
@@ -5504,7 +5905,8 @@
       "impact": 0.0,
       "entry_point": null,
       "open_channel": false,
-      "discovered": false
+      "discovered": false,
+      "owner": "R&D"
     },
     {
       "id": "web-frontends",
@@ -5515,7 +5917,8 @@
       "impact": 0.0,
       "entry_point": "internet",
       "open_channel": false,
-      "discovered": false
+      "discovered": false,
+      "owner": "Commerce Engineering"
     },
     {
       "id": "data-pipelines",
@@ -5526,7 +5929,8 @@
       "impact": 0.0,
       "entry_point": null,
       "open_channel": false,
-      "discovered": false
+      "discovered": false,
+      "owner": "Data Team"
     },
     {
       "id": "ssh-bastion",
@@ -5537,7 +5941,8 @@
       "impact": 0.0,
       "entry_point": null,
       "open_channel": false,
-      "discovered": false
+      "discovered": false,
+      "owner": "Platform Engineering"
     },
     {
       "id": "weaviate-01",
@@ -5548,7 +5953,8 @@
       "impact": 0.0,
       "entry_point": null,
       "open_channel": false,
-      "discovered": true
+      "discovered": true,
+      "owner": "Data Team"
     },
     {
       "id": "support-portal",
@@ -5559,7 +5965,8 @@
       "impact": 0.0,
       "entry_point": "internet",
       "open_channel": true,
-      "discovered": false
+      "discovered": false,
+      "owner": "Customer Experience"
     },
     {
       "id": "svc-ops-agent",
@@ -5636,7 +6043,8 @@
       "impact": 0.0,
       "entry_point": null,
       "open_channel": false,
-      "discovered": true
+      "discovered": true,
+      "owner": "Engineering IT"
     },
     {
       "id": "agent-finance",
@@ -5647,7 +6055,8 @@
       "impact": 0.0,
       "entry_point": null,
       "open_channel": false,
-      "discovered": true
+      "discovered": true,
+      "owner": "Finance Systems"
     },
     {
       "id": "agent-ops",
@@ -5658,7 +6067,8 @@
       "impact": 0.0,
       "entry_point": null,
       "open_channel": false,
-      "discovered": true
+      "discovered": true,
+      "owner": "Platform Engineering"
     },
     {
       "id": "agent-support",
@@ -5669,7 +6079,8 @@
       "impact": 0.0,
       "entry_point": null,
       "open_channel": false,
-      "discovered": true
+      "discovered": true,
+      "owner": "Customer Experience"
     },
     {
       "id": "hr-helpdesk",
@@ -5702,7 +6113,8 @@
       "impact": 0.0,
       "entry_point": null,
       "open_channel": false,
-      "discovered": true
+      "discovered": true,
+      "owner": "Workplace IT"
     },
     {
       "id": "crm-preview-mcp",
@@ -5724,7 +6136,8 @@
       "impact": 0.0,
       "entry_point": null,
       "open_channel": false,
-      "discovered": true
+      "discovered": true,
+      "owner": "Data Team"
     },
     {
       "id": "fs-tools-mcp",
@@ -5735,7 +6148,8 @@
       "impact": 0.0,
       "entry_point": null,
       "open_channel": false,
-      "discovered": true
+      "discovered": true,
+      "owner": "Engineering IT"
     },
     {
       "id": "mcp-crm",
@@ -5746,7 +6160,8 @@
       "impact": 0.0,
       "entry_point": null,
       "open_channel": false,
-      "discovered": true
+      "discovered": true,
+      "owner": "Sales Operations"
     },
     {
       "id": "mcp-erp",
@@ -5757,7 +6172,8 @@
       "impact": 0.0,
       "entry_point": null,
       "open_channel": false,
-      "discovered": true
+      "discovered": true,
+      "owner": "Finance Systems"
     },
     {
       "id": "mcp-ops",
@@ -5768,7 +6184,8 @@
       "impact": 0.0,
       "entry_point": null,
       "open_channel": false,
-      "discovered": true
+      "discovered": true,
+      "owner": "Platform Engineering"
     },
     {
       "id": "pdf-tools-mcp",
@@ -6446,57 +6863,123 @@
       {
         "id": "screenconnect-01->dc-01",
         "score": 90.0,
-        "tier": "critical"
+        "tier": "critical",
+        "nodes": [
+          "screenconnect-01",
+          "it-admin",
+          "dc-01"
+        ]
       },
       {
         "id": "vpn-gw-01->dc-01",
         "score": 81.0,
-        "tier": "critical"
+        "tier": "critical",
+        "nodes": [
+          "vpn-gw-01",
+          "corp-net",
+          "dc-01"
+        ]
       },
       {
         "id": "tracking-portal->orders-db",
         "score": 72.0,
-        "tier": "critical"
+        "tier": "critical",
+        "nodes": [
+          "tracking-portal",
+          "orders-db"
+        ]
       },
       {
         "id": "vpn-gw-01->wms-db",
         "score": 56.7,
-        "tier": "high"
+        "tier": "high",
+        "nodes": [
+          "vpn-gw-01",
+          "corp-net",
+          "reporting-app",
+          "wms-db"
+        ]
       },
       {
         "id": "vpn-gw-01->aws-prod",
         "score": 27.0,
-        "tier": "medium"
+        "tier": "medium",
+        "nodes": [
+          "vpn-gw-01",
+          "corp-net",
+          "build-01",
+          "svc-ops-agent",
+          "aws-prod"
+        ]
       },
       {
         "id": "dev-laptops->dc-01",
         "score": 21.6,
-        "tier": "medium"
+        "tier": "medium",
+        "nodes": [
+          "dev-laptops",
+          "corp-net",
+          "dc-01"
+        ]
       },
       {
         "id": "web-frontends->orders-db",
         "score": 21.6,
-        "tier": "medium"
+        "tier": "medium",
+        "nodes": [
+          "web-frontends",
+          "tracking-portal",
+          "orders-db"
+        ]
       },
       {
         "id": "vpn-gw-01->orders-db",
         "score": 21.6,
-        "tier": "medium"
+        "tier": "medium",
+        "nodes": [
+          "vpn-gw-01",
+          "corp-net",
+          "build-01",
+          "svc-ops-agent",
+          "aws-prod",
+          "orders-db"
+        ]
       },
       {
         "id": "dev-laptops->wms-db",
         "score": 15.1,
-        "tier": "low"
+        "tier": "low",
+        "nodes": [
+          "dev-laptops",
+          "corp-net",
+          "reporting-app",
+          "wms-db"
+        ]
       },
       {
         "id": "dev-laptops->aws-prod",
         "score": 7.2,
-        "tier": "low"
+        "tier": "low",
+        "nodes": [
+          "dev-laptops",
+          "corp-net",
+          "build-01",
+          "svc-ops-agent",
+          "aws-prod"
+        ]
       },
       {
         "id": "dev-laptops->orders-db",
         "score": 5.8,
-        "tier": "low"
+        "tier": "low",
+        "nodes": [
+          "dev-laptops",
+          "corp-net",
+          "build-01",
+          "svc-ops-agent",
+          "aws-prod",
+          "orders-db"
+        ]
       }
     ],
     "cvss_top10": [
