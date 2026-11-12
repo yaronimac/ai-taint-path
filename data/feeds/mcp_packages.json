@@ -1,0 +1,25 @@
+{
+  "description": "MCP packages with known vulnerabilities, checked by the discovery agent against the package versions it finds in MCP client configs. Version ranges are copied from the 'affected' field of each CVE record in CVEProject/cvelistV5.",
+  "packages": [
+    {
+      "ecosystem": "npm",
+      "package": "mcp-remote",
+      "cve": "CVE-2025-6514",
+      "introduced": "0.0.5",
+      "last_affected": "0.1.15",
+      "role": "client proxy",
+      "attack": "T1203",
+      "fix": "Upgrade mcp-remote to 0.1.16 or later, and only connect it to MCP servers you trust."
+    },
+    {
+      "ecosystem": "npm",
+      "package": "@modelcontextprotocol/inspector",
+      "cve": "CVE-2025-49596",
+      "introduced": "0.0.0",
+      "fixed": "0.14.1",
+      "role": "developer tool",
+      "attack": "T1203",
+      "fix": "Upgrade MCP Inspector to 0.14.1 or later; it adds authentication between the browser UI and the proxy."
+    }
+  ]
+}

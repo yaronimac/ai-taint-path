@@ -1,0 +1,35 @@
+{
+  "platform": "aws_bedrock",
+  "account": "aws-prod",
+  "exported_at": "2026-11-02T09:20:00Z",
+  "note": "Read-only export from bedrock-agent ListAgents/GetAgent, ListKnowledgeBases/GetKnowledgeBase and ListDataSources, collected with the SecurityAudit policy. Simplified.",
+  "agents": [
+    {
+      "agentId": "HRHLPD01",
+      "agentName": "hr-helpdesk",
+      "description": "Answers employee questions about HR policies in Microsoft Teams",
+      "foundationModel": "amazon.nova-pro-v1:0",
+      "channels": [
+        {"channel": "teams_bot", "asset": "corp-net", "audience": "internal"}
+      ],
+      "actionGroups": [],
+      "knowledgeBases": [{"knowledgeBaseId": "KBHR0001", "name": "hr-policies-kb"}],
+      "memoryConfiguration": null
+    }
+  ],
+  "knowledgeBases": [
+    {
+      "knowledgeBaseId": "KBHR0001",
+      "name": "hr-policies-kb",
+      "storageConfiguration": {"type": "OPENSEARCH_SERVERLESS", "auth": "iam"},
+      "dataSources": [
+        {"name": "HR SharePoint site", "type": "SHAREPOINT", "trust": "internal", "permissioned": true}
+      ],
+      "enforcesSourcePermissions": false,
+      "sampledDocuments": [
+        {"id": "hr-007", "title": "Parental leave policy 2026", "text": "Employees with 6 months of service can take up to 20 weeks of paid parental leave.", "sourceAccess": "all-staff"},
+        {"id": "hr-112", "title": "Salary bands 2026", "text": "Band definitions and pay ranges by role family and location.", "sourceAccess": "hr-only"}
+      ]
+    }
+  ]
+}
