@@ -57,6 +57,8 @@ def main(argv: list[str] | None = None) -> int:
     s.add_argument("--format", choices=["table", "json", "html"], default="table")
     s.add_argument("--top", type=int, default=10)
     s.add_argument("--no-discovery", action="store_true", help="rank with scanner and CMDB data only (the baseline)")
+    s.add_argument("--tour", action="store_true", help="with --format html: add a guided tour, for demos")
+    s.add_argument("--tour-home", metavar="URL", help="with --tour: the page the demo links back to")
     d = sub.add_parser("discover", help="run discovery only")
     common(d)
     d.add_argument("--format", choices=["table", "json"], default="table")
@@ -87,7 +89,7 @@ def main(argv: list[str] | None = None) -> int:
     elif args.format == "html":
         from .output.html import render_html
 
-        _write(render_html(report), args.out)
+        _write(render_html(report, tour=args.tour or bool(args.tour_home), home=args.tour_home), args.out)
     else:
         _write(render_scan(report), args.out)
     return 0

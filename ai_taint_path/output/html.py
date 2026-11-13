@@ -1216,24 +1216,36 @@ def _proof(v: _View) -> str:
 
 # --- page ---------------------------------------------------------------------------
 
-def render_html(report: dict, *, standalone: bool = True) -> str:
+def render_html(report: dict, *, standalone: bool = True, tour: bool = False, home: str | None = None) -> str:
     """The dashboard as a full HTML document, or as a page fragment (no doctype,
-    head or body) for hosts that wrap pages in their own skeleton."""
+    head or body) for hosts that wrap pages in their own skeleton.
+
+    `tour` adds the guided tour for demos (see tour.py). `home` is the page a
+    demo links back to, and the only link the page can carry that is not its own.
+    """
     v = _View(report)
     parts = [_sprite(), _header(v), _tabs(v), "<main>", _overview(v), _paths(v), _fixes(v)]
     if v.discovery:
         parts.append(_inventory(v))
     parts += ["</main>", _proof(v)]
+    css, scripts, after = CSS, f"<script>{JS}</script>", ""
+    if tour:
+        from . import tour as guide  # imported here because tour.py builds on this module
+
+        bar, steps = guide.render_tour(v, home)
+        parts.insert(1, bar)
+        css += guide.TOUR_CSS
+        after = BREAK_AFTER.sub(r"\1\n", steps)
+        scripts += f"\n<script>{guide.TOUR_JS}</script>"
     title = f"{report['environment']['name']} attack paths"
     body = BREAK_AFTER.sub(r"\1\n", "".join(parts))
-    page = (f'<div class="page">\n{body}</div>\n<div id="tip" role="tooltip" hidden></div>\n'
-            f"<script>{JS}</script>")
+    page = f'<div class="page">\n{body}</div>\n<div id="tip" role="tooltip" hidden></div>\n{after}{scripts}'
     if not standalone:
         return (f'<title>{e(title)}</title>\n<meta name="claude:viewport-fit-sides" content="cover">\n'
-                f"<style>{CSS}</style>\n{page}\n")
+                f"<style>{css}</style>\n{page}\n")
     return ('<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n'
             '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n'
-            f"<title>{e(title)}</title>\n<style>{CSS}</style>\n</head>\n<body>\n{page}\n</body>\n</html>\n")
+            f"<title>{e(title)}</title>\n<style>{css}</style>\n</head>\n<body>\n{page}\n</body>\n</html>\n")
 
 
 CSS = """
