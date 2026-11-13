@@ -35,12 +35,12 @@ Open [`examples/halden-dashboard.html`](examples/halden-dashboard.html) in a bro
 
 ### The dashboard
 
-![The Overview: three headline answers, the exposure index, and the attack-path graph with one path traced](examples/dashboard-overview.png)
+![The Overview with one attack path opened in technical detail: typed boxes, the CVE or flag on each, labelled hops and the credential the attacker picks up](examples/dashboard-overview.png)
 
 One self-contained HTML file with four views, laid out the way AI security and exposure-management consoles present the same data:
 
-- **Overview** answers three questions first: how many crown jewels are reachable (6 of 6, 2 only through AI), which single fix matters most (one VPN patch closes 5 paths), and how much AI is in no inventory (8 shadow components). Below them, an **attack-path graph** runs from entry points to crown jewels. Pick a path to trace it and read how it works, step by step. Switch to **Scanner data only** to watch the AI components fade and the paths they open disappear.
-- **Attack paths** lists all 16 paths with filters (through AI, missed without discovery, critical, in a toxic combination) and a "why this rank" breakdown of each score.
+- **Overview** answers three questions first: how many crown jewels are reachable (6 of 6, 2 only through AI), which single fix matters most (one VPN patch closes 5 paths), and how much AI is in no inventory (8 shadow components). Below them, an **attack-path graph** runs from entry points to crown jewels, with an icon in each box for what it is (gateway, server, identity, MCP server, database). Pick a path to open it in **technical detail**: every box with its type and facts, the CVE (with its KEV mark) or discovery flag pinned to the box it is on, a label on every hop saying how it works with its ATT&CK or ATLAS technique, service accounts with their permissions, and each credential the attacker picks up as its own box. Switch to **Scanner data only** to see the route a scanner shows instead, or that it shows none.
+- **Attack paths** lists all 16 paths with filters (through AI, missed without discovery, critical, in a toxic combination). Each opens to the same technical diagram and a "why this rank" breakdown of its score.
 - **Fix plan** is one queue with three orders: the re-scored plan, the biggest single fixes, and what a CVSS-sorted scanner list would do instead.
 - **AI inventory** is the AI bill of materials: each agent's inputs, tools, identity and data, its owner, shadow status and flags, and the **toxic combinations** they form.
 
@@ -107,7 +107,8 @@ The default model is `claude-opus-5-5`; use `--model` or `AI_TAINT_PATH_MODEL` t
 `--format json` writes one document that follows [`schema/scan-result.schema.json`](schema/scan-result.schema.json) (JSON Schema 2020-12, schema version 1.1). The tests validate every output against it.
 
 - Path IDs (`entry->target`) and finding IDs (`F-0001` from scanners, `D-001` from discovery) are stable across runs on the same data, so a playbook can track them over time.
-- `paths[]` has the score, tier, `top`, `through_ai` and `blind_spot` flags, and every step with its reason, findings and techniques.
+- `paths[]` has the score, tier, `top`, `through_ai` and `blind_spot` flags, and every step with its reason, findings and techniques. A step that uses a stored credential names it in `credential` (the account, the config variable and file that hold it, never the value).
+- `nodes[]` says what each box is (`type`), where it runs (`env`) and, for an identity, who uses it, its `permissions` and whether it has MFA. `baseline.paths[]` gives the scanner-only route for the same entry and target, step by step.
 - `remediation_plan[]` and `choke_points[]` give the fixes in order, with how much of the exposure index each one removes, ready to become tickets.
 - `findings[]` carries each finding's frameworks, evidence and the paths it sits on.
 - `toxic_combinations[]` names the flags that form one attack together, with their ingredients, the paths they sit on and the finding to fix first (`break_with`). Each path lists its combinations too.
@@ -127,7 +128,7 @@ Coming in week 3: a REST API with an OpenAPI spec, signed webhooks, an example X
 | `data/feeds/` | Public threat data for every CVE in the sample: CISA KEV entries, CVE records, MCP package advisories |
 | `data/frameworks/` | Names of every framework ID the tool cites, checked against the official sources |
 | `scripts/` | Rebuild the sample company, refresh the feeds and the framework catalog |
-| `tests/` | 120 tests, most of them grading discovery and the engine against the ground truth |
+| `tests/` | 123 tests, most of them grading discovery and the engine against the ground truth |
 
 ## Sample data and ground truth
 
@@ -147,7 +148,7 @@ python scripts/refresh_frameworks.py # refresh framework names (needs pyyaml)
 - [x] Sample environment with planted ground truth
 - [x] Discovery agent: MCP config files, read-only MCP and vector database probes, cloud AI exports; OWASP Agentic, OWASP LLM, MITRE ATLAS and ATT&CK mapping; optional Claude mode
 - [x] Prioritization engine: enrichment, attack-path graph, explainable score, choke points, remediation plan, dashboard
-- [x] Dashboard redesign: four views, attack-path graph with a scanner-only toggle, toxic combinations, AI bill of materials
+- [x] Dashboard redesign: four views, attack-path graph with a scanner-only toggle, each path in technical detail (types, CVEs and flags, labelled hops, credentials), toxic combinations, AI bill of materials
 - [ ] Analyst agent: explanations, remediation tickets, board brief, secured MCP server
 - [ ] SOAR integration: ~~JSON output with a published schema~~ (done), REST API (OpenAPI), signed webhooks, example XSOAR or Sentinel playbook, integration guide
 - [ ] Hosted demo, demo video, case study

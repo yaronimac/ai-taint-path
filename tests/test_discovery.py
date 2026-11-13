@@ -212,12 +212,29 @@ def test_package_specs():
 
 
 def test_secrets_in_env():
-    secrets, hosts = scan_env({
+    secrets, hosts, references = scan_env({
         "API_KEY": "abc123", "TOKEN": "${GITHUB_TOKEN}", "PASSWORD": "",
         "DSN": "postgresql://app@db.internal:5432/x", "DB_URL": "postgresql://app:hunter2@db2.internal/x",
     })
     assert secrets == ["API_KEY", "DB_URL"]
     assert hosts == ["db.internal", "db2.internal"]
+    # which variable holds the way in, and as which account: names only, never the password
+    assert references == {"db.internal": {"variable": "DSN", "account": "app"},
+                          "db2.internal": {"variable": "DB_URL", "account": "app"}}
+    assert "hunter2" not in str(references)
+
+
+def test_data_access_edge_names_the_credential(result, report):
+    edge = next(e for e in result.discovery.edges if e.kind == "data_access" and e.src == "analytics-mcp")
+    assert edge.dst == "wms-db"
+    assert edge.credential == {"type": "connection_string", "variable": "WAREHOUSE_DSN", "account": "analytics",
+                               "config": ".vscode/mcp.json", "host": "data-pipelines"}
+    # the path step that takes that hop carries it, so a reader sees which credential the attacker uses
+    path = next(p for p in report["paths"] if p["id"] == "vpn-gw-01->wms-db")
+    assert path["steps"][-1]["credential"] == edge.credential
+    # a CMDB edge that names no credential stays without one
+    assert all("credential" not in s for p in report["paths"] if p["id"] == "tracking-portal->orders-db"
+               for s in p["steps"])
 
 
 def test_package_version_ranges(feeds):

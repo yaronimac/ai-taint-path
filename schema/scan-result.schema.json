@@ -264,6 +264,28 @@
           "owner": {
             "type": "string",
             "description": "Owning team, from the CMDB or the AI inventory."
+          },
+          "env": {
+            "type": "string",
+            "description": "Where an asset runs, for example on_prem, aws or azure."
+          },
+          "account_type": {
+            "enum": [
+              "human",
+              "machine"
+            ],
+            "description": "For an identity: used by a person or by a workload."
+          },
+          "permissions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "For an identity: what it may do."
+          },
+          "mfa": {
+            "type": "boolean",
+            "description": "For an identity: whether MFA is enforced, when the data says."
           }
         }
       }
@@ -296,6 +318,9 @@
           },
           "note": {
             "type": "string"
+          },
+          "credential": {
+            "$ref": "#/$defs/credential"
           }
         }
       }
@@ -376,7 +401,8 @@
               "id",
               "score",
               "tier",
-              "nodes"
+              "nodes",
+              "steps"
             ],
             "properties": {
               "id": {
@@ -402,6 +428,14 @@
                   "type": "string"
                 },
                 "minItems": 2
+              },
+              "steps": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/step"
+                },
+                "minItems": 2,
+                "description": "How the scanner-only route works, hop by hop."
               }
             }
           }
@@ -484,6 +518,9 @@
             "static",
             "discovery"
           ]
+        },
+        "credential": {
+          "$ref": "#/$defs/credential"
         }
       }
     },
@@ -1065,6 +1102,36 @@
         "break_with": {
           "type": "string",
           "description": "The finding whose fix most directly breaks the combination."
+        }
+      }
+    },
+    "credential": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "The credential a data_access hop relies on, when the data names it. Names only: the value is never recorded.",
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "For example connection_string."
+        },
+        "account": {
+          "type": "string",
+          "description": "The account the credential logs in as."
+        },
+        "variable": {
+          "type": "string",
+          "description": "The config variable that holds it."
+        },
+        "config": {
+          "type": "string",
+          "description": "The config file the variable is in, relative to the machine it was read from."
+        },
+        "host": {
+          "type": "string",
+          "description": "The asset whose config holds the credential."
         }
       }
     }

@@ -58,6 +58,8 @@ class ConfiguredServer:
     listen_port: int | None = None
     secret_vars: list[str] = field(default_factory=list)
     referenced_hosts: list[str] = field(default_factory=list)
+    # target host -> variable, account, config file and the machine it is on (names only, never values)
+    references: dict[str, dict] = field(default_factory=dict)
     auto_approved: bool = False
 
     @property
@@ -125,18 +127,23 @@ def flag_value(args: list[str], flag: str) -> str | None:
     return None
 
 
-def scan_env(values: dict[str, str]) -> tuple[list[str], list[str]]:
-    """Names of variables holding literal secrets, and hostnames the values point at."""
-    secrets, hosts = [], []
+def scan_env(values: dict[str, str]) -> tuple[list[str], list[str], dict[str, dict]]:
+    """Names of variables holding literal secrets, hostnames the values point at, and for each
+    host the variable that points at it and the account name in its URL. Values are never kept."""
+    secrets, hosts, references = [], [], {}
     for key, value in (values or {}).items():
         value = str(value)
         if URL_WITH_PASSWORD.match(value) or (SECRET_NAME.search(key) and not PLACEHOLDER.match(value.strip())):
             secrets.append(key)
         if "://" in value:
-            host = urlparse(value).hostname
-            if host:
-                hosts.append(host)
-    return secrets, hosts
+            url = urlparse(value)
+            if url.hostname:
+                hosts.append(url.hostname)
+                ref = {"variable": key}
+                if url.username:
+                    ref["account"] = url.username
+                references.setdefault(url.hostname, ref)
+    return secrets, hosts, references
 
 
 def parse_server(host: str, client: str, rel_path: str, name: str, entry: dict) -> ConfiguredServer:
@@ -148,8 +155,8 @@ def parse_server(host: str, client: str, rel_path: str, name: str, entry: dict) 
     package, version, rest = parse_launch(command, args)
     remote = next((a for a in rest if a.startswith(("http://", "https://"))), None) if package == "mcp-remote" else None
     port = flag_value(rest, "--port")
-    secrets, hosts = scan_env(entry.get("env", {}))
-    header_secrets, _ = scan_env({k: v for k, v in entry.get("headers", {}).items()})
+    secrets, hosts, references = scan_env(entry.get("env", {}))
+    header_secrets, _, _ = scan_env({k: v for k, v in entry.get("headers", {}).items()})
     return ConfiguredServer(
         host=host, client=client, config_path=rel_path, name=name, transport=transport,
         url=url, command=command, package=package, version=version, pinned=is_pinned(version),
@@ -158,6 +165,7 @@ def parse_server(host: str, client: str, rel_path: str, name: str, entry: dict) 
         listen_port=int(port) if port and port.isdigit() else None,
         secret_vars=sorted(set(secrets + [f"header {h}" for h in header_secrets])),
         referenced_hosts=sorted(set(hosts)),
+        references={h: {**ref, "config": rel_path, "host": host} for h, ref in sorted(references.items())},
     )
 
 

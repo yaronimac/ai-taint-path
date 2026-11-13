@@ -27,6 +27,14 @@ def _display_path(path) -> str:
         return path.name
 
 
+def _steps(p) -> list[dict]:
+    return [{
+        "from": s.src, "to": s.dst, "kind": s.kind, "ease": s.ease, "why": s.why,
+        "findings": s.findings, "techniques": s.techniques, "origin": s.origin,
+        **({"credential": s.credential} if s.credential else {}),
+    } for s in p.steps]
+
+
 def _path_dict(r: ScanResult, p, rank: int, top: int, ai_ids: set, baseline: dict) -> dict:
     ai_nodes = [n for n in p.nodes if n in ai_ids]
     base = baseline.get(p.id)
@@ -51,10 +59,7 @@ def _path_dict(r: ScanResult, p, rank: int, top: int, ai_ids: set, baseline: dic
         "score_without_discovery": None if base is None else round(base, 1),
         "findings": p.findings,
         "techniques": list(dict.fromkeys(t for s in p.steps for t in s.techniques)),
-        "steps": [{
-            "from": s.src, "to": s.dst, "kind": s.kind, "ease": s.ease, "why": s.why,
-            "findings": s.findings, "techniques": s.techniques, "origin": s.origin,
-        } for s in p.steps],
+        "steps": _steps(p),
     }
 
 
@@ -62,6 +67,23 @@ def _owner(n) -> dict:
     """The team that owns a node, from the CMDB or the AI inventory, when the data says."""
     owner = n.attrs.get("owner") or (n.attrs.get("inventory") or {}).get("owner")
     return {"owner": owner} if owner else {}
+
+
+def _facts(n) -> dict:
+    """What the source data says about a node beyond its name: where an asset runs, and for an
+    identity whether a person or a workload uses it, what it may do and whether it has MFA."""
+    a = n.attrs
+    out = {}
+    if n.kind == "asset" and a.get("env"):
+        out["env"] = a["env"]
+    if n.kind == "identity":
+        if a.get("kind"):
+            out["account_type"] = a["kind"]
+        if a.get("permissions"):
+            out["permissions"] = list(a["permissions"])
+        if isinstance(a.get("mfa"), bool):
+            out["mfa"] = a["mfa"]
+    return out
 
 
 def _cvss_view(r: ScanResult, on_paths: dict) -> list[dict]:
@@ -108,7 +130,8 @@ def build_report(r: ScanResult, *, top: int = 10, generated_at: str | None = Non
 
     d = r.discovery
     inventory = [i.to_dict() for i in d.inventory] if d else []
-    edges = [{"from": e.src, "to": e.dst, "kind": e.kind, "origin": e.origin, "note": e.note} for e in r.edges]
+    edges = [{"from": e.src, "to": e.dst, "kind": e.kind, "origin": e.origin, "note": e.note,
+              **({"credential": e.credential} if e.credential else {})} for e in r.edges]
     toxic = toxic_combinations(findings, inventory, edges, paths, {n.id: n.name for n in r.nodes.values()})
     for p in paths:
         p["toxic_combinations"] = [c["id"] for c in toxic if p["id"] in c["paths"]]
@@ -153,7 +176,7 @@ def build_report(r: ScanResult, *, top: int = 10, generated_at: str | None = Non
         "inventory": inventory,
         "nodes": [{"id": n.id, "kind": n.kind, "name": n.name, "type": n.type, "crown_jewel": n.crown_jewel,
                    "impact": n.impact, "entry_point": n.entry_point, "open_channel": n.open_channel,
-                   "discovered": n.discovered, **_owner(n)} for n in r.nodes.values()],
+                   "discovered": n.discovered, **_owner(n), **_facts(n)} for n in r.nodes.values()],
         "edges": edges,
         "discovery": None if d is None else {
             "mode": d.mode, "summary": d.summary(), "sources": d.sources, "leads": d.leads,
@@ -162,7 +185,7 @@ def build_report(r: ScanResult, *, top: int = 10, generated_at: str | None = Non
         "baseline": {
             "description": "The same engine on scanner, CMDB and posture data only, without discovery.",
             "exposure_index": round(base_index, 1),
-            "paths": [{"id": p.id, "score": round(p.score, 1), "tier": p.tier, "nodes": p.nodes}
+            "paths": [{"id": p.id, "score": round(p.score, 1), "tier": p.tier, "nodes": p.nodes, "steps": _steps(p)}
                       for p in r.baseline_paths],
             "cvss_top10": cvss_view[:10],
         },

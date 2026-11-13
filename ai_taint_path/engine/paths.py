@@ -30,6 +30,7 @@ class Step:
     findings: list[str] = field(default_factory=list)
     techniques: list[str] = field(default_factory=list)
     origin: str = "static"
+    credential: dict | None = None  # for data_access steps, when the data names the credential
 
 
 @dataclass
@@ -94,7 +95,7 @@ def find_paths(graph: AttackGraph, fixed: frozenset = frozenset(), max_hops: int
                 if g is None or g.ease <= 0:
                     continue
                 nxt = like * g.ease
-                step = Step(e.src, e.dst, e.kind, g.ease, g.why, g.findings, g.techniques, e.origin)
+                step = Step(e.src, e.dst, e.kind, g.ease, g.why, g.findings, g.techniques, e.origin, e.credential)
                 heapq.heappush(heap, (round(-nxt, 12), hops + 1, path + (e.dst,), next(counter), nxt, steps + (step,)))
         for target in jewels:
             if target != entry_id and target in best:

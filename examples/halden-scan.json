@@ -794,7 +794,14 @@
           "techniques": [
             "T1213.006"
           ],
-          "origin": "discovery"
+          "origin": "discovery",
+          "credential": {
+            "type": "connection_string",
+            "variable": "WAREHOUSE_DSN",
+            "account": "analytics",
+            "config": ".vscode/mcp.json",
+            "host": "data-pipelines"
+          }
         }
       ],
       "toxic_combinations": [
@@ -1566,7 +1573,14 @@
           "techniques": [
             "T1213.006"
           ],
-          "origin": "discovery"
+          "origin": "discovery",
+          "credential": {
+            "type": "connection_string",
+            "variable": "WAREHOUSE_DSN",
+            "account": "analytics",
+            "config": ".vscode/mcp.json",
+            "host": "data-pipelines"
+          }
         }
       ],
       "toxic_combinations": [
@@ -5606,7 +5620,8 @@
       "entry_point": null,
       "open_channel": false,
       "discovered": false,
-      "owner": "Cloud Platform"
+      "owner": "Cloud Platform",
+      "env": "aws"
     },
     {
       "id": "orders-db",
@@ -5618,7 +5633,8 @@
       "entry_point": null,
       "open_channel": false,
       "discovered": false,
-      "owner": "Commerce Engineering"
+      "owner": "Commerce Engineering",
+      "env": "aws"
     },
     {
       "id": "crm",
@@ -5630,7 +5646,8 @@
       "entry_point": null,
       "open_channel": false,
       "discovered": false,
-      "owner": "Sales Operations"
+      "owner": "Sales Operations",
+      "env": "azure"
     },
     {
       "id": "dc-01",
@@ -5642,7 +5659,8 @@
       "entry_point": null,
       "open_channel": false,
       "discovered": false,
-      "owner": "IT Infrastructure"
+      "owner": "IT Infrastructure",
+      "env": "on_prem"
     },
     {
       "id": "finance-erp",
@@ -5654,7 +5672,8 @@
       "entry_point": null,
       "open_channel": false,
       "discovered": false,
-      "owner": "Finance Systems"
+      "owner": "Finance Systems",
+      "env": "azure"
     },
     {
       "id": "wms-db",
@@ -5666,7 +5685,8 @@
       "entry_point": null,
       "open_channel": false,
       "discovered": false,
-      "owner": "Logistics Engineering"
+      "owner": "Logistics Engineering",
+      "env": "azure"
     },
     {
       "id": "vpn-gw-01",
@@ -5678,7 +5698,8 @@
       "entry_point": "internet",
       "open_channel": false,
       "discovered": false,
-      "owner": "Network Team"
+      "owner": "Network Team",
+      "env": "on_prem"
     },
     {
       "id": "fw-edge-01",
@@ -5690,7 +5711,8 @@
       "entry_point": "internet",
       "open_channel": false,
       "discovered": false,
-      "owner": "Network Team"
+      "owner": "Network Team",
+      "env": "on_prem"
     },
     {
       "id": "pan-gp-01",
@@ -5702,7 +5724,8 @@
       "entry_point": "internet",
       "open_channel": false,
       "discovered": false,
-      "owner": "Network Team"
+      "owner": "Network Team",
+      "env": "on_prem"
     },
     {
       "id": "citrix-adc-01",
@@ -5714,7 +5737,8 @@
       "entry_point": "internet",
       "open_channel": false,
       "discovered": false,
-      "owner": "Network Team"
+      "owner": "Network Team",
+      "env": "on_prem"
     },
     {
       "id": "tracking-portal",
@@ -5726,7 +5750,8 @@
       "entry_point": "internet",
       "open_channel": false,
       "discovered": false,
-      "owner": "Commerce Engineering"
+      "owner": "Commerce Engineering",
+      "env": "aws"
     },
     {
       "id": "moveit-01",
@@ -5738,7 +5763,8 @@
       "entry_point": "internet",
       "open_channel": false,
       "discovered": false,
-      "owner": "Integration Team"
+      "owner": "Integration Team",
+      "env": "on_prem"
     },
     {
       "id": "screenconnect-01",
@@ -5750,7 +5776,8 @@
       "entry_point": "internet",
       "open_channel": false,
       "discovered": false,
-      "owner": "IT Service Desk"
+      "owner": "IT Service Desk",
+      "env": "on_prem"
     },
     {
       "id": "support-chat",
@@ -5762,7 +5789,8 @@
       "entry_point": "internet",
       "open_channel": true,
       "discovered": false,
-      "owner": "Customer Experience"
+      "owner": "Customer Experience",
+      "env": "azure"
     },
     {
       "id": "finance-inbox",
@@ -5774,7 +5802,8 @@
       "entry_point": "internet",
       "open_channel": true,
       "discovered": false,
-      "owner": "Finance Operations"
+      "owner": "Finance Operations",
+      "env": "azure"
     },
     {
       "id": "dev-laptops",
@@ -5786,7 +5815,8 @@
       "entry_point": "user_action",
       "open_channel": false,
       "discovered": false,
-      "owner": "Engineering IT"
+      "owner": "Engineering IT",
+      "env": "on_prem"
     },
     {
       "id": "corp-net",
@@ -5798,7 +5828,8 @@
       "entry_point": null,
       "open_channel": false,
       "discovered": false,
-      "owner": "Network Team"
+      "owner": "Network Team",
+      "env": "on_prem"
     },
     {
       "id": "azure-apps",
@@ -5810,7 +5841,8 @@
       "entry_point": null,
       "open_channel": false,
       "discovered": false,
-      "owner": "Cloud Platform"
+      "owner": "Cloud Platform",
+      "env": "azure"
     },
     {
       "id": "build-01",
@@ -5822,7 +5854,8 @@
       "entry_point": null,
       "open_channel": false,
       "discovered": false,
-      "owner": "Platform Engineering"
+      "owner": "Platform Engineering",
+      "env": "aws"
     },
     {
       "id": "sharepoint-01",
@@ -5834,7 +5867,8 @@
       "entry_point": null,
       "open_channel": false,
       "discovered": false,
-      "owner": "Collaboration Team"
+      "owner": "Collaboration Team",
+      "env": "on_prem"
     },
     {
       "id": "reporting-app",
@@ -5846,7 +5880,8 @@
       "entry_point": null,
       "open_channel": false,
       "discovered": false,
-      "owner": "Data Team"
+      "owner": "Data Team",
+      "env": "on_prem"
     },
     {
       "id": "core-router-01",
@@ -5858,7 +5893,8 @@
       "entry_point": null,
       "open_channel": false,
       "discovered": false,
-      "owner": "Network Team"
+      "owner": "Network Team",
+      "env": "on_prem"
     },
     {
       "id": "file-share-01",
@@ -5870,7 +5906,8 @@
       "entry_point": null,
       "open_channel": false,
       "discovered": false,
-      "owner": "Integration Team"
+      "owner": "Integration Team",
+      "env": "on_prem"
     },
     {
       "id": "outlook-clients",
@@ -5882,7 +5919,8 @@
       "entry_point": null,
       "open_channel": false,
       "discovered": false,
-      "owner": "Workplace IT"
+      "owner": "Workplace IT",
+      "env": "on_prem"
     },
     {
       "id": "confluence-lab",
@@ -5894,7 +5932,8 @@
       "entry_point": null,
       "open_channel": false,
       "discovered": false,
-      "owner": "R&D"
+      "owner": "R&D",
+      "env": "on_prem"
     },
     {
       "id": "xz-test-vm",
@@ -5906,7 +5945,8 @@
       "entry_point": null,
       "open_channel": false,
       "discovered": false,
-      "owner": "R&D"
+      "owner": "R&D",
+      "env": "on_prem"
     },
     {
       "id": "web-frontends",
@@ -5918,7 +5958,8 @@
       "entry_point": "internet",
       "open_channel": false,
       "discovered": false,
-      "owner": "Commerce Engineering"
+      "owner": "Commerce Engineering",
+      "env": "aws"
     },
     {
       "id": "data-pipelines",
@@ -5930,7 +5971,8 @@
       "entry_point": null,
       "open_channel": false,
       "discovered": false,
-      "owner": "Data Team"
+      "owner": "Data Team",
+      "env": "on_prem"
     },
     {
       "id": "ssh-bastion",
@@ -5942,7 +5984,8 @@
       "entry_point": null,
       "open_channel": false,
       "discovered": false,
-      "owner": "Platform Engineering"
+      "owner": "Platform Engineering",
+      "env": "aws"
     },
     {
       "id": "weaviate-01",
@@ -5954,7 +5997,8 @@
       "entry_point": null,
       "open_channel": false,
       "discovered": true,
-      "owner": "Data Team"
+      "owner": "Data Team",
+      "env": "on_prem"
     },
     {
       "id": "support-portal",
@@ -5966,7 +6010,8 @@
       "entry_point": "internet",
       "open_channel": true,
       "discovered": false,
-      "owner": "Customer Experience"
+      "owner": "Customer Experience",
+      "env": "azure"
     },
     {
       "id": "svc-ops-agent",
@@ -5977,7 +6022,11 @@
       "impact": 0.0,
       "entry_point": null,
       "open_channel": false,
-      "discovered": false
+      "discovered": false,
+      "account_type": "machine",
+      "permissions": [
+        "AdministratorAccess"
+      ]
     },
     {
       "id": "svc-support-agent",
@@ -5988,7 +6037,13 @@
       "impact": 0.0,
       "entry_point": null,
       "open_channel": false,
-      "discovered": false
+      "discovered": false,
+      "account_type": "machine",
+      "permissions": [
+        "crm.records.read_all",
+        "crm.records.write_all",
+        "mail.send_as_company"
+      ]
     },
     {
       "id": "svc-finance-agent",
@@ -5999,7 +6054,12 @@
       "impact": 0.0,
       "entry_point": null,
       "open_channel": false,
-      "discovered": false
+      "discovered": false,
+      "account_type": "machine",
+      "permissions": [
+        "erp.invoices.write",
+        "erp.payments.create"
+      ]
     },
     {
       "id": "svc-backup",
@@ -6010,7 +6070,12 @@
       "impact": 0.0,
       "entry_point": null,
       "open_channel": false,
-      "discovered": false
+      "discovered": false,
+      "account_type": "machine",
+      "permissions": [
+        "s3:GetObject",
+        "rds:CreateDBSnapshot"
+      ]
     },
     {
       "id": "it-admin",
@@ -6021,7 +6086,12 @@
       "impact": 0.0,
       "entry_point": null,
       "open_channel": false,
-      "discovered": false
+      "discovered": false,
+      "account_type": "human",
+      "permissions": [
+        "Domain Admins"
+      ],
+      "mfa": false
     },
     {
       "id": "wms-app",
@@ -6032,7 +6102,11 @@
       "impact": 0.0,
       "entry_point": null,
       "open_channel": false,
-      "discovered": false
+      "discovered": false,
+      "account_type": "machine",
+      "permissions": [
+        "wms.db.read_write"
+      ]
     },
     {
       "id": "agent-dev-assistants",
@@ -6508,7 +6582,14 @@
       "to": "wms-db",
       "kind": "data_access",
       "origin": "discovery",
-      "note": "its config connects it to wms-db.halden.internal"
+      "note": "its config connects it to wms-db.halden.internal",
+      "credential": {
+        "type": "connection_string",
+        "variable": "WAREHOUSE_DSN",
+        "account": "analytics",
+        "config": ".vscode/mcp.json",
+        "host": "data-pipelines"
+      }
     },
     {
       "from": "corp-net",
@@ -6868,6 +6949,44 @@
           "screenconnect-01",
           "it-admin",
           "dc-01"
+        ],
+        "steps": [
+          {
+            "from": null,
+            "to": "screenconnect-01",
+            "kind": "entry",
+            "ease": 0.9,
+            "why": "CVE-2024-1709 on ScreenConnect remote support: on the CISA KEV list (exploited in the wild) (exposed to the internet)",
+            "findings": [
+              "F-0003"
+            ],
+            "techniques": [
+              "T1190"
+            ],
+            "origin": "static"
+          },
+          {
+            "from": "screenconnect-01",
+            "to": "it-admin",
+            "kind": "session_hijack",
+            "ease": 1.0,
+            "why": "takes over remote-support sessions of IT admin (shared account) (active directory)",
+            "findings": [],
+            "techniques": [
+              "T1563"
+            ],
+            "origin": "static"
+          },
+          {
+            "from": "it-admin",
+            "to": "dc-01",
+            "kind": "admin_of",
+            "ease": 1.0,
+            "why": "IT admin (shared account) (active directory) has admin rights over Active Directory domain controller",
+            "findings": [],
+            "techniques": [],
+            "origin": "static"
+          }
         ]
       },
       {
@@ -6878,6 +6997,46 @@
           "vpn-gw-01",
           "corp-net",
           "dc-01"
+        ],
+        "steps": [
+          {
+            "from": null,
+            "to": "vpn-gw-01",
+            "kind": "entry",
+            "ease": 0.9,
+            "why": "CVE-2024-21887 on Ivanti Connect Secure VPN gateway: on the CISA KEV list (exploited in the wild) (exposed to the internet)",
+            "findings": [
+              "F-0001"
+            ],
+            "techniques": [
+              "T1190"
+            ],
+            "origin": "static"
+          },
+          {
+            "from": "vpn-gw-01",
+            "to": "corp-net",
+            "kind": "network",
+            "ease": 1.0,
+            "why": "network route into Corporate network (10.20.0.0/16, AWS VPC joined over Direct Connect)",
+            "findings": [],
+            "techniques": [],
+            "origin": "static"
+          },
+          {
+            "from": "corp-net",
+            "to": "dc-01",
+            "kind": "network",
+            "ease": 0.9,
+            "why": "CVE-2020-1472 on Active Directory domain controller: on the CISA KEV list (exploited in the wild)",
+            "findings": [
+              "F-0002"
+            ],
+            "techniques": [
+              "T1210"
+            ],
+            "origin": "static"
+          }
         ]
       },
       {
@@ -6887,6 +7046,34 @@
         "nodes": [
           "tracking-portal",
           "orders-db"
+        ],
+        "steps": [
+          {
+            "from": null,
+            "to": "tracking-portal",
+            "kind": "entry",
+            "ease": 0.9,
+            "why": "CVE-2022-22965 on Shipment tracking portal (Spring): on the CISA KEV list (exploited in the wild) (exposed to the internet)",
+            "findings": [
+              "F-0004"
+            ],
+            "techniques": [
+              "T1190"
+            ],
+            "origin": "static"
+          },
+          {
+            "from": "tracking-portal",
+            "to": "orders-db",
+            "kind": "data_access",
+            "ease": 1.0,
+            "why": "Shipment tracking portal (Spring) holds credentials to Orders database (RDS)",
+            "findings": [],
+            "techniques": [
+              "T1213.006"
+            ],
+            "origin": "static"
+          }
         ]
       },
       {
@@ -6898,6 +7085,58 @@
           "corp-net",
           "reporting-app",
           "wms-db"
+        ],
+        "steps": [
+          {
+            "from": null,
+            "to": "vpn-gw-01",
+            "kind": "entry",
+            "ease": 0.9,
+            "why": "CVE-2024-21887 on Ivanti Connect Secure VPN gateway: on the CISA KEV list (exploited in the wild) (exposed to the internet)",
+            "findings": [
+              "F-0001"
+            ],
+            "techniques": [
+              "T1190"
+            ],
+            "origin": "static"
+          },
+          {
+            "from": "vpn-gw-01",
+            "to": "corp-net",
+            "kind": "network",
+            "ease": 1.0,
+            "why": "network route into Corporate network (10.20.0.0/16, AWS VPC joined over Direct Connect)",
+            "findings": [],
+            "techniques": [],
+            "origin": "static"
+          },
+          {
+            "from": "corp-net",
+            "to": "reporting-app",
+            "kind": "network",
+            "ease": 0.9,
+            "why": "CVE-2021-44228 on Internal reporting app (Java): on the CISA KEV list (exploited in the wild)",
+            "findings": [
+              "F-0006"
+            ],
+            "techniques": [
+              "T1210"
+            ],
+            "origin": "static"
+          },
+          {
+            "from": "reporting-app",
+            "to": "wms-db",
+            "kind": "data_access",
+            "ease": 1.0,
+            "why": "Internal reporting app (Java) holds credentials to Warehouse management database",
+            "findings": [],
+            "techniques": [
+              "T1213.006"
+            ],
+            "origin": "static"
+          }
         ]
       },
       {
@@ -6910,6 +7149,70 @@
           "build-01",
           "svc-ops-agent",
           "aws-prod"
+        ],
+        "steps": [
+          {
+            "from": null,
+            "to": "vpn-gw-01",
+            "kind": "entry",
+            "ease": 0.9,
+            "why": "CVE-2024-21887 on Ivanti Connect Secure VPN gateway: on the CISA KEV list (exploited in the wild) (exposed to the internet)",
+            "findings": [
+              "F-0001"
+            ],
+            "techniques": [
+              "T1190"
+            ],
+            "origin": "static"
+          },
+          {
+            "from": "vpn-gw-01",
+            "to": "corp-net",
+            "kind": "network",
+            "ease": 1.0,
+            "why": "network route into Corporate network (10.20.0.0/16, AWS VPC joined over Direct Connect)",
+            "findings": [],
+            "techniques": [],
+            "origin": "static"
+          },
+          {
+            "from": "corp-net",
+            "to": "build-01",
+            "kind": "network",
+            "ease": 0.3,
+            "why": "CVE-2023-38545 on CI build server: CVSS 8.8, not known to be exploited (no EPSS score available)",
+            "findings": [
+              "F-0030"
+            ],
+            "techniques": [
+              "T1210"
+            ],
+            "origin": "static"
+          },
+          {
+            "from": "build-01",
+            "to": "svc-ops-agent",
+            "kind": "runs_as",
+            "ease": 1.0,
+            "why": "CI build server runs as ops-agent-role (aws iam role)",
+            "findings": [],
+            "techniques": [
+              "T1078.004"
+            ],
+            "origin": "static"
+          },
+          {
+            "from": "svc-ops-agent",
+            "to": "aws-prod",
+            "kind": "admin_of",
+            "ease": 1.0,
+            "why": "ops-agent-role (aws iam role) has admin rights over AWS production account (Agent identity has AdministratorAccess on the production AWS account)",
+            "findings": [
+              "F-0016"
+            ],
+            "techniques": [],
+            "origin": "static"
+          }
         ]
       },
       {
@@ -6920,6 +7223,46 @@
           "dev-laptops",
           "corp-net",
           "dc-01"
+        ],
+        "steps": [
+          {
+            "from": null,
+            "to": "dev-laptops",
+            "kind": "entry",
+            "ease": 0.4,
+            "why": "CVE-2025-49596 on Developer laptop fleet (120 devices): CVSS 9.4, not known to be exploited (no EPSS score available) (reached when an employee opens untrusted content)",
+            "findings": [
+              "F-0015"
+            ],
+            "techniques": [
+              "T1203"
+            ],
+            "origin": "static"
+          },
+          {
+            "from": "dev-laptops",
+            "to": "corp-net",
+            "kind": "network",
+            "ease": 1.0,
+            "why": "network route into Corporate network (10.20.0.0/16, AWS VPC joined over Direct Connect)",
+            "findings": [],
+            "techniques": [],
+            "origin": "static"
+          },
+          {
+            "from": "corp-net",
+            "to": "dc-01",
+            "kind": "network",
+            "ease": 0.9,
+            "why": "CVE-2020-1472 on Active Directory domain controller: on the CISA KEV list (exploited in the wild)",
+            "findings": [
+              "F-0002"
+            ],
+            "techniques": [
+              "T1210"
+            ],
+            "origin": "static"
+          }
         ]
       },
       {
@@ -6930,6 +7273,48 @@
           "web-frontends",
           "tracking-portal",
           "orders-db"
+        ],
+        "steps": [
+          {
+            "from": null,
+            "to": "web-frontends",
+            "kind": "entry",
+            "ease": 0.3,
+            "why": "CVE-2023-38545 on Public web front-ends (nginx): CVSS 8.8, not known to be exploited (no EPSS score available) (exposed to the internet)",
+            "findings": [
+              "F-0023"
+            ],
+            "techniques": [
+              "T1190"
+            ],
+            "origin": "static"
+          },
+          {
+            "from": "web-frontends",
+            "to": "tracking-portal",
+            "kind": "network",
+            "ease": 0.9,
+            "why": "CVE-2022-22965 on Shipment tracking portal (Spring): on the CISA KEV list (exploited in the wild)",
+            "findings": [
+              "F-0004"
+            ],
+            "techniques": [
+              "T1210"
+            ],
+            "origin": "static"
+          },
+          {
+            "from": "tracking-portal",
+            "to": "orders-db",
+            "kind": "data_access",
+            "ease": 1.0,
+            "why": "Shipment tracking portal (Spring) holds credentials to Orders database (RDS)",
+            "findings": [],
+            "techniques": [
+              "T1213.006"
+            ],
+            "origin": "static"
+          }
         ]
       },
       {
@@ -6943,6 +7328,80 @@
           "svc-ops-agent",
           "aws-prod",
           "orders-db"
+        ],
+        "steps": [
+          {
+            "from": null,
+            "to": "vpn-gw-01",
+            "kind": "entry",
+            "ease": 0.9,
+            "why": "CVE-2024-21887 on Ivanti Connect Secure VPN gateway: on the CISA KEV list (exploited in the wild) (exposed to the internet)",
+            "findings": [
+              "F-0001"
+            ],
+            "techniques": [
+              "T1190"
+            ],
+            "origin": "static"
+          },
+          {
+            "from": "vpn-gw-01",
+            "to": "corp-net",
+            "kind": "network",
+            "ease": 1.0,
+            "why": "network route into Corporate network (10.20.0.0/16, AWS VPC joined over Direct Connect)",
+            "findings": [],
+            "techniques": [],
+            "origin": "static"
+          },
+          {
+            "from": "corp-net",
+            "to": "build-01",
+            "kind": "network",
+            "ease": 0.3,
+            "why": "CVE-2023-38545 on CI build server: CVSS 8.8, not known to be exploited (no EPSS score available)",
+            "findings": [
+              "F-0030"
+            ],
+            "techniques": [
+              "T1210"
+            ],
+            "origin": "static"
+          },
+          {
+            "from": "build-01",
+            "to": "svc-ops-agent",
+            "kind": "runs_as",
+            "ease": 1.0,
+            "why": "CI build server runs as ops-agent-role (aws iam role)",
+            "findings": [],
+            "techniques": [
+              "T1078.004"
+            ],
+            "origin": "static"
+          },
+          {
+            "from": "svc-ops-agent",
+            "to": "aws-prod",
+            "kind": "admin_of",
+            "ease": 1.0,
+            "why": "ops-agent-role (aws iam role) has admin rights over AWS production account (Agent identity has AdministratorAccess on the production AWS account)",
+            "findings": [
+              "F-0016"
+            ],
+            "techniques": [],
+            "origin": "static"
+          },
+          {
+            "from": "aws-prod",
+            "to": "orders-db",
+            "kind": "admin_of",
+            "ease": 1.0,
+            "why": "AWS production account has admin rights over Orders database (RDS)",
+            "findings": [],
+            "techniques": [],
+            "origin": "static"
+          }
         ]
       },
       {
@@ -6954,6 +7413,58 @@
           "corp-net",
           "reporting-app",
           "wms-db"
+        ],
+        "steps": [
+          {
+            "from": null,
+            "to": "dev-laptops",
+            "kind": "entry",
+            "ease": 0.4,
+            "why": "CVE-2025-49596 on Developer laptop fleet (120 devices): CVSS 9.4, not known to be exploited (no EPSS score available) (reached when an employee opens untrusted content)",
+            "findings": [
+              "F-0015"
+            ],
+            "techniques": [
+              "T1203"
+            ],
+            "origin": "static"
+          },
+          {
+            "from": "dev-laptops",
+            "to": "corp-net",
+            "kind": "network",
+            "ease": 1.0,
+            "why": "network route into Corporate network (10.20.0.0/16, AWS VPC joined over Direct Connect)",
+            "findings": [],
+            "techniques": [],
+            "origin": "static"
+          },
+          {
+            "from": "corp-net",
+            "to": "reporting-app",
+            "kind": "network",
+            "ease": 0.9,
+            "why": "CVE-2021-44228 on Internal reporting app (Java): on the CISA KEV list (exploited in the wild)",
+            "findings": [
+              "F-0006"
+            ],
+            "techniques": [
+              "T1210"
+            ],
+            "origin": "static"
+          },
+          {
+            "from": "reporting-app",
+            "to": "wms-db",
+            "kind": "data_access",
+            "ease": 1.0,
+            "why": "Internal reporting app (Java) holds credentials to Warehouse management database",
+            "findings": [],
+            "techniques": [
+              "T1213.006"
+            ],
+            "origin": "static"
+          }
         ]
       },
       {
@@ -6966,6 +7477,70 @@
           "build-01",
           "svc-ops-agent",
           "aws-prod"
+        ],
+        "steps": [
+          {
+            "from": null,
+            "to": "dev-laptops",
+            "kind": "entry",
+            "ease": 0.4,
+            "why": "CVE-2025-49596 on Developer laptop fleet (120 devices): CVSS 9.4, not known to be exploited (no EPSS score available) (reached when an employee opens untrusted content)",
+            "findings": [
+              "F-0015"
+            ],
+            "techniques": [
+              "T1203"
+            ],
+            "origin": "static"
+          },
+          {
+            "from": "dev-laptops",
+            "to": "corp-net",
+            "kind": "network",
+            "ease": 1.0,
+            "why": "network route into Corporate network (10.20.0.0/16, AWS VPC joined over Direct Connect)",
+            "findings": [],
+            "techniques": [],
+            "origin": "static"
+          },
+          {
+            "from": "corp-net",
+            "to": "build-01",
+            "kind": "network",
+            "ease": 0.3,
+            "why": "CVE-2023-38545 on CI build server: CVSS 8.8, not known to be exploited (no EPSS score available)",
+            "findings": [
+              "F-0030"
+            ],
+            "techniques": [
+              "T1210"
+            ],
+            "origin": "static"
+          },
+          {
+            "from": "build-01",
+            "to": "svc-ops-agent",
+            "kind": "runs_as",
+            "ease": 1.0,
+            "why": "CI build server runs as ops-agent-role (aws iam role)",
+            "findings": [],
+            "techniques": [
+              "T1078.004"
+            ],
+            "origin": "static"
+          },
+          {
+            "from": "svc-ops-agent",
+            "to": "aws-prod",
+            "kind": "admin_of",
+            "ease": 1.0,
+            "why": "ops-agent-role (aws iam role) has admin rights over AWS production account (Agent identity has AdministratorAccess on the production AWS account)",
+            "findings": [
+              "F-0016"
+            ],
+            "techniques": [],
+            "origin": "static"
+          }
         ]
       },
       {
@@ -6979,6 +7554,80 @@
           "svc-ops-agent",
           "aws-prod",
           "orders-db"
+        ],
+        "steps": [
+          {
+            "from": null,
+            "to": "dev-laptops",
+            "kind": "entry",
+            "ease": 0.4,
+            "why": "CVE-2025-49596 on Developer laptop fleet (120 devices): CVSS 9.4, not known to be exploited (no EPSS score available) (reached when an employee opens untrusted content)",
+            "findings": [
+              "F-0015"
+            ],
+            "techniques": [
+              "T1203"
+            ],
+            "origin": "static"
+          },
+          {
+            "from": "dev-laptops",
+            "to": "corp-net",
+            "kind": "network",
+            "ease": 1.0,
+            "why": "network route into Corporate network (10.20.0.0/16, AWS VPC joined over Direct Connect)",
+            "findings": [],
+            "techniques": [],
+            "origin": "static"
+          },
+          {
+            "from": "corp-net",
+            "to": "build-01",
+            "kind": "network",
+            "ease": 0.3,
+            "why": "CVE-2023-38545 on CI build server: CVSS 8.8, not known to be exploited (no EPSS score available)",
+            "findings": [
+              "F-0030"
+            ],
+            "techniques": [
+              "T1210"
+            ],
+            "origin": "static"
+          },
+          {
+            "from": "build-01",
+            "to": "svc-ops-agent",
+            "kind": "runs_as",
+            "ease": 1.0,
+            "why": "CI build server runs as ops-agent-role (aws iam role)",
+            "findings": [],
+            "techniques": [
+              "T1078.004"
+            ],
+            "origin": "static"
+          },
+          {
+            "from": "svc-ops-agent",
+            "to": "aws-prod",
+            "kind": "admin_of",
+            "ease": 1.0,
+            "why": "ops-agent-role (aws iam role) has admin rights over AWS production account (Agent identity has AdministratorAccess on the production AWS account)",
+            "findings": [
+              "F-0016"
+            ],
+            "techniques": [],
+            "origin": "static"
+          },
+          {
+            "from": "aws-prod",
+            "to": "orders-db",
+            "kind": "admin_of",
+            "ease": 1.0,
+            "why": "AWS production account has admin rights over Orders database (RDS)",
+            "findings": [],
+            "techniques": [],
+            "origin": "static"
+          }
         ]
       }
     ],

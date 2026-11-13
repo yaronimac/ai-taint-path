@@ -5,6 +5,11 @@ present the same data: an Overview (three answers, the attack-path graph and the
 first fixes), the ranked Attack paths, the Fix plan, and the AI inventory with
 its toxic combinations. How the report was made sits in a collapsed panel below.
 
+The graph is a map of the top paths, with an icon in each box for what it is.
+Picking a path swaps the map for that path in technical detail: typed boxes with
+the facts the data holds, each CVE or flag on the box it is on, a label on every
+hop and each credential the path uses as its own box.
+
 The page is self-contained and makes no network requests: the styles, the graph
 (inline SVG drawn here) and the small script are inline, and text uses the
 reader's system fonts. Everything that came from the scanned environment is
@@ -25,6 +30,7 @@ from ..discovery.inventory import KIND_LABELS
 from ..discovery.probe import ALLOWED_RPC, VECTOR_PROBES
 from ..engine.graph import EXPOSURE
 from ..engine.paths import TIERS
+from ..engine.toxic import PHRASES
 from ..frameworks import FRAMEWORK_TITLES, framework_of
 from ..frameworks import name as technique_name
 from ..model import AI_KINDS
@@ -43,6 +49,57 @@ AUTH = {"none": "no authentication", "required": "asks for credentials", "local"
 ENTRY_WORDS = {"internet": "the entry point faces the internet", "user_action": "someone has to open or click something"}
 KIND_PLURAL = {"agent": "AI agents", "mcp_server": "MCP servers", "knowledge_base": "Knowledge bases",
                "vector_store": "Vector databases"}
+ENVS = {"on_prem": "on-prem", "aws": "AWS", "azure": "Azure", "gcp": "Google Cloud", "saas": "SaaS"}
+# What a box is: node type (or AI kind) -> icon and the words for it.
+TYPES = {
+    "network_appliance": ("gateway", "Network appliance"), "network_segment": ("network", "Network segment"),
+    "web_app": ("web", "Web app"), "application": ("app", "Application"), "server": ("server", "Server"),
+    "server_group": ("server", "Server group"), "database": ("database", "Database"), "storage": ("storage", "Storage"),
+    "endpoint_group": ("endpoint", "Endpoints"), "saas": ("cloud", "SaaS app"), "cloud_account": ("cloud", "Cloud account"),
+    "mailbox": ("mail", "Mailbox"), "active_directory": ("badge", "AD account"), "aws_iam_role": ("badge", "AWS IAM role"),
+    "aws_iam_user": ("badge", "AWS IAM user"), "entra_service_principal": ("badge", "Entra service principal"),
+    "entra_managed_identity": ("badge", "Entra managed identity"), "agent": ("agent", "AI agent"),
+    "mcp_server": ("plug", "MCP server"), "knowledge_base": ("book", "Knowledge base"),
+    "vector_store": ("cube", "Vector database"),
+}
+# How a hop works, in two or three words (entry and network hops are worded from their finding).
+HOPS = {
+    "agent_input": "prompt injection", "retrieved_by": "indirect prompt injection", "feeds": "uploads are indexed",
+    "agent_tool": "calls its tools", "runs_as": "runs as", "admin_of": "admin of", "data_access": "logs in to",
+    "session_hijack": "hijacks its session", "executes_on": "runs commands on", "backs": "rewrites its vectors",
+}
+TAG_WORDS = {"excess_privilege": "more privilege than it needs", "foothold": "a way in"}
+# Line icons on a 16 x 16 grid, drawn here so the page loads nothing.
+ICONS = {
+    "globe": '<circle cx="8" cy="8" r="6.25"/><path d="M1.75 8h12.5M8 1.75c2 2.1 2.6 4 2.6 6.25S10 12.15 8 14.25'
+             'C6 12.15 5.4 10.25 5.4 8S6 3.85 8 1.75z"/>',
+    "gateway": '<rect x="1.5" y="8" width="13" height="5.5" rx="1.5"/><path d="M4.5 10.75h.01M7 10.75h.01M8 8V2.5'
+               'M5.5 5 8 2.5 10.5 5"/>',
+    "network": '<circle cx="8" cy="3.5" r="1.75"/><circle cx="3" cy="12.5" r="1.75"/><circle cx="13" cy="12.5" r="1.75"/>'
+               '<path d="M8 5.25V8M3 10.75V8h10v2.75"/>',
+    "web": '<rect x="1.5" y="2.5" width="13" height="11" rx="1.5"/><path d="M1.5 6h13M4 4.25h.01M6.25 4.25h.01"/>',
+    "app": '<rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/>'
+           '<rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/>',
+    "server": '<rect x="2" y="2.5" width="12" height="4.5" rx="1"/><rect x="2" y="9" width="12" height="4.5" rx="1"/>'
+              '<path d="M4.5 4.75h.01M4.5 11.25h.01"/>',
+    "database": '<ellipse cx="8" cy="4" rx="5" ry="2"/><path d="M3 4v8c0 1.1 2.24 2 5 2s5-.9 5-2V4M3 8c0 1.1 2.24 2 5 2'
+                's5-.9 5-2"/>',
+    "storage": '<ellipse cx="8" cy="4" rx="5.5" ry="1.75"/><path d="M2.5 4l1.3 8.3c.15 1 .9 1.7 1.9 1.7h4.6c1 0 1.75-.7 '
+               '1.9-1.7L13.5 4"/>',
+    "endpoint": '<rect x="3" y="3" width="10" height="7.5" rx="1"/><path d="M1.5 13h13"/>',
+    "cloud": '<path d="M4.75 12.5a3.25 3.25 0 0 1-.5-6.46 4 4 0 0 1 7.6.96 2.75 2.75 0 0 1-.35 5.5z"/>',
+    "mail": '<rect x="1.5" y="3.5" width="13" height="9" rx="1.5"/><path d="M2 4.5l6 4.5 6-4.5"/>',
+    "user": '<circle cx="8" cy="5.25" r="2.75"/><path d="M2.75 14c.5-2.6 2.6-4 5.25-4s4.75 1.4 5.25 4"/>',
+    "badge": '<rect x="1.5" y="3" width="13" height="10" rx="1.5"/><circle cx="5.5" cy="7" r="1.5"/>'
+             '<path d="M3.25 10.75c.4-1 1.2-1.5 2.25-1.5s1.85.5 2.25 1.5M10 6.5h2.5M10 9.25h2.5"/>',
+    "agent": '<rect x="2.75" y="5.5" width="10.5" height="8" rx="2"/><circle cx="8" cy="2.25" r=".75"/>'
+             '<path d="M8 5.5V3M6 9.25h.01M10 9.25h.01M6.5 11.5h3M1 8.75v2M15 8.75v2"/>',
+    "plug": '<path d="M5.75 1.5v3M10.25 1.5v3M3.75 4.5h8.5v2.25a4.25 4.25 0 0 1-8.5 0zM8 11v3.5"/>',
+    "book": '<path d="M3 3.5A1.5 1.5 0 0 1 4.5 2H13v9.5H4.5A1.5 1.5 0 0 0 3 13zM3 13a1.5 1.5 0 0 0 1.5 1.5H13M6 5.5h4"/>',
+    "cube": '<path d="M8 1.75l5.5 3v6.5L8 14.25l-5.5-3v-6.5zM2.5 4.75 8 7.9l5.5-3.15M8 7.9v6.35"/>',
+    "key": '<circle cx="5" cy="11" r="3"/><path d="M7.1 8.9l6.4-6.4M11 5l2 2M9 7l1.5 1.5"/>',
+    "warn": '<path d="M8 2.25l6.25 11h-12.5zM8 6.5v3.25M8 11.75h.01"/>',
+}
 
 
 # --- small helpers ------------------------------------------------------------------
@@ -89,6 +146,15 @@ def level(name: str) -> str:
 
 def dot(name: str) -> str:
     return f'<span class="lvl l-{e(name)}" title="{e(name.capitalize())}"><i aria-hidden="true"></i></span>'
+
+
+def icon(name: str) -> str:
+    return f'<svg class="ico" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><use href="#i-{e(name)}"/></svg>'
+
+
+def _sprite() -> str:
+    symbols = "".join(f'<symbol id="i-{k}" viewBox="0 0 16 16">{body}</symbol>' for k, body in ICONS.items())
+    return f'<svg class="sprite" width="0" height="0" aria-hidden="true" focusable="false">{symbols}</svg>'
 
 
 def when(stamp: str) -> str:
@@ -149,6 +215,26 @@ class _View:
         self.toxic = report.get("toxic_combinations", [])
         self.tc = {c["id"]: c for c in self.toxic}
         self.inventory = {i["id"]: i for i in report["inventory"]}
+        self.base = {b["id"]: b for b in report["baseline"]["paths"]}
+
+    def kind(self, node_id: str | None) -> tuple[str, str]:
+        """(icon, words) for what a node is: a gateway, a service principal, an MCP server."""
+        node = self.nodes.get(node_id or "", {})
+        key = node.get("kind") if node.get("kind") in AI_KINDS else node.get("type")
+        ico, label = TYPES.get(key, ("app", (words(key) or "Asset").capitalize()))
+        return ("user" if node.get("account_type") == "human" else ico), label
+
+    def label(self, node_id: str | None) -> tuple[str, str | None]:
+        """A node's name split into the name and the detail it carries in brackets, if any."""
+        node = self.nodes.get(node_id or "", {})
+        name = self.name(node_id)
+        if node.get("kind") == "identity":
+            suffix = f" ({words(node.get('type'))})"
+            return (name[: -len(suffix)] if name.endswith(suffix) else name), None
+        if " (" in name and name.endswith(")"):
+            main, detail = name.split(" (", 1)
+            return main.strip(), detail[:-1]
+        return name, None
 
     def name(self, node_id: str | None) -> str:
         node = self.nodes.get(node_id or "")
@@ -304,8 +390,9 @@ def _strip(v: _View) -> str:
 
 # The attack-path graph: a layered drawing (entry points left, crown jewels where their routes end),
 # with long links routed through empty slots so a line never runs behind a box it does not touch.
-NODE_W, COL, PAD = 128, 146, 12
+NODE_W, COL, PAD = 142, 160, 12
 ROW_SEP, DUMMY_SEP = 14, 8
+ICON, ICON_PAD = 14, 9  # the type icon sits left of the label
 
 
 def _layout(routes: dict[str, list[str]], order: list[str]):
@@ -349,7 +436,7 @@ def _graph(v: _View) -> str:
                 routes[f"q{rank_of[b['id']]}"] = b["nodes"]
     order = list(dict.fromkeys(n for ns in routes.values() for n in ns))
     layer, slots, chains, up, down = _layout(routes, order)
-    labels = {n: wrap(short(v.name(n))) for n in order}
+    labels = {n: wrap(v.label(n)[0]) for n in order}
     height = {n: 22 + 15 * len(labels[n]) for n in order}
 
     def h(n):
@@ -432,7 +519,8 @@ def _graph(v: _View) -> str:
         entry = bool(node.get("entry_point"))
         ks, ms = keys_on(node=n)
         hh, top_y = h(n), y[n] - h(n) / 2
-        info = [v.name(n), KIND_LABELS.get(node.get("kind"), words(node.get("type") or node.get("kind")))]
+        ico, what = v.kind(n)
+        info = [v.name(n), what]
         if node.get("crown_jewel"):
             info.append("Crown jewel")
         if entry:
@@ -444,8 +532,12 @@ def _graph(v: _View) -> str:
         flags = [f for f in v.flags if f["asset"] == n]
         if flags:
             info.append(f"{plural(len(flags), 'risk flag')}: " + ", ".join(f["id"] for f in flags))
-        text = "".join(f'<text x="{x[n]:.1f}" y="{top_y + 19 + 15 * i:.1f}">{e(line)}</text>'
+        left = x[n] - NODE_W / 2
+        tx = left + (ICON_PAD + ICON + NODE_W - 4) / 2  # centre of the space right of the icon
+        text = "".join(f'<text x="{tx:.1f}" y="{top_y + 19 + 15 * i:.1f}">{e(line)}</text>'
                        for i, line in enumerate(labels[n]))
+        text = (f'<use class="ni" href="#i-{ico}" x="{left + ICON_PAD:.1f}" y="{y[n] - ICON / 2:.1f}" '
+                f'width="{ICON}" height="{ICON}"/>{text}')
         bar = (f'<rect class="entry-bar" x="{x[n] - NODE_W / 2:.1f}" y="{top_y:.1f}" width="4" height="{hh}" rx="2"/>'
                if entry else "")
         nodes_svg.append(f'<g class="nd k-{kind}" data-p="{ks}" data-m="{ms}"{tip(chr(10).join(info), True)}>'
@@ -462,15 +554,159 @@ def _graph(v: _View) -> str:
     return svg
 
 
-def _story(v: _View, p: dict) -> str:
-    steps = []
-    for s in p["steps"]:
+# --- one path in technical detail ---------------------------------------------------
+
+def _badge(v: _View, finding_id: str) -> str:
+    """A weakness, pinned to the box it lives on: the CVE (with its KEV mark) or the discovery flag."""
+    f = v.findings.get(finding_id, {})
+    intel = f.get("intel") or {}
+    info = [f.get("title", finding_id)]
+    if f.get("cve"):
+        facts = [f"CVSS {intel['cvss']}"] if intel.get("cvss") is not None else []
+        if intel.get("kev"):
+            facts.append("on the CISA KEV list" + (", used by ransomware" if intel.get("ransomware_use") else ""))
+        if facts:
+            info.append(", ".join(facts))
+        kev = '<span class="kev">KEV</span>' if intel.get("kev") else ""
+        label = f'<span class="mono">{e(f["cve"])}</span>{kev}'
+    else:
+        phrase = PHRASES.get(f.get("rule")) or next((TAG_WORDS[t] for t in f.get("tags", []) if t in TAG_WORDS), "")
+        label = f'<span class="mono">{e(finding_id)}</span>{f" {e(phrase)}" if phrase else ""}'
+    info.append(f"Finding {finding_id}" + (f", rule {f['rule']}" if f.get("rule") else ""))
+    return (f'<li class="badge l-{e(f.get("severity") or "low")}"{tip(chr(10).join(info), True)}>{icon("warn")}'
+            f'{label}</li>')
+
+
+def _node_facts(v: _View, node_id: str) -> list[str]:
+    """The technical facts the data holds about a node, shortest first."""
+    node = v.nodes.get(node_id, {})
+    item = v.inventory.get(node_id, {})
+    facts = []
+    detail = v.label(node_id)[1]
+    if detail:
+        facts.append(detail)
+    if node.get("env"):
+        facts.append(ENVS.get(node["env"], words(node["env"])))
+    if node.get("entry_point") == "internet":
+        facts.append("internet-facing")
+    elif node.get("entry_point"):
+        facts.append("needs a user action")
+    if node.get("kind") == "identity":
+        if node.get("account_type"):
+            facts.append("used by a person" if node["account_type"] == "human" else "used by a workload")
+        perms = node.get("permissions") or []
+        if perms:
+            facts.append(", ".join(perms[:2]) + (f" +{len(perms) - 2}" if len(perms) > 2 else ""))
+        if node.get("mfa") is False:
+            facts.append("no MFA")
+    if item.get("platform"):
+        facts.append(PLATFORMS.get(item["platform"], words(item["platform"])))
+    where = urlsplit(item.get("endpoint") or "").netloc or item.get("endpoint")
+    if where and where not in v.name(node_id):
+        facts.append(where)
+    if item.get("auth") in ("none", "required"):
+        facts.append(AUTH[item["auth"]])
+    return facts
+
+
+def _node_card(v: _View, node_id: str, finding_ids: list[str]) -> str:
+    node = v.nodes.get(node_id, {})
+    ico, what = v.kind(node_id)
+    classes = ["nc"]
+    marks = []
+    if node_id in v.ai:
+        classes.append("ai")
+    if node.get("entry_point"):
+        classes.append("entry")
+        marks.append("Entry point")
+    if node.get("crown_jewel"):
+        classes.append("jewel")
+        marks.append("Crown jewel")
+    if node_id in v.inventory and not v.inventory[node_id].get("registered"):
+        marks.append("In no inventory")
+    info = [v.name(node_id), what] + ([f"Owner: {v.owner(node_id)}"] if v.owner(node_id) else [])
+    if node.get("discovered") and v.discovery:
+        info.append("Found by AI discovery")
+    facts = _node_facts(v, node_id)
+    return (f'<div class="{" ".join(classes)}"{tip(chr(10).join(info), True)}>'
+            f'<span class="nc-type">{icon(ico)}{e(what)}</span>'
+            f'<strong class="nc-name">{e(v.label(node_id)[0])}</strong>'
+            + (f'<span class="nc-facts">{e(" · ".join(facts))}</span>' if facts else "")
+            + (f'<span class="marks">{"".join(f"<span class=mark>{e(m)}</span>" for m in marks)}</span>' if marks else "")
+            + (f'<ul class="badges">{"".join(_badge(v, f) for f in finding_ids)}</ul>' if finding_ids else "")
+            + "</div>")
+
+
+def _credential_card(v: _View, s: dict) -> str:
+    """The credential a data_access hop relies on, as its own box. Names only: never a value."""
+    c = s.get("credential") or {}
+    target = "Database" if v.nodes.get(s["to"], {}).get("type") == "database" else "Service"
+    name = f"{target} account {c['account']}" if c.get("account") else f"Stored {target.lower()} credential"
+    if c.get("variable"):
+        where = f"{c['variable']} in {c.get('config') or 'its config'}"
+        if c.get("host"):
+            where += f" on {v.label(c['host'])[0]}"
+        facts = f"{where} · value not recorded"
+    else:
+        facts = f"held by {v.label(s['from'])[0]} · not named in the source data"
+    return (f'<div class="nc cred"><span class="nc-type">{icon("key")}Credential</span>'
+            f'<strong class="nc-name">{e(name)}</strong><span class="nc-facts">{e(facts)}</span></div>')
+
+
+def _hop_label(v: _View, s: dict) -> str:
+    """How the hop works, as HTML: a CVE id stays on one line."""
+    found = [v.findings.get(f, {}) for f in s["findings"]]
+    cve = next((f["cve"] for f in found if f.get("cve")), None)
+    if s["kind"] in ("entry", "network"):
+        if cve:
+            return f'exploits <span class="nb">{e(cve)}</span>'
         if s["kind"] == "entry":
-            hop = f"Entry at {short(v.name(s['to']))}"
-        else:
-            hop = f"{short(v.name(s['from']))} → {short(v.name(s['to']))}"
-        new = ' <span class="tag">found by AI discovery</span>' if s["origin"] == "discovery" else ""
-        steps.append(f'<li><strong>{e(hop)}</strong>{new}<span class="sub">{e(s["why"])}</span></li>')
+            return "no exploit needed" if not found else "gets in"
+        if any(f.get("rule") in ("AI-MCP-001", "AI-VEC-001") for f in found):
+            return "connects, no login"
+        return "network route"
+    return HOPS.get(s["kind"], words(s["kind"]))
+
+
+def _via(v: _View, s: dict, label: str | None = None, quiet: bool = False) -> str:
+    """The labelled arrow into a box: how the hop works, its technique and how easy it is."""
+    sub, info = [], [s["why"]]
+    if not quiet:
+        if s["techniques"]:
+            more = f" +{len(s['techniques']) - 1}" if len(s["techniques"]) > 1 else ""
+            sub.append(s["techniques"][0] + more)
+            info.append(", ".join(f"{t} {technique_name(framework_of(t), t)}" for t in s["techniques"]))
+        if s["ease"] < 1:
+            sub.append(f"ease {s['ease']:.2f}")
+        if s["origin"] == "discovery":
+            info.append("Hop found by AI discovery")
+    cls = "via disc" if s["origin"] == "discovery" else "via"
+    subs = "".join(f"<span>{e(x)}</span>" for x in sub)
+    return (f'<div class="{cls}"{tip(chr(10).join(info), True)}><span class="via-label">{e(label) if label else _hop_label(v, s)}'
+            f'</span><span class="via-line"></span><span class="via-sub">{subs}</span></div>')
+
+
+def _diagram(v: _View, steps: list[dict], label: str) -> str:
+    """A path as a chain of typed boxes joined by labelled arrows, with each weakness on the box it is on."""
+    on_node: dict[str, list[str]] = defaultdict(list)
+    path_nodes = {s["to"] for s in steps}
+    for s in steps:
+        for f in s["findings"]:
+            asset = v.findings.get(f, {}).get("asset")
+            home = asset if asset in path_nodes else s["to"]
+            if f not in on_node[home]:
+                on_node[home].append(f)
+    hops = [f'<li class="hop"><div class="nc start"><span class="nc-type">{icon("globe")}Internet</span>'
+            f'<strong class="nc-name">Attacker</strong></div></li>']
+    for s in steps:
+        if s["kind"] == "data_access":
+            hops.append(f'<li class="hop">{_via(v, s, "holds", quiet=True)}{_credential_card(v, s)}</li>')
+        hops.append(f'<li class="hop">{_via(v, s)}{_node_card(v, s["to"], on_node.get(s["to"], []))}</li>')
+    return f'<ol class="hops" aria-label="{e(label)}">{"".join(hops)}</ol>'
+
+
+def _path_detail(v: _View, p: dict) -> str:
+    """The selected path on the Overview: its diagram, why it matters and what cuts it."""
     tags = []
     if v.discovery and p["score_without_discovery"] is None:
         tags.append('<span class="tag strong">Invisible without AI discovery</span>')
@@ -486,12 +722,21 @@ def _story(v: _View, p: dict) -> str:
                          f' <span class="muted">({MINUS}{num(c["reduction"])} on the index)</span></li>')
     fixes_html = (f'<p class="mini-h">Fixes that cut this path</p><ul class="plain">{"".join(fixes[:4])}</ul>'
                   if fixes else "")
-    return (f'<div class="story" data-key="{p["rank"]}" hidden><p class="story-title"><span class="rank">#{p["rank"]}</span> '
-            f'{e(short(v.name(p["entry"])))} → {e(short(p["target_name"]))} '
-            f'<span class="story-score">{num(p["score"])}</span> {level(p["tier"])}</p>'
-            f'{f"<div class=tags>{chr(10).join(tags)}</div>" if tags else ""}'
-            f'<ol class="story-steps">{"".join(steps)}</ol>{fixes_html}'
-            f'<p><a href="#path-{p["rank"]}" data-goto>Full step-by-step detail</a></p></div>')
+    route = f'{e(v.label(p["entry"])[0])} → {e(short(p["target_name"]))}'
+    base = v.base.get(p["id"])
+    keys = f'p{p["rank"]}' + (f' q{p["rank"]}' if v.discovery and base and base["nodes"] == p["nodes"] else "")
+    out = (f'<div class="detail" data-keys="{keys}" hidden><p class="story-title"><span class="rank">#{p["rank"]}</span> '
+           f'{route} <span class="story-score">{num(p["score"])}</span> {level(p["tier"])}</p>'
+           f'{f"<div class=tags>{chr(10).join(tags)}</div>" if tags else ""}'
+           f'{_diagram(v, p["steps"], "Path " + str(p["rank"]) + ", hop by hop")}{fixes_html}'
+           f'<p><a href="#path-{p["rank"]}" data-goto>Score breakdown and step table</a></p></div>')
+    if v.discovery and base and base["nodes"] != p["nodes"]:
+        out += (f'<div class="detail" data-keys="q{p["rank"]}" hidden><p class="story-title"><span class="rank">'
+                f'#{p["rank"]}</span> {route} <span class="story-score">{num(base["score"])}</span> {level(base["tier"])}</p>'
+                f'<div class="tags"><span class="tag strong">The route scanner data shows</span><span class="tag">'
+                f'Scores {num(p["score"])} with AI discovery, by a different route</span></div>'
+                f'{_diagram(v, base["steps"], "Path " + str(p["rank"]) + " on scanner data only, hop by hop")}</div>')
+    return out
 
 
 def _graph_card(v: _View) -> str:
@@ -504,27 +749,34 @@ def _graph_card(v: _View) -> str:
               '<span><i class="sw sw-jewel"></i>Crown jewel</span>'
               + ('<span class="base-only"><i class="sw sw-ghost"></i>Not visible to a scanner</span>' if v.discovery else "")
               + "</div>")
+    key = (f'<div class="legend"><span>{icon("warn")}Weakness this path uses, on the box it is on</span>'
+           f'<span>{icon("key")}Credential the attacker picks up</span>'
+           + ('<span><i class="sw sw-disc"></i>Hop found by AI discovery</span>'
+              '<span><i class="sw sw-ai"></i>AI component</span>' if v.discovery else "")
+           + '<span><i class="sw sw-jewel"></i>Crown jewel</span></div>')
     picks = []
-    base_ids = {b["id"] for b in v.r["baseline"]["paths"]}
     for p in v.top:
         ai = ' <span class="ai-mark" title="Runs through AI"></span>' if p["ai_nodes"] else ""
-        missing = ' data-absent' if v.discovery and p["id"] not in base_ids else ""
+        missing = ' data-absent' if v.discovery and p["id"] not in v.base else ""
         picks.append(f'<li><button type="button" class="pick" data-key="{p["rank"]}" aria-pressed="false"{missing}>'
-                     f'<span class="rank">{p["rank"]}</span><span class="pick-name">{e(short(v.name(p["entry"])))} → '
+                     f'<span class="rank">{p["rank"]}</span><span class="pick-name">{e(v.label(p["entry"])[0])} → '
                      f'{e(short(p["target_name"]))}{ai}</span><span class="pick-score">{num(p["score"])}</span></button></li>')
-    stories = "".join(_story(v, p) for p in v.top)
-    placeholder = ('<div class="story-empty"><p>Pick a path to trace it on the graph and read how it works, '
-                   'step by step.</p>'
-                   + ('<p class="muted">Switch to <em>Scanner data only</em> to see what the same company looks like '
-                      'without AI discovery: the AI components fade and their paths disappear.</p>' if v.discovery else "")
-                   + "</div>")
-    note = (f"The top {len(v.top)} of {plural(len(v.r['paths']), 'path')}. Hover a box for details."
-            if len(v.r["paths"]) > len(v.top) else "Hover a box for details.")
+    details = "".join(_path_detail(v, p) for p in v.top)
+    absent = ('<div class="detail miss" data-miss hidden><p class="story-title">A scanner does not see this path</p>'
+              '<p>It runs through AI agents, MCP servers or knowledge bases that are in no scanner, CMDB or posture '
+              'data, so a scanner-only view has no route here. Switch to <em>With AI discovery</em> to see it.</p></div>'
+              if v.discovery else "")
+    note = (f"The top {len(v.top)} of {plural(len(v.r['paths']), 'path')}." if len(v.r["paths"]) > len(v.top) else "")
+    note += " The icon in each box shows what it is. Hover a box for details."
+    hint = ("Pick a path for its technical detail: what each box is, the vulnerability or flag on it, how each hop "
+            "works and the credentials it uses.")
     return (f'<div class="card graph-card" data-graph-card><div class="gc-head"><div><h3>How an attacker reaches your crown '
-            f'jewels</h3><p class="note">{e(note)}</p></div>{toggle}</div>{legend}'
-            f'<div class="graph-wrap">{_graph(v)}</div>'
-            f'<div class="explore"><ol class="picker" aria-label="Top attack paths">{"".join(picks)}</ol>'
-            f'<div class="stories" aria-live="polite">{placeholder}{stories}</div></div></div>')
+            f'jewels</h3><p class="note">{e(note.strip())}</p></div>{toggle}</div>'
+            f'<div class="explore"><p class="note">{e(hint)}</p>'
+            f'<ol class="picker" aria-label="Top attack paths">{"".join(picks)}</ol></div>'
+            f'<div class="stage map" data-map>{legend}<div class="graph-wrap">{_graph(v)}</div></div>'
+            f'<div class="stage one" data-one aria-live="polite" hidden><div class="one-head">'
+            f'<button type="button" class="back" data-back>Back to all paths</button>{key}</div>{details}{absent}</div></div>')
 
 
 def _overview_lists(v: _View) -> str:
@@ -614,7 +866,8 @@ def _path_item(v: _View, p: dict) -> str:
     return (f'<li class="path" id="path-{p["rank"]}" data-tags="{" ".join(flags)}"><span class="rank">{p["rank"]}</span>'
             f'<div class="path-main"><p class="path-title">{title}<span class="sub mono">{e(p["id"])}</span></p>{score}'
             f'<ol class="chain" aria-label="Route">{chips}</ol>{tags_html}'
-            f'<details><summary>Why this rank, and how the path works step by step</summary>{_why_rank(p)}{_steps(v, p)}'
+            f'<details><summary>The path in technical detail, and why it ranks here</summary>'
+            f'{_diagram(v, p["steps"], "Path " + str(p["rank"]) + ", hop by hop")}{_why_rank(p)}{_steps(v, p)}'
             f'</details></div></li>')
 
 
@@ -967,7 +1220,7 @@ def render_html(report: dict, *, standalone: bool = True) -> str:
     """The dashboard as a full HTML document, or as a page fragment (no doctype,
     head or body) for hosts that wrap pages in their own skeleton."""
     v = _View(report)
-    parts = [_header(v), _tabs(v), "<main>", _overview(v), _paths(v), _fixes(v)]
+    parts = [_sprite(), _header(v), _tabs(v), "<main>", _overview(v), _paths(v), _fixes(v)]
     if v.discovery:
         parts.append(_inventory(v))
     parts += ["</main>", _proof(v)]
@@ -1057,6 +1310,9 @@ border:1px solid var(--border);border-radius:10px;background:var(--surface)}
 .sw-entry{width:14px;height:12px;border-radius:3px;border:1px solid var(--axis);box-shadow:inset 3px 0 0 var(--ink-2)}
 .sw-jewel{width:14px;height:12px;border-radius:3px;border:2px solid var(--ink)}
 .sw-ghost{width:14px;height:12px;border-radius:3px;border:1.5px dashed var(--muted)}
+.sw-disc{width:18px;height:2px;border-radius:0;background:var(--violet)}
+.sprite{position:absolute;width:0;height:0;overflow:hidden}
+.ico{display:inline-block;flex:none;width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
 .gc-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;gap:.75rem}
 .gc-head>div:first-child{display:grid;gap:.3rem}
 .seg{display:inline-flex;border:1px solid var(--axis);border-radius:8px;overflow:hidden;width:fit-content;max-width:100%}
@@ -1073,6 +1329,8 @@ border:1px solid var(--border);border-radius:10px;background:var(--surface)}
 .graph .ah-on{fill:var(--blue)}
 .graph .nd rect{fill:var(--surface);stroke:var(--axis);stroke-width:1}
 .graph .nd text{font-size:12px;fill:var(--ink);text-anchor:middle}
+.graph .ni{fill:none;stroke:var(--ink-2);stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
+.graph .k-ai .ni{stroke:var(--violet)}
 .graph .nd .entry-bar{fill:var(--ink-2);stroke:none}
 .graph .k-ai rect{fill:var(--violet-tint);stroke:var(--violet);stroke-width:1.5}
 .graph .k-jewel rect{stroke:var(--ink);stroke-width:2}
@@ -1088,7 +1346,7 @@ border:1px solid var(--border);border-radius:10px;background:var(--surface)}
 .graph .k-asset.on rect,.graph .k-id.on rect{stroke:var(--blue)}
 .base-only{display:none!important}
 .graph-card.m-base .base-only{display:inline-flex!important}
-.explore{display:grid;gap:1rem;border-top:1px solid var(--border);padding-top:1rem}
+.explore{display:grid;gap:.6rem}
 .picker{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(16.5rem,1fr));gap:4px 8px;align-content:start}
 .pick{display:grid;grid-template-columns:1.6rem minmax(0,1fr) auto;gap:.5rem;align-items:center;width:100%;text-align:left;
 border:1px solid transparent;border-radius:8px;background:transparent;padding:.4rem .55rem;cursor:pointer;font-size:.875rem}
@@ -1099,12 +1357,50 @@ border:1px solid transparent;border-radius:8px;background:transparent;padding:.4
 .graph-card.m-base .pick[data-absent]{opacity:.45}
 .graph-card.m-base .pick[data-absent] .pick-name::after{content:" · not visible to a scanner";color:var(--muted);font-size:.75rem}
 .ai-mark{display:inline-block;width:8px;height:8px;margin-left:.35rem;border-radius:2px;background:var(--violet);vertical-align:middle}
-.stories{min-width:0}
-.story,.story-empty{display:grid;gap:.6rem;align-content:start;padding:1rem 1.1rem;border-radius:8px;background:var(--sunken)}
+.stage{display:grid;gap:.9rem;min-width:0;border-top:1px solid var(--border);padding-top:1rem;scroll-margin-top:3.5rem}
+.one-head{display:flex;flex-wrap:wrap;align-items:center;gap:.6rem 1.25rem}
+.back{border:1px solid var(--axis);border-radius:8px;background:var(--surface);padding:.35rem .8rem;font-size:.8125rem;font-weight:600;cursor:pointer;color:var(--ink-2)}
+.back:hover{color:var(--ink);border-color:var(--ink)}
+.detail{display:grid;gap:.8rem;align-content:start;min-width:0}
 .story-title{font-weight:650;font-size:1rem;display:flex;flex-wrap:wrap;align-items:center;gap:.35rem .6rem}
 .story-title .rank{color:var(--muted)}
 .story-score{font-variant-numeric:tabular-nums}
-.story-steps{margin:0;padding-left:1.25rem;display:grid;gap:.4rem;font-size:.875rem}
+.hops{list-style:none;margin:0;padding:.9rem;display:flex;flex-wrap:wrap;gap:.9rem 0;border-radius:8px;background:var(--sunken)}
+.hop{display:flex;align-items:stretch;min-width:0}
+.via{flex:none;width:7.25rem;display:grid;grid-template-rows:1fr auto 1fr;justify-items:center;gap:4px;padding-inline:.35rem;
+text-align:center;font-size:.75rem;line-height:1.25;color:var(--ink-2);cursor:default}
+.via-label{align-self:end;font-weight:600;color:var(--ink)}
+.via-line{position:relative;display:block;width:100%;height:1.5px;background:var(--gray-mark)}
+.via-line::after{content:"";position:absolute;right:-1px;top:-3.25px;border-left:7px solid var(--gray-mark);
+border-top:4px solid transparent;border-bottom:4px solid transparent}
+.via-sub{align-self:start;font-family:var(--mono);font-size:.6875rem;color:var(--ink-2)}
+.via-sub span{display:block}
+.nb{white-space:nowrap}
+.via.disc .via-line{background:var(--violet)}
+.via.disc .via-line::after{border-left-color:var(--violet)}
+.nc{flex:none;width:10.5rem;display:grid;gap:.25rem;align-content:start;padding:.55rem .65rem;border:1px solid var(--axis);
+border-radius:8px;background:var(--surface);font-size:.8125rem;line-height:1.35;min-width:0;overflow-wrap:anywhere;cursor:default}
+.nc.ai{border:1.5px solid var(--violet);background:var(--violet-tint)}
+.nc.jewel{border:2px solid var(--ink)}
+.nc.entry{box-shadow:inset 4px 0 0 var(--ink-2)}
+.nc.cred{border-style:dashed;border-color:var(--ink-2)}
+.nc.start{width:auto;align-self:center;background:var(--ink);border-color:var(--ink);color:var(--page)}
+.nc-type{display:flex;align-items:center;gap:.35rem;font-size:.6875rem;font-weight:650;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-2)}
+.nc.ai .nc-type{color:var(--violet)}
+.nc.start .nc-type{color:inherit;opacity:.8}
+.nc-name{font-weight:650}
+.nc-facts{font-size:.75rem;color:var(--ink-2)}
+.marks{display:flex;flex-wrap:wrap;gap:4px}
+.mark{font-size:.6875rem;font-weight:650;padding:0 6px;border-radius:4px;background:var(--sunken);color:var(--ink)}
+.nc.ai .mark{background:var(--surface)}
+.badges{list-style:none;margin:.15rem 0 0;padding:0;display:grid;gap:3px}
+.badge{display:flex;flex-wrap:wrap;align-items:center;gap:.15rem .3rem;padding:2px 6px;border:1px solid var(--c,var(--axis));
+border-radius:5px;background:var(--surface);font-size:.75rem;line-height:1.35}
+.badge .ico{width:12px;height:12px;color:var(--c,var(--ink-2))}
+.badge .mono{font-size:.75rem}
+.kev{font-size:.625rem;font-weight:700;letter-spacing:.04em;padding:0 4px;border-radius:3px;background:var(--critical);color:#fff}
+.legend .ico{color:var(--ink-2)}
+.path-main .hops{margin-block:.6rem .9rem}
 .mini-h{font-size:.75rem;font-weight:650;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-2)}
 .plain{margin:0;padding-left:1.1rem;display:grid;gap:.25rem;font-size:.875rem}
 .two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
@@ -1221,7 +1517,9 @@ footer{border-top:1px solid var(--border);padding-top:1rem}
 [data-tip]:focus-visible,button:focus-visible,a:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
 @media (max-width:900px){.two{grid-template-columns:minmax(0,1fr)}}
 @media (max-width:760px){.kpis{grid-template-columns:minmax(0,1fr)}.strip{grid-template-columns:minmax(0,1fr)}}
-@media (max-width:640px){h1{font-size:1.75rem}.hb-row{grid-template-columns:minmax(0,1fr) 4.75rem;gap:.3rem .75rem}
+@media (max-width:640px){.hops{flex-direction:column;padding:.7rem}.hop{display:grid;grid-template-columns:5.75rem minmax(0,1fr)}
+.hop:first-child{display:block}.via{width:auto;padding-inline:0 .4rem}.nc{width:auto}.nc.start{width:fit-content}
+h1{font-size:1.75rem}.hb-row{grid-template-columns:minmax(0,1fr) 4.75rem;gap:.3rem .75rem}
 .hb-label{grid-column:1/-1}.path,.fix{grid-template-columns:1.5rem minmax(0,1fr);gap:.25rem .6rem}.card{padding:1rem}
 .score{grid-template-columns:minmax(0,1fr) 2.75rem auto;width:100%}.why-row{grid-template-columns:5.5rem minmax(0,1fr) 2.5rem}
 .why-row .sub{grid-column:1/-1}}
@@ -1310,26 +1608,51 @@ JS = """
     });
   });
 
-  /* the attack-path graph: pick a path, switch between with and without AI discovery */
+  /* the attack-path graph: hover a path to trace it on the map, pick it to see it in technical detail,
+     and switch between with and without AI discovery */
   all("[data-graph-card]").forEach(function (card) {
     var svg = card.querySelector("svg.graph");
     if (!svg) return;
-    var mode = "ai", key = null;
-    var picks = all("button.pick", card), stories = all(".story", card), empty = card.querySelector(".story-empty");
+    var mode = "ai", key = null, hover = null;
+    var picks = all("button.pick", card), details = all(".detail[data-keys]", card);
+    var map = card.querySelector("[data-map]"), one = card.querySelector("[data-one]"), miss = card.querySelector("[data-miss]");
     var marks = all("[data-p]", svg);
+    function token(k) { return k ? (mode === "ai" ? "p" : "q") + k : null; }
+    function trace() {
+      var tok = token(hover);
+      svg.classList.toggle("has-sel", !!tok);
+      marks.forEach(function (el) { el.classList.toggle("on", !!tok && has(el, "data-p", tok)); });
+    }
     function paint() {
       svg.classList.toggle("m-ai", mode === "ai");
       svg.classList.toggle("m-base", mode === "base");
       card.classList.toggle("m-base", mode === "base");
-      var tok = key ? (mode === "ai" ? "p" : "q") + key : null;
-      svg.classList.toggle("has-sel", !!tok);
-      marks.forEach(function (el) { el.classList.toggle("on", !!tok && has(el, "data-p", tok)); });
+      var tok = token(key), found = false;
+      details.forEach(function (d) {
+        var on = !!tok && has(d, "data-keys", tok);
+        d.hidden = !on;
+        found = found || on;
+      });
+      if (miss) miss.hidden = !tok || found;
+      if (map) map.hidden = !!tok;
+      if (one) one.hidden = !tok;
       picks.forEach(function (b) { b.setAttribute("aria-pressed", b.getAttribute("data-key") === key ? "true" : "false"); });
-      stories.forEach(function (s) { s.hidden = s.getAttribute("data-key") !== key; });
-      if (empty) empty.hidden = !!key;
+      trace();
     }
     picks.forEach(function (b) {
-      b.addEventListener("click", function () { key = key === b.getAttribute("data-key") ? null : b.getAttribute("data-key"); paint(); });
+      var k = b.getAttribute("data-key");
+      b.addEventListener("click", function () {
+        key = key === k ? null : k;
+        paint();
+        if (key && one && one.getBoundingClientRect().top > window.innerHeight * 0.6) one.scrollIntoView({ block: "start" });
+      });
+      b.addEventListener("pointerenter", function () { hover = k; trace(); });
+      b.addEventListener("pointerleave", function () { hover = null; trace(); });
+      b.addEventListener("focus", function () { hover = k; trace(); });
+      b.addEventListener("blur", function () { hover = null; trace(); });
+    });
+    all("[data-back]", card).forEach(function (b) {
+      b.addEventListener("click", function () { key = null; paint(); });
     });
     all(".seg[data-graph] button", card).forEach(function (b) {
       b.addEventListener("click", function () {
