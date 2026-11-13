@@ -39,6 +39,8 @@ class Edge:
     kind: str
     origin: str = "static"  # static | discovery
     note: str = ""
+    # For data_access: which credential the source holds (type, account, variable, config). Never its value.
+    credential: dict | None = None
 
 
 @dataclass
@@ -154,7 +156,7 @@ def load_environment(path: str | Path) -> Environment:
         if i["id"] in nodes:
             raise ValueError(f"duplicate node id {i['id']}")
         nodes[i["id"]] = _identity_node(i)
-    edges = [Edge(e["from"], e["to"], e["kind"]) for e in read("edges.json", [])]
+    edges = [Edge(e["from"], e["to"], e["kind"], credential=e.get("credential")) for e in read("edges.json", [])]
     findings = [Finding.from_dict(f) for f in read("findings.json", [])]
     registry = read("ai_registry.json", {"agents": [], "mcp_servers": [], "knowledge_bases": []})
     return Environment(path, read("company.json", {}), nodes, edges, findings, registry)

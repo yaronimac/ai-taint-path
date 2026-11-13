@@ -232,6 +232,8 @@ def correlate(env: Environment, scope: Scope, evidence: Evidence, probes: dict) 
             item.pinned = srv.pinned
         item.secret_vars = sorted(set(item.secret_vars) | set(srv.secret_vars))
         item.data_hosts = sorted(set(item.data_hosts) | set(srv.referenced_hosts))
+        for h, ref in srv.references.items():
+            item.data_refs.setdefault(h, ref)
         item.evidence.append(cfg_note)
         config_key[id(srv)] = next(k for k, v in servers.items() if v is item)
 
@@ -347,10 +349,10 @@ def correlate(env: Environment, scope: Scope, evidence: Evidence, probes: dict) 
     edges: list[Edge] = []
     seen: set[tuple[str, str, str]] = set()
 
-    def edge(src: str | None, dst: str | None, kind: str, note: str) -> None:
+    def edge(src: str | None, dst: str | None, kind: str, note: str, credential: dict | None = None) -> None:
         if src and dst and (src, dst, kind) not in seen and src != dst:
             seen.add((src, dst, kind))
-            edges.append(Edge(src, dst, kind, origin="discovery", note=note))
+            edges.append(Edge(src, dst, kind, origin="discovery", note=note, credential=credential))
 
     for key, s in by_key.items():
         if s.segment:
@@ -361,7 +363,8 @@ def correlate(env: Environment, scope: Scope, evidence: Evidence, probes: dict) 
         for h in s.data_hosts:
             target = env.asset_for_host(h)
             if target:
-                edge(s.id, target, "data_access", f"its config connects it to {h}")
+                edge(s.id, target, "data_access", f"its config connects it to {h}",
+                     {"type": "connection_string", **s.data_refs[h]} if h in s.data_refs else None)
         for name in sorted(server_identities.get(key, ())):
             edge(s.id, env.identity_by_name(name), "runs_as", f"acts as {name}")
     for a in agents.values():

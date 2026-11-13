@@ -36,6 +36,7 @@ class InventoryItem:
     instructions: str | None = None
     secret_vars: list[str] = field(default_factory=list)
     data_hosts: list[str] = field(default_factory=list)  # assets its config points at
+    data_refs: dict[str, dict] = field(default_factory=dict)  # host -> variable, account and config file
     # Agents
     channels: list[dict] = field(default_factory=list)
     identity: str | None = None
@@ -61,6 +62,7 @@ class InventoryItem:
         data = asdict(self)
         # Sampled document text stays out of reports: titles and ids are enough to act on
         data["documents"] = [{k: v for k, v in d.items() if k != "text"} for d in self.documents]
+        data.pop("data_refs")  # reported on the data_access edge it explains
         return {k: v for k, v in data.items() if v not in (None, [], {}, "")}
 
 
