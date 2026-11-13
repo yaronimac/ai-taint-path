@@ -2,6 +2,8 @@
 
 Follows untrusted input (a chat message, an emailed invoice, a poisoned document) through shadow AI agents, MCP servers, knowledge bases and identities to the systems that matter.
 
+**[Live demo with a guided tour](https://yaronimac.github.io/ai-taint-path/demo.html#tour)** · [About the project](https://yaronimac.github.io/ai-taint-path/) · [PRD and GTM brief](https://yaronimac.github.io/ai-taint-path/brief.html)
+
 **Status: week 2 of 3.** The discovery agent, the prioritization engine, JSON output with a published schema and an HTML dashboard are done. The analyst agent and the rest of the SOAR integration (REST API, signed webhooks, example playbook) are next.
 
 Security teams can see thousands of exposures but can't tell which few actually lead to their critical assets. AI agents make this worse: they add tools, identities and MCP servers that most exposure tools don't model as attack surface, and many of them are in no inventory at all.
@@ -46,6 +48,10 @@ One self-contained HTML file with four views, laid out the way AI security and e
 
 How the report was made (scoring, discovery log, safety rules, frameworks) sits in a collapsed panel at the bottom. Every finding shows its own ID (`D-001`, `F-0001`) next to its rule or CVE.
 
+### The guided tour
+
+`--tour` adds a guided tour to the dashboard, for demos. It dims the page, puts a ring around one thing at a time (a number, a button, a path) and explains it in a pop-up: the headline numbers, one attack path hop by hop, the same path through a scanner's eyes, the fix plan and the AI inventory. Some steps ask the reader to click the ringed button, and Next makes the same click for them. The steps are written from the report's own numbers, so the tour reads correctly for any scan. A link ending in `#tour` starts it on load, and `--tour-home URL` adds a link back to a project page.
+
 ## Quick start
 
 Python 3.10 or later. No runtime dependencies.
@@ -56,6 +62,7 @@ pip install -e '.[dev]'
 
 ai-taint-path scan data/sample/halden                                   # ranked paths in the terminal
 ai-taint-path scan data/sample/halden --format html --out report.html   # the dashboard
+ai-taint-path scan data/sample/halden --format html --tour --out demo.html   # the dashboard with a guided tour
 ai-taint-path scan data/sample/halden --format json --out scan.json     # for SOAR and ticketing
 ai-taint-path scan data/sample/halden --no-discovery                    # the scanner-only baseline
 ai-taint-path discover data/sample/halden                               # AI inventory and flags only
@@ -121,14 +128,15 @@ Coming in week 3: a REST API with an OpenAPI spec, signed webhooks, an example X
 | --- | --- |
 | `ai_taint_path/discovery/` | Discovery: config parsing, read-only probes, cloud exports, correlation, risk rules, Claude mode |
 | `ai_taint_path/engine/` | Enrichment, attack graph, path search, choke points and the remediation plan |
-| `ai_taint_path/output/` | JSON report, terminal tables and the HTML dashboard |
+| `ai_taint_path/output/` | JSON report, terminal tables, the HTML dashboard and its guided tour |
 | `schema/` | JSON Schema for the scan result |
 | `examples/` | The sample company's scan as JSON and as a dashboard |
+| `docs/` | The project site, served by GitHub Pages: landing page, the demo with its guided tour, the PRD and GTM brief as a page and a PDF |
 | `data/sample/halden/` | The fictional sample company, its discovery evidence and the planted ground truth |
 | `data/feeds/` | Public threat data for every CVE in the sample: CISA KEV entries, CVE records, MCP package advisories |
 | `data/frameworks/` | Names of every framework ID the tool cites, checked against the official sources |
 | `scripts/` | Rebuild the sample company, refresh the feeds and the framework catalog |
-| `tests/` | 123 tests, most of them grading discovery and the engine against the ground truth |
+| `tests/` | 136 tests, most of them grading discovery and the engine against the ground truth |
 
 ## Sample data and ground truth
 
@@ -142,6 +150,18 @@ python scripts/refresh_feeds.py      # refresh threat intelligence
 python scripts/refresh_frameworks.py # refresh framework names (needs pyyaml)
 ```
 
+## The project site
+
+`docs/` is a static site with no build step. GitHub Pages serves it from the `main` branch (Settings, Pages, "Deploy from a branch", `main` and `/docs`).
+
+```bash
+# the demo: the sample dashboard with the guided tour and a link back to the landing page
+python -m ai_taint_path scan data/sample/halden --format html --tour --tour-home index.html \
+  --generated-at 2026-11-05T00:00:00Z --out docs/demo.html
+```
+
+`docs/index.html` (the landing page) and `docs/brief.html` (the PRD and GTM brief) are written by hand. The tests check that the demo page is current, that every local link resolves and that the numbers on both pages match the scan. The PDF is `brief.html` printed from a browser on A4.
+
 ## Roadmap
 
 - [x] Product requirements and go-to-market brief
@@ -151,7 +171,8 @@ python scripts/refresh_frameworks.py # refresh framework names (needs pyyaml)
 - [x] Dashboard redesign: four views, attack-path graph with a scanner-only toggle, each path in technical detail (types, CVEs and flags, labelled hops, credentials), toxic combinations, AI bill of materials
 - [ ] Analyst agent: explanations, remediation tickets, board brief, secured MCP server
 - [ ] SOAR integration: ~~JSON output with a published schema~~ (done), REST API (OpenAPI), signed webhooks, example XSOAR or Sentinel playbook, integration guide
-- [ ] Hosted demo, demo video, case study
+- [x] Hosted demo with a guided tour, landing page, public PRD and GTM brief
+- [ ] Case study
 
 ## Frameworks used
 

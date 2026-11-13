@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ai-taint-path</title>
+<meta name="description" content="Finds the AI agents, MCP servers and knowledge bases a company runs, then ranks the attack paths that lead through them to its crown jewels. Live demo, code, PRD and GTM brief.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="ai-taint-path: attack paths that run through AI agents">
+<meta property="og:description" content="A working demo on a fictional company with real CVEs: 7 of the top 10 attack paths run through AI, and 5 fixes cut exposure by 78.7%. Guided tour, code, PRD and GTM brief.">
+<meta property="og:url" content="https://yaronimac.github.io/ai-taint-path/">
+<meta property="og:image" content="https://yaronimac.github.io/ai-taint-path/assets/preview.png">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+/* Layout: one left-aligned column. The hero's attack path, drawn in the dashboard's own boxes and
+   colours, is the only loud element; everything after it is quiet text on hairlines. */
+:root{--page:#f9f9f7;--surface:#fcfcfb;--sunken:#f0efea;--ink:#0b0b0b;--ink-2:#52514e;--muted:#6f6d68;
+--border:#e1e0d9;--axis:#c3c2b7;--violet:#6250d6;--violet-tint:#eeebfb;--critical:#c53030;
+--sans:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+--mono:ui-monospace,"SF Mono","Cascadia Mono","Segoe UI Mono",Menlo,Consolas,"Liberation Mono",monospace}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--page:#0d0d0d;--surface:#1a1a19;--sunken:#242422;
+--ink:#f0efec;--ink-2:#c3c2b7;--muted:#a3a19a;--border:#2c2c2a;--axis:#4a4a46;--violet:#9085e9;--violet-tint:#26223f;
+--critical:#f07171;color-scheme:dark}}
+:root[data-theme="dark"]{--page:#0d0d0d;--surface:#1a1a19;--sunken:#242422;--ink:#f0efec;--ink-2:#c3c2b7;--muted:#a3a19a;
+--border:#2c2c2a;--axis:#4a4a46;--violet:#9085e9;--violet-tint:#26223f;--critical:#f07171;color-scheme:dark}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--page);color:var(--ink);font:1.0625rem/1.6 var(--sans)}
+.wrap{max-width:70rem;margin:0 auto;padding-block:1.5rem 4rem;padding-left:max(16px,env(safe-area-inset-left,0px));
+padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:4.5rem}
+main{display:grid;gap:4.5rem;min-width:0}
+h1,h2,h3,p,ol,ul,dl,dd,figure{margin:0}
+h1,h2,h3{text-wrap:balance}
+h1{font-size:clamp(2.25rem,5.6vw,3.75rem);line-height:1.04;font-weight:750;letter-spacing:-.035em;max-width:17ch}
+h2{font-size:1.625rem;line-height:1.2;font-weight:700;letter-spacing:-.02em}
+h3{font-size:1.0625rem;line-height:1.35;font-weight:650}
+a{color:inherit;text-underline-offset:.18em;text-decoration-thickness:1px}
+a:focus-visible{outline:2px solid var(--violet);outline-offset:3px;border-radius:3px}
+code,.mono{font-family:var(--mono);font-size:.875em}
+.label{font:600 .75rem/1.4 var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2)}
+.lede{font-size:1.1875rem;line-height:1.55;color:var(--ink-2);max-width:60ch}
+.note{font-size:.9375rem;color:var(--ink-2);max-width:68ch}
+
+.top{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:.5rem 1.5rem;font-size:.9375rem}
+.top .name{font:600 1rem/1.4 var(--mono);letter-spacing:-.01em}
+.top nav{display:flex;flex-wrap:wrap;gap:.25rem 1.25rem}
+.top nav a{color:var(--ink-2)}
+
+.hero{display:grid;gap:1.5rem}
+.cta{display:flex;flex-wrap:wrap;align-items:center;gap:.75rem 1rem;margin-top:.5rem}
+.btn{display:inline-block;padding:.7rem 1.15rem;border:1px solid var(--ink);border-radius:6px;font-weight:650;font-size:1rem;
+line-height:1.2;text-decoration:none}
+.btn.primary{background:var(--ink);color:var(--page)}
+.btn:hover{background:var(--sunken)}
+.btn.primary:hover{background:var(--ink-2);border-color:var(--ink-2)}
+.cta .aside{font-size:.9375rem;color:var(--ink-2)}
+
+.trace{display:grid;gap:1rem;padding:1.25rem;border:1px solid var(--border);border-radius:8px;background:var(--sunken);min-width:0}
+.trace figcaption{display:flex;flex-wrap:wrap;align-items:baseline;gap:.35rem 1rem;font-size:.9375rem}
+.trace figcaption b{font-weight:650}
+.sev{display:inline-flex;align-items:center;gap:.4rem;font-weight:650}
+.sev::before{content:"";width:.6rem;height:.6rem;border-radius:50%;background:var(--critical)}
+.chain{list-style:none;padding:0;display:flex;flex-wrap:wrap;gap:.9rem 0;align-items:stretch}
+.step{display:flex;align-items:stretch;min-width:0}
+.node{flex:0 0 11.25rem;display:grid;align-content:start;justify-items:start;gap:.3rem;padding:.7rem .8rem;border:1px solid var(--axis);
+border-radius:6px;background:var(--surface);font-size:.875rem;line-height:1.35}
+.node .kind{font:600 .6875rem/1.3 var(--sans);letter-spacing:.07em;text-transform:uppercase;color:var(--ink-2)}
+.node b{font-weight:650}
+.node small{font-size:.75rem;color:var(--ink-2)}
+.node.start{background:var(--ink);border-color:var(--ink);color:var(--page)}
+.node.start .kind{color:inherit;opacity:.72}
+.node.ai{background:var(--violet-tint);border-color:var(--violet)}
+.node.ai .kind{color:var(--violet)}
+.node.jewel{border:2px solid var(--ink)}
+.mark{font:500 .75rem/1.3 var(--mono);padding:.15rem .4rem;border:1px solid var(--critical);border-radius:4px;color:var(--critical);
+background:var(--surface)}
+.hop{flex:0 0 6.5rem;display:grid;align-content:center;justify-items:center;gap:.3rem;padding:0 .5rem;text-align:center;
+font-size:.75rem;line-height:1.25;color:var(--ink-2)}
+.hop i{display:block;position:relative;width:100%;height:1.5px;background:currentColor}
+.hop i::after{content:"";position:absolute;right:-1px;top:-3.25px;border:4px solid transparent;border-right:0;border-left:7px solid currentColor}
+.hop.disc{color:var(--violet);font-weight:600}
+.trace .note b{color:var(--violet);font-weight:650}
+
+.found{display:grid;gap:1.5rem}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:1px solid var(--axis)}
+.stats div{display:grid;align-content:start;gap:.4rem;padding:1.1rem 1.25rem 0 0}
+.stats div+div{padding-left:1.25rem;border-left:1px solid var(--border)}
+.stats dt{font-size:2.125rem;line-height:1.05;font-weight:750;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.stats dt span{font-size:1rem;font-weight:600;letter-spacing:0;color:var(--ink-2)}
+.stats dd{font-size:.9375rem;line-height:1.5;color:var(--ink-2)}
+
+.shot{display:grid;gap:.75rem}
+.shot>a{display:block;border:1px solid var(--axis);border-radius:8px;overflow:hidden;background:var(--surface)}
+.shot img{display:block;width:100%;max-width:100%;height:auto}
+.shot figcaption{font-size:.9375rem;color:var(--ink-2)}
+
+.how{display:grid;gap:1.5rem}
+.stages{list-style:none;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:2rem;counter-reset:stage}
+.stages li{display:grid;align-content:start;gap:.5rem;padding-top:1rem;border-top:1px solid var(--axis);counter-increment:stage;min-width:0}
+.stages h3::before{content:counter(stage) " ";font-family:var(--mono);font-weight:500;color:var(--muted);margin-right:.35rem}
+.stages p{font-size:.9688rem;color:var(--ink-2)}
+
+.open{display:grid;gap:1rem}
+.items{list-style:none;padding:0;border-top:1px solid var(--axis)}
+.items li{display:grid;grid-template-columns:minmax(0,13rem) minmax(0,1fr) auto;gap:.5rem 2rem;align-items:start;padding:1.25rem 0;
+border-bottom:1px solid var(--border)}
+.items p{font-size:.9688rem;color:var(--ink-2);max-width:56ch}
+.items .links{display:grid;gap:.35rem;justify-items:end;font-weight:650;font-size:.9688rem;white-space:nowrap}
+
+.status{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.5rem 3rem}
+.status h2{grid-column:1/-1}
+.status section{display:grid;align-content:start;gap:.75rem;min-width:0}
+.status ul{padding-left:1.1rem;display:grid;gap:.4rem;font-size:.9688rem;color:var(--ink-2)}
+
+.about{display:grid;gap:.6rem;padding-top:1.5rem;border-top:1px solid var(--axis)}
+.about p{max-width:66ch}
+.about .links{display:flex;flex-wrap:wrap;gap:.25rem 1.5rem;font-weight:650}
+footer{font-size:.875rem;color:var(--muted)}
+
+@media (max-width:820px){
+  .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .stats div{padding-bottom:1.1rem}
+  .stats div:nth-child(odd){padding-left:0;border-left:0}
+  .stats div:nth-child(n+3){border-top:1px solid var(--border)}
+  .stages{grid-template-columns:minmax(0,1fr);gap:1.25rem}
+  .items li{grid-template-columns:minmax(0,1fr)}
+  .items .links{justify-items:start;white-space:normal}
+  .status{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:640px){
+  .wrap,main{gap:3.25rem}
+  .trace{padding:1rem}
+  .chain{display:grid;gap:0}
+  .step{display:grid}
+  .node{flex:none}
+  .hop{flex:none;grid-template-columns:auto minmax(0,1fr);justify-items:start;align-items:center;gap:.6rem;padding:.3rem 0 .45rem 1.25rem;
+  text-align:left}
+  .hop i{order:-1;width:1.5px;height:1.9rem}
+  .hop i::after{right:auto;left:-3.25px;top:auto;bottom:-1px;border:4px solid transparent;border-bottom:0;border-top:7px solid currentColor}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <span class="name">ai-taint-path</span>
+  <nav aria-label="Project">
+    <a href="demo.html">Demo</a>
+    <a href="https://github.com/yaronimac/ai-taint-path">Code</a>
+    <a href="brief.html">PRD and GTM brief</a>
+  </nav>
+</header>
+
+<main>
+
+<section class="hero">
+  <p class="label">Open-source exposure management for the AI attack surface</p>
+  <h1>Rank the attack paths that run through AI agents.</h1>
+  <p class="lede">ai-taint-path finds the AI agents, MCP servers and knowledge bases a company runs, including the ones
+  in no inventory. It joins them with scanner and identity data, ranks every route to a crown-jewel system, and says
+  which fixes to make first.</p>
+  <div class="cta">
+    <a class="btn primary" href="demo.html#tour">Take the guided tour</a>
+    <a class="btn" href="demo.html">Open the demo</a>
+    <span class="aside">About two minutes. Nothing to install or sign in to.</span>
+  </div>
+
+  <figure class="trace">
+    <figcaption><b>Path 2 in the sample company</b> <span>Score 85.5</span> <span class="sev">Critical</span></figcaption>
+    <ol class="chain">
+      <li class="step">
+        <div class="node start"><span class="kind">Internet</span><b>Attacker</b></div>
+      </li>
+      <li class="step">
+        <div class="hop"><span>exploits</span><i></i></div>
+        <div class="node"><span class="kind">Network appliance</span><b>Ivanti Connect Secure VPN gateway</b>
+        <span class="mark">CVE-2024-21887 · KEV</span></div>
+      </li>
+      <li class="step">
+        <div class="hop"><span>network route</span><i></i></div>
+        <div class="node"><span class="kind">Network segment</span><b>Corporate network</b><small>10.20.0.0/16</small></div>
+      </li>
+      <li class="step">
+        <div class="hop disc"><span>connects, no login</span><i></i></div>
+        <div class="node ai"><span class="kind">MCP server</span><b>Ops tools server</b>
+        <span class="mark">answers without a login</span></div>
+      </li>
+      <li class="step">
+        <div class="hop disc"><span>runs commands on</span><i></i></div>
+        <div class="node"><span class="kind">Server</span><b>CI build server</b></div>
+      </li>
+      <li class="step">
+        <div class="hop"><span>runs as</span><i></i></div>
+        <div class="node"><span class="kind">AWS IAM role</span><b>ops-agent-role</b><small>AdministratorAccess</small></div>
+      </li>
+      <li class="step">
+        <div class="hop"><span>admin of</span><i></i></div>
+        <div class="node jewel"><span class="kind">Crown jewel</span><b>AWS production account</b></div>
+      </li>
+    </ol>
+    <p class="note">The <b>two violet hops</b> exist only because discovery found the MCP server. On scanner data alone
+    the same target scores 27.0, by a weaker route, and the path drops down the list.</p>
+  </figure>
+</section>
+
+<section class="found" aria-labelledby="found-h">
+  <h2 id="found-h">What one scan of the sample company found</h2>
+  <p class="note">Halden Logistics is a fictional 4,500-person freight company. Its CVEs, KEV entries and EPSS scores are
+  real, and its problems are planted so the results can be checked by tests.</p>
+  <dl class="stats">
+    <div><dt>433.4 <span>of 600</span></dt><dd>Exposure index with AI discovery. Scanner data alone shows 245.7.</dd></div>
+    <div><dt>7 <span>of the top 10</span></dt><dd>Attack paths run through AI components. 4 of them have no scanner route at all.</dd></div>
+    <div><dt>8 <span>of 19</span></dt><dd>AI components are in no inventory. Discovery raised 25 risk flags, 7 of them critical.</dd></div>
+    <div><dt>5 <span>fixes</span></dt><dd>Cut the exposure index by 78.7%. The first one ranks 11th on a list sorted by CVSS.</dd></div>
+  </dl>
+</section>
+
+<figure class="shot">
+  <a href="demo.html"><img src="assets/dashboard.png" width="1200" height="1127" loading="lazy"
+  alt="The dashboard's Overview: 6 of 6 crown jewels reachable, 1 fix closes 5 paths, 8 shadow AI components, the exposure index, the ten top paths and a map from entry points to crown jewels with AI components in violet"></a>
+  <figcaption>The Overview opens with three answers and one number, then maps every route from an entry point to a crown jewel.
+  Picking a path redraws it hop by hop. <a href="demo.html">Open the demo</a></figcaption>
+</figure>
+
+<section class="how" aria-labelledby="how-h">
+  <h2 id="how-h">How it works</h2>
+  <ol class="stages">
+    <li><h3>Discover</h3>
+    <p>A discovery agent reads MCP client configs, sends read-only probes to hosts on an approved scope list, and reads
+    cloud AI platform exports. It lists every agent, MCP server, knowledge base and vector database, and flags the risky
+    ones: no login, high-impact tools, hidden instructions in a tool description, a poisoned document.</p></li>
+    <li><h3>Rank</h3>
+    <p>A prioritization engine joins that inventory with scanner, CMDB and identity data and builds a graph from
+    internet-facing entry points to crown jewels. Each path gets a score and its reasons, using CISA KEV and EPSS, with
+    the ATT&amp;CK, ATLAS and OWASP entries each hop maps to.</p></li>
+    <li><h3>Fix</h3>
+    <p>The fix plan re-scores every path after each fix, so the list is ordered by exposure removed and not by severity.
+    Results come as a dashboard and as JSON with a published schema, ready for ticketing and SOAR.</p></li>
+  </ol>
+  <p class="note">Discovery only asks a server to describe itself. It never calls a tool, never writes, never stores a
+  secret value, and never contacts a host outside the scope list.</p>
+</section>
+
+<section class="open" aria-labelledby="open-h">
+  <h2 id="open-h">What is in the project</h2>
+  <ul class="items">
+    <li><h3>Live demo</h3>
+    <p>The dashboard for the sample company, as one self-contained page. A guided tour walks through it in 16 steps,
+    from the headline numbers to a single attack path and the fix plan.</p>
+    <span class="links"><a href="demo.html#tour">Take the guided tour</a><a href="demo.html">Open the demo</a></span></li>
+    <li><h3>Code</h3>
+    <p>Python with no runtime dependencies, more than 130 automated tests and an MIT licence. The README covers the
+    scoring model, the safety rules and the sample data.</p>
+    <span class="links"><a href="https://github.com/yaronimac/ai-taint-path">View the code on GitHub</a></span></li>
+    <li><h3>PRD and GTM brief</h3>
+    <p>The product case: the problem, buyers and users, MVP scope, competitive landscape, positioning, packaging and
+    pricing, success metrics and risks.</p>
+    <span class="links"><a href="brief.html">Read the brief</a><a href="ai-taint-path-prd-gtm-brief.pdf">Download the PDF</a></span></li>
+  </ul>
+</section>
+
+<section class="status" aria-labelledby="status-h">
+  <h2 id="status-h">Built so far, and what comes next</h2>
+  <section>
+    <p class="label">Built</p>
+    <ul>
+      <li>Discovery agent, rule-based by default, with an optional Claude mode that chooses which leads to probe</li>
+      <li>Prioritization engine with explainable scores, choke points and a re-scored fix plan</li>
+      <li>JSON output with a versioned schema</li>
+      <li>Dashboard with attack paths in technical detail, toxic combinations and an AI bill of materials</li>
+      <li>Guided tour of the demo</li>
+    </ul>
+  </section>
+  <section>
+    <p class="label">Next</p>
+    <ul>
+      <li>Analyst agent that explains the top risks, drafts remediation tickets and writes a one-page board brief</li>
+      <li>REST API with an OpenAPI spec</li>
+      <li>Signed webhook and an example SOAR playbook</li>
+    </ul>
+  </section>
+</section>
+
+<section class="about" aria-labelledby="about-h">
+  <p class="label" id="about-h">About</p>
+  <p>Built by Yaron Shumunov with Claude Code. The product decisions are Yaron's: the buyer, the route to market, the
+  positioning, the pricing model and the scope. Claude wrote most of the code.</p>
+  <p class="links"><a href="https://github.com/yaronimac">GitHub</a></p>
+</section>
+
+</main>
+
+<footer>Halden Logistics is fictional. No real company's data is used. © 2026 Yaron Shumunov, MIT licence.</footer>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ai-taint-path PRD and GTM brief</title>
+<meta name="description" content="Product requirements and go-to-market brief for ai-taint-path: the problem, buyers, MVP scope, competitive landscape, positioning, packaging, pricing, metrics and risks.">
+<style>
+/* Layout: a reading column for prose, with tables allowed the full page width. Same tokens as the landing page. */
+:root{--page:#f9f9f7;--surface:#fcfcfb;--sunken:#f0efea;--ink:#0b0b0b;--ink-2:#52514e;--muted:#6f6d68;
+--border:#e1e0d9;--axis:#c3c2b7;--violet:#6250d6;--violet-tint:#eeebfb;--good:#0b7a0b;--good-tint:#e7f4e7;
+--sans:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+--mono:ui-monospace,"SF Mono","Cascadia Mono","Segoe UI Mono",Menlo,Consolas,"Liberation Mono",monospace}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--page:#0d0d0d;--surface:#1a1a19;--sunken:#242422;
+--ink:#f0efec;--ink-2:#c3c2b7;--muted:#a3a19a;--border:#2c2c2a;--axis:#4a4a46;--violet:#9085e9;--violet-tint:#26223f;
+--good:#5fd35f;--good-tint:#17301a;color-scheme:dark}}
+:root[data-theme="dark"]{--page:#0d0d0d;--surface:#1a1a19;--sunken:#242422;--ink:#f0efec;--ink-2:#c3c2b7;--muted:#a3a19a;
+--border:#2c2c2a;--axis:#4a4a46;--violet:#9085e9;--violet-tint:#26223f;--good:#5fd35f;--good-tint:#17301a;color-scheme:dark}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--page);color:var(--ink);font:1rem/1.6 var(--sans)}
+.wrap{max-width:62rem;margin:0 auto;padding-block:1.5rem 4rem;padding-left:max(16px,env(safe-area-inset-left,0px));
+padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:2.75rem}
+main{display:grid;gap:2.75rem;min-width:0}
+section{display:grid;gap:1rem;min-width:0}
+figure{display:grid;gap:.6rem;min-width:0}
+h1,h2,h3,p,ol,ul,dl,dd,figure{margin:0}
+h1,h2,h3{text-wrap:balance}
+h1{font-size:clamp(2rem,4.6vw,2.75rem);line-height:1.08;font-weight:750;letter-spacing:-.03em}
+h2{font-size:1.5rem;line-height:1.2;font-weight:700;letter-spacing:-.02em;padding-top:1.25rem;border-top:1px solid var(--axis)}
+h3{font-size:1rem;line-height:1.35;font-weight:650}
+p,li{max-width:74ch}
+ul,ol{padding-left:1.2rem;display:grid;gap:.45rem}
+a{color:inherit;text-underline-offset:.18em;text-decoration-thickness:1px}
+a:focus-visible{outline:2px solid var(--violet);outline-offset:3px;border-radius:3px}
+code{font-family:var(--mono);font-size:.875em}
+.label{font:600 .75rem/1.4 var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2)}
+.lede{font-size:1.125rem;color:var(--ink-2)}
+.top{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:.5rem 1.5rem;font-size:.9375rem}
+.top .name{font:600 1rem/1.4 var(--mono);text-decoration:none}
+.top nav{display:flex;flex-wrap:wrap;gap:.25rem 1.25rem}
+.top nav a{color:var(--ink-2)}
+.title{display:grid;gap:.75rem}
+.byline{font-size:.9375rem;color:var(--ink-2)}
+.summary{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:.6rem 1.5rem;padding:1.25rem;border:1px solid var(--border);
+border-radius:8px;background:var(--sunken);font-size:.9688rem}
+.summary dt{font-weight:650}
+.scroll{overflow-x:auto;min-width:0}
+table{width:100%;border-collapse:collapse;font-size:.9063rem;line-height:1.5}
+th,td{text-align:left;vertical-align:top;padding:.6rem .9rem .6rem 0;border-bottom:1px solid var(--border)}
+th{font:600 .75rem/1.4 var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2);border-bottom-color:var(--axis);
+white-space:nowrap}
+td:first-child{font-weight:650}
+td.plain{font-weight:400}
+.tag{display:inline-block;padding:.05rem .5rem;border-radius:999px;font-size:.75rem;font-weight:650;line-height:1.5;white-space:nowrap;
+border:1px solid var(--axis);color:var(--ink-2)}
+.tag.built{border-color:transparent;background:var(--good-tint);color:var(--good)}
+.stories li{padding-left:.2rem}
+.flow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.75rem;align-items:stretch}
+.flow div{display:grid;align-content:start;gap:.3rem;padding:.8rem .9rem;border:1px solid var(--axis);border-radius:6px;background:var(--surface);
+font-size:.875rem;line-height:1.4;min-width:0}
+.flow .ai{background:var(--violet-tint);border-color:var(--violet)}
+.flow .next{border-style:dashed}
+.flow b{font-weight:650}
+.flow span{color:var(--ink-2)}
+.caption{font-size:.9063rem;color:var(--ink-2)}
+.map{display:block;width:100%;max-width:38rem;height:auto}
+.map text{font-family:var(--sans);fill:var(--ink)}
+.map .axis-t{fill:var(--ink-2);font-size:11px;letter-spacing:.04em}
+.map .seg{font-size:12px}
+.map .us{font-weight:700}
+footer{font-size:.875rem;color:var(--muted)}
+@media screen and (max-width:700px){
+  .summary{grid-template-columns:minmax(0,1fr);gap:.15rem}
+  .summary dd{margin-bottom:.6rem}
+  .flow{grid-template-columns:minmax(0,1fr)}
+  table{min-width:40rem}
+}
+@media print{
+  :root{--page:#fff;--surface:#fff;--sunken:#f4f4f1;--ink:#0b0b0b;--ink-2:#454441;--muted:#6f6d68;--border:#dcdbd4;--axis:#b9b8ae;
+  --violet:#5a48c9;--violet-tint:#eeebfb;--good:#0b6a0b;--good-tint:#e7f4e7;color-scheme:light}
+  body{font-size:10.5pt;line-height:1.5}
+  /* block layout for print: grid containers do not split cleanly across pages */
+  .wrap,main,section,figure,ul,ol{display:block}
+  .wrap{max-width:none;padding:0}
+  .wrap>*+*,main>*+*{margin-top:1.5rem}
+  section>*+*,figure>*+*{margin-top:.75rem}
+  li+li{margin-top:.35rem}
+  .top nav{display:none}
+  h2{break-after:avoid;padding-top:.8rem}
+  h3,.label{break-after:avoid}
+  tr,li,.flow,.summary,figure,.map{break-inside:avoid}
+  thead{display:table-row-group}
+  table{font-size:9pt}
+  a{text-decoration:none}
+  .scroll{overflow:visible}
+}
+@page{size:A4;margin:16mm 15mm}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <a class="name" href="index.html">ai-taint-path</a>
+  <nav aria-label="Project">
+    <a href="index.html">About the project</a>
+    <a href="demo.html">Demo</a>
+    <a href="https://github.com/yaronimac/ai-taint-path">Code</a>
+    <a href="ai-taint-path-prd-gtm-brief.pdf">PDF</a>
+  </nav>
+</header>
+
+<main>
+
+<section class="title">
+  <p class="label">Product requirements and go-to-market brief</p>
+  <h1>ai-taint-path</h1>
+  <p class="lede">An intelligence-led prioritization layer that finds the AI agents and MCP servers a company runs and
+  ranks the attack paths that lead through them to its crown jewels.</p>
+  <p class="byline">Yaron Shumunov · November 2026 · Demo and code at yaronimac.github.io/ai-taint-path</p>
+  <dl class="summary">
+    <dt>Problem</dt><dd>Security teams see thousands of exposures and cannot tell which few reach their critical assets.
+    AI agents add a fast-growing class of exposures that their tools do not model at all.</dd>
+    <dt>Buyer</dt><dd>The CISO or head of exposure management at a 1,000 to 10,000-employee company rolling out AI agents.</dd>
+    <dt>Route to market</dt><dd>MSSP and MDR partners first, with a free open-source edition.</dd>
+    <dt>Positioning</dt><dd>A layer on top of the scanners and CTEM tools a customer already owns, which makes them agent-aware.</dd>
+    <dt>Pricing</dt><dd>Per protected asset, with each AI agent, MCP server and RAG knowledge base counted as an asset.</dd>
+    <dt>Status</dt><dd>Discovery, ranking, the dashboard and JSON output are built and shown on a sample company. The analyst
+    agent and the rest of the SOAR integration are next.</dd>
+  </dl>
+</section>
+
+<section>
+  <h2>Problem and opportunity</h2>
+  <p>Security teams can see thousands of exposures but can't tell which few actually lead to their critical assets, and
+  AI agents are now adding a fast-growing class of exposures that their tools don't model at all.</p>
+  <ul>
+    <li><b>Prioritization is broken.</b> 97% of security teams struggle to know which exposures are actually exploitable,
+    42% of analyst time goes to risks that turn out not to matter, and 84% of SOC teams were hit through risks they already
+    knew about (<a href="https://filigran.io/ctem-market-survey-report">Filigran survey</a>, vendor-run).</li>
+    <li><b>AI agents are a new, unmanaged attack surface.</b> 38% of 560 scanned MCP servers had no authentication, 30 MCP
+    vulnerabilities were filed in 60 days, and only 21% of executives have full visibility into what their agents can access
+    (<a href="https://dev.to/ai_agent_digest/30-cves-in-60-days-mcps-security-reckoning-is-here-4p0n">DEV roundup</a>).</li>
+    <li><b>Analysts agree it's the priority.</b> Two of Gartner's six top cybersecurity trends for 2026 are oversight of AI
+    agents and adapting identity management to them
+    (<a href="https://gcom.pdo.aws.gartner.com/en/newsroom/press-releases/2026-02-05-gartner-identifies-the-top-cybersecurity-trends-for-2026">Gartner</a>).</li>
+  </ul>
+  <p><b>Why now:</b> agent adoption is moving from pilots to production, while dedicated MCP security startups have raised
+  only about $40M (<a href="https://softwarestrategiesblog.com/2026/03/28/agentic-ai-security-startups-funding-mna-rsac-2026/">Software Strategies</a>).
+  Exposure tools that already sit in the budget have no agent-aware prioritization yet, which leaves room for a layer
+  that adds it.</p>
+</section>
+
+<section>
+  <h2>Users and buyers</h2>
+  <p>The CISO buys it, the exposure management lead uses it daily, and engineers act on what it produces. The MSSP is the
+  channel that brings it to many CISOs at once.</p>
+  <div class="scroll"><table>
+    <thead><tr><th>Persona</th><th>Role in the deal</th><th>Job to be done</th><th>What they need from the product</th></tr></thead>
+    <tbody>
+    <tr><td>CISO</td><td>Economic buyer</td><td>Show the board that exposure is falling while the company rolls out AI</td><td>A one-page board brief with a trend and three asks</td></tr>
+    <tr><td>Head of exposure management</td><td>Champion and daily user</td><td>Fix the 10 things that matter this week, not 10,000 findings</td><td>Ranked attack paths, each with a plain-language reason</td></tr>
+    <tr><td>Cloud or IT engineer</td><td>Remediation owner</td><td>Know exactly what to change and why it's urgent</td><td>A ready-to-file ticket with the fix and the evidence</td></tr>
+    <tr><td>AI platform owner</td><td>Influencer</td><td>Ship agents without them becoming the breach path</td><td>An inventory of agents and MCP servers with risky permissions flagged</td></tr>
+    <tr><td>MSSP service manager</td><td>Channel partner</td><td>Deliver CTEM to many clients with a small team</td><td>Repeatable, brandable reports per client (after the MVP)</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section>
+  <h2>Product decisions</h2>
+  <p>Six calls shape everything else in this brief.</p>
+  <div class="scroll"><table>
+    <thead><tr><th>Decision</th><th>Choice</th><th>Why</th></tr></thead>
+    <tbody>
+    <tr><td>Primary buyer</td><td>Enterprise CISO or head of exposure management at a 1,000 to 10,000-employee company rolling out AI agents</td><td>Owns the budget and the board conversation</td></tr>
+    <tr><td>Route to market</td><td>MSSP and MDR partners first, with a free open-source edition for credibility</td><td>One partner brings the product to many CISOs, and practitioners can check an open-source edition for themselves</td></tr>
+    <tr><td>Positioning</td><td>A layer on top: it imports findings from existing scanners and CTEM tools and makes them agent-aware</td><td>Buyers are consolidating vendors, not adding platforms</td></tr>
+    <tr><td>Pricing model</td><td>Per protected asset, with each AI agent, MCP server and RAG knowledge base counted as an asset</td><td>Matches how exposure tools are already bought, and grows with agent adoption</td></tr>
+    <tr><td>What the MVP produces</td><td>A discovered agent and MCP inventory, the top 10 ranked attack paths, remediation tickets and a one-page board brief, all also delivered as JSON and through a REST API with webhooks for SOAR</td><td>Every persona gets something to act on: the engineer a ticket, the exposure lead a ranked list, the CISO a brief</td></tr>
+    <tr><td>Name</td><td>ai-taint-path</td><td>From taint analysis: it follows untrusted input (a chat message, an emailed invoice, a poisoned document) through agents, tools and identities to a crown jewel</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section>
+  <h2>MVP scope</h2>
+  <p>The MVP runs two agents on one fictional company: a discovery agent that finds its AI agents and MCP servers and checks
+  how risky they are, and an analyst agent that turns everything into a top-10 list of attack paths, tickets and a board
+  brief. It uses only free data sources.</p>
+  <figure>
+    <div class="flow">
+      <div><b>Inputs</b><span>Scanner findings, an asset inventory with crown-jewel tags, identities</span></div>
+      <div class="ai"><b>Discovery agent</b><span>Finds AI agents, MCP servers, knowledge bases and vector databases, and flags their risks</span></div>
+      <div><b>Prioritization engine</b><span>Builds the attack graph, scores every path, plans the fixes</span></div>
+      <div class="ai next"><b>Analyst agent (next)</b><span>Explains the top risks, drafts tickets, writes the board brief</span></div>
+    </div>
+    <figcaption class="caption">Discovery feeds the engine the AI attack surface that scanners don't see. The analyst agent only
+    explains scores the engine computed.</figcaption>
+  </figure>
+  <div class="scroll"><table>
+    <thead><tr><th>In the MVP</th><th>What it does</th><th>Status</th></tr></thead>
+    <tbody>
+    <tr><td>Inputs</td><td>Scanner findings, an asset inventory with crown-jewel tags, and identities, as JSON files. The AI agent and MCP inventory is not hand-written: the discovery agent builds it.</td><td><span class="tag built">Built</span></td></tr>
+    <tr><td>Discovery agent</td><td>Finds AI agents, MCP servers and RAG pipelines (vector databases and the knowledge bases agents retrieve from) from three sources: MCP config files on laptops and servers (Claude, Cursor, VS Code), read-only probes of MCP and vector database endpoints on an approved scope list, and exported cloud AI inventories (AWS Bedrock agents and knowledge bases, Azure AI Foundry, Azure AI Search). It flags missing authentication, high-risk tools (shell, payments, external email), vulnerable MCP packages such as mcp-remote and MCP Inspector, tool descriptions with hidden instructions, vector stores open without login, knowledge bases fed from untrusted sources, and retrieval that ignores document permissions. Each finding maps to the OWASP agentic and LLM risks and MITRE ATLAS.</td><td><span class="tag built">Built</span></td></tr>
+    <tr><td>Enrichment</td><td><a href="https://www.cisa.gov/known-exploited-vulnerabilities-catalog">CISA KEV</a> (exploited in the wild), FIRST EPSS (likelihood of exploitation), MITRE ATT&amp;CK techniques, the <a href="https://genai.owasp.org/2025/12/09/owasp-top-10-for-agentic-applications-the-benchmark-for-agentic-security-in-the-age-of-autonomous-ai/">OWASP Top 10 for Agentic Applications</a> for agent risks, and the <a href="https://genai.owasp.org/llm-top-10/">OWASP Top 10 for LLM Applications</a> for RAG risks.</td><td><span class="tag built">Built</span></td></tr>
+    <tr><td>Attack paths</td><td>A graph from internet-facing entry points to crown-jewel assets, where agents, knowledge bases and machine identities are nodes that can be abused along the way.</td><td><span class="tag built">Built</span></td></tr>
+    <tr><td>Explainable score</td><td>Every path gets a score and the reasons for it, in words a CISO can read.</td><td><span class="tag built">Built</span></td></tr>
+    <tr><td>Web dashboard</td><td>The ranked paths, each in technical detail, the fix plan and the AI inventory, as one self-contained page.</td><td><span class="tag built">Built</span></td></tr>
+    <tr><td>Analyst agent</td><td>A Claude agent that explains the top risks, drafts remediation tickets and writes the board brief.</td><td><span class="tag">Next</span></td></tr>
+    <tr><td>MCP server</td><td>Lets other AI assistants ask the product questions.</td><td><span class="tag">Next</span></td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>SOAR integration</h3>
+  <p>Every output is machine-readable, so security automation can act on it without a person in the loop.</p>
+  <div class="scroll"><table>
+    <thead><tr><th>Interface</th><th>What it does</th><th>Status</th></tr></thead>
+    <tbody>
+    <tr><td>JSON output</td><td><code>scan --format json</code> writes the inventory, findings and ranked paths as JSON with a published, versioned JSON Schema</td><td><span class="tag built">Built</span></td></tr>
+    <tr><td>REST API</td><td>Start a scan, list ranked paths, get a path's evidence and ticket. An OpenAPI spec is generated automatically</td><td><span class="tag">Next</span></td></tr>
+    <tr><td>Webhook</td><td>Pushes each new or worsened critical path to a SOAR endpoint as JSON, signed so the receiver can verify it</td><td><span class="tag">Next</span></td></tr>
+    <tr><td>Example playbook</td><td>One working playbook (Cortex XSOAR generic webhook or a Microsoft Sentinel Logic App) that opens a case per critical path and assigns the ticket owner</td><td><span class="tag">Next</span></td></tr>
+    <tr><td>Integration guide</td><td>Field-by-field schema reference, example payloads and setup steps for the playbook, in the repo docs</td><td><span class="tag">Next</span></td></tr>
+    </tbody>
+  </table></div>
+
+  <p><b>Not in the MVP:</b> live vulnerability scanning, live cloud API discovery (the MVP reads exported inventories),
+  probing anything outside the approved scope list, calling MCP tools (discovery only lists them), live connectors to
+  scanners and CTEM tools, multiple clients (tenants), user accounts, and automatic fixes.</p>
+
+  <h3>Core user stories</h3>
+  <ol class="stories">
+    <li>As an AI platform owner, I want the discovery agent to find every AI agent, MCP server and RAG knowledge base in use, including ones nobody registered, so shadow AI shows up in the inventory. <span class="tag built">Built</span></li>
+    <li>As an AI platform owner, I want each discovered MCP server checked for missing login, high-risk tools and known-vulnerable packages, so I can fix them before an attacker finds them. <span class="tag built">Built</span></li>
+    <li>As an AI platform owner, I want every knowledge base mapped to the sources that feed it and the agents that read it, so a poisoned document or an open vector store shows up as an attack path. <span class="tag built">Built</span></li>
+    <li>As a head of exposure management, I want the 10 attack paths that reach crown-jewel assets, ranked, so my team works on what matters first. <span class="tag built">Built</span></li>
+    <li>As a head of exposure management, I want each path's reason in plain words, so I can defend the ranking to engineers and auditors. <span class="tag built">Built</span></li>
+    <li>As a cloud engineer, I want a ready-to-file ticket with the fix and evidence, so I can act without a meeting. <span class="tag">Next</span></li>
+    <li>As a SOAR engineer at a company or MSSP, I want new critical paths pushed to my SOAR as JSON, so playbooks open cases and route fixes automatically. <span class="tag">Next</span></li>
+    <li>As a CISO, I want a one-page brief showing the trend and three asks, so I can take it straight to the board. <span class="tag">Next</span></li>
+  </ol>
+</section>
+
+<section>
+  <h2>What the build shows so far</h2>
+  <p>The demo runs on Halden Logistics, a fictional 4,500-person freight company with real CVEs and planted problems. The
+  numbers below come from the published scan result, which the test suite regenerates and compares on every run.</p>
+  <ul>
+    <li>The exposure index is 433.4 of 600 with AI discovery, against 245.7 on scanner, CMDB and posture data alone.</li>
+    <li>7 of the top 10 attack paths run through AI components. 4 of them are invisible without discovery, and 3 more score far lower without it.</li>
+    <li>Discovery finds 19 AI components, 8 of them in no inventory, and raises 25 risk flags, 7 of them critical.</li>
+    <li>5 fixes cut the exposure index by 78.7%. The first is a VPN flaw that ranks only 11th on a list sorted by CVSS, and 2 of the 5 are agent approval settings that no vulnerability scanner reports.</li>
+    <li>8 of the 10 highest-CVSS findings lead to no crown jewel at all.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Competitive landscape</h2>
+  <p>Exposure platforms are strong at prioritization but treat AI agents as an add-on, while AI agent security startups
+  find agents but don't rank them against the rest of the attack surface. The gap is joining the two, and the closest
+  player doing so today is Wiz, but only for cloud.</p>
+  <figure>
+    <svg class="map" viewBox="0 0 560 330" role="img" aria-label="Positioning map. Exposure management platforms sit high on prioritization depth and low on agent awareness. AI agent security startups sit high on agent awareness and low on prioritization depth. Platform giants sit in the middle. The target, ai-taint-path, is high on both.">
+      <rect x="60" y="14" width="486" height="262" fill="none" stroke="var(--axis)"/>
+      <line x1="303" y1="14" x2="303" y2="276" stroke="var(--border)"/>
+      <line x1="60" y1="145" x2="546" y2="145" stroke="var(--border)"/>
+      <text class="axis-t" x="303" y="302" text-anchor="middle">TREATS AI AGENTS AS PART OF THE ATTACK SURFACE →</text>
+      <text class="axis-t" transform="translate(40 145) rotate(-90)" text-anchor="middle">DEPTH OF PRIORITIZATION →</text>
+      <circle cx="140" cy="62" r="6" fill="var(--ink-2)"/>
+      <text class="seg" x="154" y="58">Exposure management</text><text class="seg" x="154" y="74">platforms</text>
+      <circle cx="318" cy="150" r="6" fill="var(--ink-2)"/>
+      <text class="seg" x="332" y="146">Platform giants buying</text><text class="seg" x="332" y="162">AI security</text>
+      <circle cx="430" cy="232" r="6" fill="var(--ink-2)"/>
+      <text class="seg" x="416" y="228" text-anchor="end">AI agent security</text><text class="seg" x="416" y="244" text-anchor="end">startups</text>
+      <circle cx="486" cy="52" r="8" fill="var(--violet)"/>
+      <text class="seg us" x="472" y="48" text-anchor="end">ai-taint-path</text><text class="seg" x="472" y="64" text-anchor="end">the target</text>
+    </svg>
+    <figcaption class="caption">A qualitative map. The top-right corner is the target: deep prioritization that treats agents
+    as part of the attack surface, across cloud and on-premises.</figcaption>
+  </figure>
+  <div class="scroll"><table>
+    <thead><tr><th>Segment</th><th>Examples</th><th>Their strength</th><th>Their gap</th><th>Our angle</th></tr></thead>
+    <tbody>
+    <tr><td>Exposure management platforms</td><td><a href="https://tenable.com/analyst-research/tenable-gartner-magic-quadrant-exposure-assessment-platforms">Tenable One</a>, XM Cyber, Microsoft Security Exposure Management, Trend Micro Vision One (<a href="https://www.itsecurityguru.org/2026/03/03/the-top-exposure-assessment-platforms-eaps-to-watch-in-2026/">list</a>)</td><td>Broad asset coverage, attack paths, established budgets</td><td>AI agents and MCP servers are new add-on modules, not part of the core path model</td><td>Import their findings and add agent-aware paths on top, rather than compete</td></tr>
+    <tr><td>AI agent security startups</td><td><a href="https://guptadeepak.com/agent-security/vendor/noma-security/">Noma</a> ($132M raised), <a href="https://www.tamradar.com/funding-rounds/zenity-series-c-125m">Zenity</a> ($125M Series C)</td><td>Deep agent discovery, access policies, runtime monitoring</td><td>Agent risk sits in its own console, not ranked against the rest of the attack surface</td><td>Discover agents and MCP servers too, then put their risk in the same ranked list as everything else</td></tr>
+    <tr><td>Platform giants buying AI security</td><td>Palo Alto (Protect AI), Check Point (Lakera), Google (Wiz) (<a href="https://softwarestrategiesblog.com/2026/03/28/agentic-ai-security-startups-funding-mna-rsac-2026/">deals</a>)</td><td>Distribution and bundling power</td><td>Integration takes years, and bundles favour their own stack</td><td>Vendor-neutral, works across Microsoft, Palo Alto and others</td></tr>
+    </tbody>
+  </table></div>
+  <p>Incumbents are adding AI coverage quickly, so the honest pitch is a sharper, intelligence-led prioritization layer
+  that also works through MSSPs. It is not a claim that nobody else covers agents.</p>
+</section>
+
+<section>
+  <h2>Positioning, packaging and pricing</h2>
+  <p>Position it as the prioritization layer that makes existing exposure tools agent-aware, sell it through MSSPs, and
+  price it per protected asset with agents counted as assets.</p>
+  <p><b>Positioning statement.</b> For CISOs at enterprises rolling out AI agents, who can't tell which of thousands of
+  exposures reach their crown jewels, this product is an intelligence-led prioritization layer. It discovers the AI agents
+  and MCP servers in use, ranks attack paths across infrastructure, identities and those agents, then turns them into
+  tickets and a board brief. Unlike exposure platforms that bolt on AI modules, or agent security tools in a separate
+  console, it puts agent risk in the same ranked list, on top of the tools you already own.</p>
+  <h3>Three messages</h3>
+  <ul>
+    <li>Fix the 10 paths that reach your crown jewels, not 10,000 findings.</li>
+    <li>Find the AI agents, MCP servers and RAG knowledge bases you didn't know you had, and see their risk in the same list as everything else.</li>
+    <li>From raw findings to a board-ready brief in minutes.</li>
+  </ul>
+  <h3>Packaging hypothesis</h3>
+  <div class="scroll"><table>
+    <thead><tr><th>Edition</th><th>Who it's for</th><th>What's included</th></tr></thead>
+    <tbody>
+    <tr><td>Community (open source)</td><td>Practitioners and evaluators</td><td>Discovery agent, file import, ranking, dashboard, JSON output, REST API and webhooks, AI explanations with your own API key</td></tr>
+    <tr><td>Professional</td><td>Enterprise exposure management teams</td><td>Connectors to major scanners and CTEM tools, scheduled runs, Jira and ServiceNow tickets, packaged SOAR playbooks</td></tr>
+    <tr><td>MSSP</td><td>MSSP and MDR providers</td><td>Multiple clients, brandable board briefs, per-client billing</td></tr>
+    </tbody>
+  </table></div>
+  <p><b>Pricing hypothesis:</b> an annual price per protected asset, with each AI agent, MCP server and RAG knowledge base
+  counted as an asset, so revenue grows with the customer's agent adoption. MSSPs get volume tiers per client. Price points
+  are an open question, to be tested with design partners.</p>
+  <p><b>Go-to-market motion:</b> launch the open-source edition with a case study, recruit three MSSP design partners for
+  the MSSP edition, then list on the AWS and Azure marketplaces.</p>
+</section>
+
+<section>
+  <h2>Success metrics and risks</h2>
+  <p>The MVP succeeds if it reliably surfaces the paths that matter, explains each one, and gets from raw files to a board
+  brief in minutes. Targets are set on the sample company and checked by automated tests.</p>
+  <div class="scroll"><table>
+    <thead><tr><th>Metric</th><th>MVP target</th><th>How it's measured</th><th>Status</th></tr></thead>
+    <tbody>
+    <tr><td>Discovery coverage</td><td>Finds every planted agent, MCP server and knowledge base, including one shadow server missing from all inventories</td><td>Test suite on the sample company</td><td><span class="tag built">Met</span></td></tr>
+    <tr><td>Discovery accuracy</td><td>Flags every planted unauthenticated server, open vector store, vulnerable MCP package, poisoned tool description and poisoned knowledge-base document, with no false alarms on the clean ones</td><td>Test suite on the sample company</td><td><span class="tag built">Met</span></td></tr>
+    <tr><td>Ranking quality</td><td>Every planted critical path (known-exploited flaw or agent misconfiguration reaching a crown jewel) lands in the top 10</td><td>Test suite on the sample company</td><td><span class="tag built">Met</span></td></tr>
+    <tr><td>Explainability</td><td>Every ranked path explains itself and maps to ATT&amp;CK, ATLAS or OWASP</td><td>Automated check: every hop carries a one-sentence reason, and every cited framework entry is verified</td><td><span class="tag built">Met</span></td></tr>
+    <tr><td>SOAR integration</td><td>Every new critical path reaches the example playbook by webhook and opens a case, and all JSON validates against the published schema</td><td>Integration test and recorded demo</td><td><span class="tag">Schema met, webhook next</span></td></tr>
+    <tr><td>Time to brief</td><td>Discovery to board brief in under 5 minutes</td><td>Timed demo run</td><td><span class="tag">Next</span></td></tr>
+    </tbody>
+  </table></div>
+  <div class="scroll"><table>
+    <thead><tr><th>Risk</th><th>Mitigation</th></tr></thead>
+    <tbody>
+    <tr><td>It looks like a toy</td><td>A realistic fictional company and real public threat data (KEV, EPSS, ATT&amp;CK)</td></tr>
+    <tr><td>The AI gets facts wrong</td><td>Scores are computed by code. The AI only explains them and must cite the evidence</td></tr>
+    <tr><td>Discovery probing looks like an attack</td><td>Probes only hosts on an explicit scope list, and only asks a server to describe itself. It never calls a tool</td></tr>
+    <tr><td>A poisoned tool description manipulates the discovery agent</td><td>Tool descriptions are treated as untrusted data, checked by rules first, and never followed as instructions</td></tr>
+    <tr><td>Scope creep</td><td>The MVP list above is fixed. Everything else goes to a backlog in the repo</td></tr>
+    <tr><td>Confidentiality</td><td>No real employer or client data. The company and its findings are invented</td></tr>
+    <tr><td>API costs on the public demo</td><td>The hosted demo is a pre-generated page and calls no model</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section>
+  <h2>Sources</h2>
+  <ul>
+    <li><a href="https://filigran.io/ctem-market-survey-report">Filigran: State of Threat Management 2026</a> (vendor survey)</li>
+    <li><a href="https://dev.to/ai_agent_digest/30-cves-in-60-days-mcps-security-reckoning-is-here-4p0n">DEV: 30 CVEs in 60 days, MCP's security reckoning</a></li>
+    <li><a href="https://gcom.pdo.aws.gartner.com/en/newsroom/press-releases/2026-02-05-gartner-identifies-the-top-cybersecurity-trends-for-2026">Gartner: Top Cybersecurity Trends for 2026</a></li>
+    <li><a href="https://softwarestrategiesblog.com/2026/03/28/agentic-ai-security-startups-funding-mna-rsac-2026/">Software Strategies Blog: agentic AI security funding and M&amp;A</a></li>
+    <li><a href="https://genai.owasp.org/2025/12/09/owasp-top-10-for-agentic-applications-the-benchmark-for-agentic-security-in-the-age-of-autonomous-ai/">OWASP Top 10 for Agentic Applications</a></li>
+    <li><a href="https://www.cisa.gov/known-exploited-vulnerabilities-catalog">CISA Known Exploited Vulnerabilities catalog</a></li>
+    <li><a href="https://tenable.com/analyst-research/tenable-gartner-magic-quadrant-exposure-assessment-platforms">Tenable: Leader in Gartner Magic Quadrant for Exposure Assessment Platforms</a></li>
+    <li><a href="https://www.itsecurityguru.org/2026/03/03/the-top-exposure-assessment-platforms-eaps-to-watch-in-2026/">IT Security Guru: Exposure assessment platforms to watch in 2026</a></li>
+    <li><a href="https://guptadeepak.com/agent-security/vendor/noma-security/">Noma Security vendor profile</a></li>
+    <li><a href="https://www.tamradar.com/funding-rounds/zenity-series-c-125m">Zenity Series C</a></li>
+  </ul>
+</section>
+
+</main>
+
+<footer>Halden Logistics is fictional. No real company's data is used. © 2026 Yaron Shumunov.</footer>
+
+</div>
+</body>
+</html>
